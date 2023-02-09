@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<title>LoginPage</title>
+	</head>
+	
+	<body>
+		<h1>Login</h1>
+		<p id='pUserMsg'>Enter Username</p>
+		<form>
+			<input id='txtUname' type='user'>
+		
+		<p id='pPasswordMsg'>Enter Password</p>
+			<input id='txtPass' type='pass'>
+			<button id='btnSubmit' onClick=validateUser()>Submit</button>
+		</form>
+	</body>
+</html>
+
+<script>
+	var tempUser = "user";
+	var tempPass = "password";
+	
+	function validateUser(){
+		//todo: write your code here
+		//alert("Just Checking...")
+
+		const uComp = document.getElementById('txtUname').value.localeCompare(tempUser)
+		const pComp = document.getElementById('txtPass').value.localeCompare(tempPass)
+
+		if ((uComp != 0) || (pComp != 0)) {		
+			alert("Warning...")
+		}
+		else {alert("Access Granted...")}
+	}
+</script>
