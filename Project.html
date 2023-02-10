@@ -6,30 +6,120 @@
 	<body>
 		<h1>Login</h1>
 		<p id='pUserMsg'>Enter Username</p>
-		<form>
-			<input id='txtUname' type='user'>
 		
-		<p id='pPasswordMsg'>Enter Password</p>
-			<input id='txtPass' type='pass'>
-			<button id='btnSubmit' onClick=validateUser()>Submit</button>
+		<form>
+			<input id='txtUname' type='text'>
+			<p id='pPasswordMsg'>Enter Password</p>
+			
+			<p>
+			<input id='txtPass' type='password'>
+			<input id='btnShow' type='checkbox' onclick=passwordVisibility()>Show   
+			</p>
+			
+			<p id='ptxtLoginResult' type='text'></p>
+
+			<button type='button' id='btnSubmit' onClick=validateUser()>Submit</button>
+			<button type='button' id='btnSignUp' onClick=signUp()>Sign Up</button>
+			<button type='button' id='btnForgotPass' onClick=forgotPassword()>Forgot Password</button>
+			
+			<p id='ptxtBottom' type='text'></p>
 		</form>
 	</body>
 </html>
 
 <script>
-	var tempUser = "user";
-	var tempPass = "password";
+    // Dictionary of usernames and passwords
+    var dict = {
+    	"user" : "password"
+    }
 	
-	function validateUser(){
-		//todo: write your code here
-		//alert("Just Checking...")
+    function validateUser(){
+	//todo: write your code here
 
-		const uComp = document.getElementById('txtUname').value.localeCompare(tempUser)
-		const pComp = document.getElementById('txtPass').value.localeCompare(tempPass)
+    	// Clean up
+    	setBottomText("")
 
-		if ((uComp != 0) || (pComp != 0)) {		
-			alert("Warning...")
-		}
-		else {alert("Access Granted...")}
-	}
+    	if(isValidUsername() == false)
+    	{
+		setLoginResult("Username is not within the system...")
+		return // Exit function
+    	}
+	    
+	if(isPasswordCorrect() == false)
+    	{
+		setLoginResult("Password is incorrect...")
+		return // Exit function
+    	}
+        else
+		setLoginResult("Access Granted...")
+    }
+
+    // Checks if username is present in dictionary
+    function isValidUsername()
+    {
+        var username = document.getElementById('txtUname').value
+        if(dict[username] == undefined)
+        {
+            console.log("There is no such username")
+            return false
+        }
+        return true
+    }
+
+    // Checks if password is correct for the given username
+    function isPasswordCorrect()
+    {
+        var username = document.getElementById('txtUname').value
+        var password = document.getElementById('txtPass').value
+        // Does given password match stored password
+        console.log("Actual Password: " + dict[username])
+        console.log("Given Password:  " + password)
+        if(dict[username].localeCompare(password) == 0)
+            return true
+        return false
+    }
+
+    // Sets the visibility of the password field
+    function passwordVisibility()
+    {
+        var showButton = document.getElementById("txtPass")
+        if(showButton.type == "password")
+            showButton.type = "text"
+        else
+            showButton.type = "password"
+    }
+    
+    function signUp()
+    {
+        // Todo: redirect to a sign up page
+        var username = document.getElementById('txtUname').value
+        var password = document.getElementById('txtPass').value
+        // Create key-value pair
+        dict[username] = password
+        if(dict[document.getElementById('txtUname').value] == undefined)
+            console.log("Account not created")
+        else
+            setBottomText("Account created... or not")
+        setLoginResult("")
+    }
+
+    function forgotPassword()
+    {
+        // Todo: redirect to a page for answering security questions
+        document.getElementById('ptxtBottom').innerHTML = "Too bad..."
+        setBottomText("Too bad...")
+        setLoginResult("")
+    }
+
+    // Changes the text below the password input field
+    function setLoginResult(stringLoginResult)
+    {
+        document.getElementById('ptxtLoginResult').innerHTML = stringLoginResult
+    }
+
+    // Changes the text below the buttons: Submit, Sign Up, and Forgot Password
+    function setBottomText(stringBottomText)
+    {
+        document.getElementById('ptxtBottom').innerHTML = stringBottomText
+    }
 </script>
