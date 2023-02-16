@@ -9,12 +9,14 @@
 		
 		<form>
 			<input id='txtUname' type='text'>
-			<p id='pPasswordMsg'>Enter Password</p>
-			
+            <p id='pUsernameReqMsg' style="color:red;"></p>
+
+			<p id='pPasswordMsg'>Enter Password</p>			
 			<p>
 			<input id='txtPass' type='password'>
 			<input id='btnShow' type='checkbox' onclick=passwordVisibility()>Show   
 			</p>
+            <p id='pPasswordReqMsg' style="color:red;"></p>          
 			
 			<p id='ptxtLoginResult' type='text'></p>
 
@@ -103,11 +105,19 @@
         password = getPassword();
         // Create key-value pair
 
-        //Todo Add checking for user
         if (isValidUsername())
         {
             console.log("Account already present.");
             setBottomText("Username already in use");
+            setLoginResult("");
+            return;
+        }
+
+        // Username and password requirements
+        if(!usernameRequirementsMet(username) ||
+           !passwordRequirementsMet(password, username))
+        {
+            setBottomText("Username or Password do not meet requirements.");
             setLoginResult("");
             return;
         }
@@ -120,8 +130,96 @@
             setBottomText("Account created");
             console.log("Account created: user=" + username + ", password=" + password);
         }
-        setLoginResult("");
+        setLoginResult("");        
     }
+
+    function usernameRequirementsMet(username)
+    {
+        // At least 8 characters long
+        if(username.length < 8)
+        {
+            setUserReqText("*Username needs to be at least 10 characters long.");
+            return false;
+        }
+
+        // No spacing in the username allowed
+        if(username.includes(' '))
+        {
+            setUserReqText("*Username cannot have spaces.");
+            return false;
+        }
+
+        // At least 1 uppercase letter and 1 lowercase letter        
+        if(!hasUpperAndLowerCaseLetters(username))
+        {
+            setUserReqText("*Username must have at least 1 uppercase letter and 1 lowercase letter.");
+            return false;
+        }
+
+        setUserReqText("");
+        console.log("Username requirements met.");
+        return true;
+    }
+
+    function passwordRequirementsMet(password, username)
+    {
+        // At least 10 characters long
+        if(password.length < 10)
+        {
+            setPassReqText("*Password needs to be at least 10 characters long.");
+            return false;
+        }
+
+        // No spacing in the password allowed
+        if(password.includes(' '))
+        {
+            setPassReqText("*Password cannot have spaces.");
+            return false;
+        }
+
+        // At least 1 uppercase letter and 1 lowercase letter        
+        if(!hasUpperAndLowerCaseLetters(password))
+        {
+            setPassReqText("*Password must have at least 1 uppercase letter and 1 lowercase letter.");
+            return false;
+        }
+
+        // The password should not contain the username (not case sensitive)
+        if(password.toUpperCase().includes(username.toUpperCase()))
+        {
+            setPassReqText("*Password should not contain the username.");
+            return false;
+        }
+
+        setPassReqText("");
+        console.log("Password requirements met.");
+        return true;
+    }
+
+    function hasUpperAndLowerCaseLetters(string)
+    {
+        // At least 1 uppercase letter and 1 lowercase letter
+        var oneUppercase = false;
+        var oneLowercase = false;
+        for (let index = 0; index < string.length; index++) {
+            const element = string[index];
+            if(!isNaN(element * 1)) 
+            {}// It is a number                
+            else
+            {
+                if(element == element.toUpperCase())
+                    oneUppercase = true;
+                else
+                    oneLowercase = true;
+            }
+        }
+
+        if(oneUppercase && oneLowercase)
+            return true;
+        else
+            return false;
+    }
+
 
     function forgotPassword()
     {
@@ -131,17 +229,38 @@
         setLoginResult("");
     }
 
+
+
+
+
+
+
+
     // Changes the text below the password input field
-    function setLoginResult(stringLoginResult)
+    function setLoginResult(stringText)
     {
-        document.getElementById('ptxtLoginResult').innerHTML = stringLoginResult;
+        document.getElementById('ptxtLoginResult').innerHTML = stringText;
     }
 
     // Changes the text below the buttons: Submit, Sign Up, and Forgot Password
-    function setBottomText(stringBottomText)
+    function setBottomText(stringText)
     {
-        document.getElementById('ptxtBottom').innerHTML = stringBottomText;
+        document.getElementById('ptxtBottom').innerHTML = stringText;
     }
+
+    // Sets the text below the Username input field
+    function setUserReqText(stringText)
+    {
+        document.getElementById('pUsernameReqMsg').innerHTML = stringText;
+    }
+
+    // Sets the text below the Password input field
+    function setPassReqText(stringText)
+    {
+        document.getElementById('pPasswordReqMsg').innerHTML = stringText;
+    }
+
+
 
     function getUsername()
     {
