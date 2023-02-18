@@ -8,28 +8,41 @@
   		<form>     
             <!-- First name -->
             <p id='pFirstNameMsg'>First name</p>
-            <input id='txtFirstName' type='text'>
+            <input id='txtFirstName' type='text' placeholder='First Name'>
 
             <!-- Last name -->
             <p id='pLastNameMsg'>Last name</p>
-            <input id='txtLastName' type='text'>
+            <input id='txtLastName' type='text' placeholder='Last Name'>
 
             <!-- Username -->
 		    <p id='pUsernameMsg'>Username</p>	
-			<input id='txtUname' type='text'>
+			<input id='txtUname' type='text' placeholder='Username'>
             <p id='pUsernameReqMsg' style="color:red;"></p>  
 
             <!-- Password -->
 			<p id='pPasswordMsg'>Enter Password</p>			
 			<p>
-			<input id='txtPass' type='password'>
+			<input id='txtPass' type='password' placeholder='Password'>
 			<button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
 			</p>
             <p id='pPasswordReqMsg' style="color:red;"></p> 	
 
             <!-- Email -->
             <p id='pEmailMsg'>Email</p>	
-			<input id='txtEmail' type='text'>
+			<input id='txtEmail' type='text' placeholder='Email'>
+
+            <!-- Security Questions -->
+            <p id='pSecurityQuestionsMsg'>Security Questions</p>	
+			<input id='txtSecureQ1' type='text' placeholder='Question 1'>
+            <input id='txtSecureQ1Ans' type='text' placeholder='Answer'>
+            <p>
+            <input id='txtSecureQ2' type='text' placeholder='Question 2'>
+            <input id='txtSecureQ2Ans' type='text' placeholder='Answer'>
+            </p>
+            <p>
+            <input id='txtSecureQ3' type='text' placeholder='Question 3'>
+            <input id='txtSecureQ3Ans' type='text' placeholder='Answer'>
+            </p>
             
             <!-- Sign up button -->
             <p>
@@ -91,7 +104,7 @@
         // Send username to server
         // Receive duplicate or not
 
-        console.log("Server contact required. (Line 94)");
+        console.log("Server contact required. (function usernameRequirementsMet())");
         // Confirm that the username is not a duplicate
         //if(isDuplicate(username))
         //{
@@ -168,24 +181,41 @@
 
     function createAccount()
     {
+        // Entered information
         firstName = document.getElementById('txtFirstName').value;
         lastName = document.getElementById('txtLastName').value;
         username = getUsername();
         password = getPassword();  
-        email = document.getElementById('txtEmail').value;
-     
+        email = document.getElementById('txtEmail').value;    
+        // Q1    
+        securityQ1 = document.getElementById('txtSecureQ1').value;
+        securityQ1Ans = document.getElementById('txtSecureQ1Ans').value;
+        // Q2
+        securityQ2 = document.getElementById('txtSecureQ2').value;
+        securityQ2Ans = document.getElementById('txtSecureQ2Ans').value;
+        // Q3
+        securityQ3 = document.getElementById('txtSecureQ3').value;
+        securityQ3Ans = document.getElementById('txtSecureQ3Ans').value;
+        
         accountText = 
             firstName + ' ' +
             lastName + ' ' +
             username + ' ' +
             password + ' ' +
-            email;
+            email + ' \n' +            
+            securityQ1 + ' \n' +
+            securityQ1Ans + ' \n' +
+            securityQ2 + ' \n' +
+            securityQ2Ans + ' \n' +
+            securityQ3 + ' \n' +
+            securityQ3Ans;
 
         console.log("Account created: user=" + username + ", password=" + password);
-        console.log(accountText);
+        console.log(accountText + "\n");
+
+        console.log("Server contact required. (function createAccount())");
 
         // Encrypt (not needed at the moment)
-        // console.log(accountText);
 
         // Send to server (server decrypts and stores)
         // Log in the new user upon creation
