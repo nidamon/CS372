@@ -1,0 +1,224 @@
+<html>
+	<head>
+		<title>SignUp</title>
+	</head>
+	
+	<body>
+		<h1>Account Creation</h1>
+  		<form>     
+            <!-- First name -->
+            <p id='pFirstNameMsg'>First name</p>
+            <input id='txtFirstName' type='text'>
+
+            <!-- Last name -->
+            <p id='pLastNameMsg'>Last name</p>
+            <input id='txtLastName' type='text'>
+
+            <!-- Username -->
+		    <p id='pUsernameMsg'>Username</p>	
+			<input id='txtUname' type='text'>
+            <p id='pUsernameReqMsg' style="color:red;"></p>  
+
+            <!-- Password -->
+			<p id='pPasswordMsg'>Enter Password</p>			
+			<p>
+			<input id='txtPass' type='password'>
+			<button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
+			</p>
+            <p id='pPasswordReqMsg' style="color:red;"></p> 	
+
+            <!-- Email -->
+            <p id='pEmailMsg'>Email</p>	
+			<input id='txtEmail' type='text'>
+            
+            <!-- Sign up button -->
+            <p>
+			<button id='btnSignUp' type='button' onClick=signUp()>Sign Up</button>
+            </p>
+		</form>
+	</body>
+</html>
+
+<script>    
+    // Sets the visibility of the password field
+    function passwordVisibility()
+    {
+        var showButton = document.getElementById("txtPass");
+        if(showButton.type == "password")
+            showButton.type = "text";
+        else
+            showButton.type = "password";
+    }
+    
+    // Todo: Account data storage + add names and email
+    function signUp()
+    {        
+        username = getUsername();
+        password = getPassword();        
+
+        // Username and password requirements
+        if(!usernameRequirementsMet(username) ||
+           !passwordRequirementsMet(password, username))
+            return;
+                
+        createAccount();          
+    }
+
+    function usernameRequirementsMet(username)
+    {
+        // At least 8 characters long
+        if(username.length < 8)
+        {
+            setUserReqText("*Username needs to be at least 10 characters long.");
+            return false;
+        }
+
+        // No spacing in the username allowed
+        if(username.includes(' '))
+        {
+            setUserReqText("*Username cannot have spaces.");
+            return false;
+        }
+
+        // At least 1 uppercase letter and 1 lowercase letter        
+        if(!hasUpperAndLowerCaseLetters(username))
+        {
+            setUserReqText("*Username must have at least 1 uppercase letter and 1 lowercase letter.");
+            return false;
+        }
+
+        // ############ Server contact required! #############
+        // Send username to server
+        // Receive duplicate or not
+
+        console.log("Server contact required. (Line 94)");
+        // Confirm that the username is not a duplicate
+        //if(isDuplicate(username))
+        //{
+        //    console.log("Account already present.");
+        //    setUserReqText("*Username already in use");
+        //    return false;
+        //}
+
+        // Wait for server response for above
+
+        setUserReqText("");
+        console.log("Username requirements met.");
+        return true;
+    }
+
+    function passwordRequirementsMet(password, username)
+    {
+        // At least 10 characters long
+        if(password.length < 10)
+        {
+            setPassReqText("*Password needs to be at least 10 characters long.");
+            return false;
+        }
+
+        // No spacing in the password allowed
+        if(password.includes(' '))
+        {
+            setPassReqText("*Password cannot have spaces.");
+            return false;
+        }
+
+        // At least 1 uppercase letter and 1 lowercase letter        
+        if(!hasUpperAndLowerCaseLetters(password))
+        {
+            setPassReqText("*Password must have at least 1 uppercase letter and 1 lowercase letter.");
+            return false;
+        }
+
+        // The password should not contain the username (not case sensitive)
+        if(password.toUpperCase().includes(username.toUpperCase()))
+        {
+            setPassReqText("*Password should not contain the username.");
+            return false;
+        }
+
+        setPassReqText("");
+        console.log("Password requirements met.");
+        return true;
+    }
+
+    function hasUpperAndLowerCaseLetters(string)
+    {
+        // At least 1 uppercase letter and 1 lowercase letter
+        var oneUppercase = false;
+        var oneLowercase = false;
+        for (let index = 0; index < string.length; index++) {
+            const element = string[index];
+            if(!isNaN(element * 1)) 
+            {}// It is a number                
+            else
+            {
+                if(element == element.toUpperCase())
+                    oneUppercase = true;
+                else
+                    oneLowercase = true;
+            }
+        }
+
+        if(oneUppercase && oneLowercase)
+            return true;
+        else
+            return false;
+    }
+
+    function createAccount()
+    {
+        firstName = document.getElementById('txtFirstName').value;
+        lastName = document.getElementById('txtLastName').value;
+        username = getUsername();
+        password = getPassword();  
+        email = document.getElementById('txtEmail').value;
+     
+        accountText = 
+            firstName + ' ' +
+            lastName + ' ' +
+            username + ' ' +
+            password + ' ' +
+            email;
+
+        console.log("Account created: user=" + username + ", password=" + password);
+        console.log(accountText);
+
+        // Encrypt (not needed at the moment)
+        // console.log(accountText);
+
+        // Send to server (server decrypts and stores)
+        // Log in the new user upon creation
+    }
+
+
+
+
+
+
+
+
+
+    // Sets the text below the Username input field
+    function setUserReqText(stringText)
+    {
+        document.getElementById('pUsernameReqMsg').innerHTML = stringText;
+    }
+
+    // Sets the text below the Password input field
+    function setPassReqText(stringText)
+    {
+        document.getElementById('pPasswordReqMsg').innerHTML = stringText;
+    }
+
+
+
+    function getUsername()
+    {
+        return document.getElementById('txtUname').value;
+    }
+    function getPassword()
+    {
+        return document.getElementById('txtPass').value;
+    }
+</script>
