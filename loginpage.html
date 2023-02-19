@@ -20,16 +20,20 @@
 		<p id='pUserMsg'>Enter Username</p>
 		
 		<form>
-			<input id='txtUname' type='text'>
+			<!-- Username -->
+		    <p id='pUserMsg'>Enter Username</p>	
+			<input id='txtUname' type='text' placeholder='Username'>
             <p id='pUsernameReqMsg' style="color:red;"></p>
 
+            <!-- Password -->
 			<p id='pPasswordMsg'>Enter Password</p>			
 			<p>
-			<input id='txtPass' type='password'>
-			<input id='btnShow' type='checkbox' onclick=passwordVisibility()>Show   
+			<input id='txtPass' type='password' placeholder='Password'>
+			<button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
 			</p>
-            <p id='pPasswordReqMsg' style="color:red;"></p>          
+            <p id='pPasswordReqMsg' style="color:red;"></p>           
 			
+            <!-- Buttons and response text -->
 			<p id='ptxtLoginResult' type='text'></p>
 
 			<button type='button' id='btnSubmit' onClick=validateUser()>Submit</button>
