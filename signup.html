@@ -1,52 +1,53 @@
+<!DOCTYPE html>
 <html>
 	<head>
-		<title>SignUp</title>
+		<title>Sign Up</title>
 	</head>
 	
 	<body>
 		<h1>Account Creation</h1>
-  		<form>     
+  		<form method='post' onsubmit="return validateForm()">     
             <!-- First name -->
             <p id='pFirstNameMsg'>First name</p>
-            <input id='txtFirstName' type='text' placeholder='First Name'>
+            <input id='txtFirstName' type='text' placeholder='First Name' name='txtFirstName'>
 
             <!-- Last name -->
             <p id='pLastNameMsg'>Last name</p>
-            <input id='txtLastName' type='text' placeholder='Last Name'>
+            <input id='txtLastName' type='text' placeholder='Last Name' name='txtLastName'>
 
             <!-- Username -->
 		    <p id='pUsernameMsg'>Username</p>	
-			<input id='txtUname' type='text' placeholder='Username'>
+			<input id='txtUname' type='text' placeholder='Username' name='txtUsername'>
             <p id='pUsernameReqMsg' style="color:red;"></p>  
 
             <!-- Password -->
 			<p id='pPasswordMsg'>Enter Password</p>			
 			<p>
-			<input id='txtPass' type='password' placeholder='Password'>
+			<input id='txtPass' type='password' placeholder='Password' name='txtPassword'>
 			<button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
 			</p>
             <p id='pPasswordReqMsg' style="color:red;"></p> 	
 
             <!-- Email -->
             <p id='pEmailMsg'>Email</p>	
-			<input id='txtEmail' type='text' placeholder='Email'>
+			<input id='txtEmail' type='text' placeholder='Email' name='txtEmail'>
 
             <!-- Security Questions -->
             <p id='pSecurityQuestionsMsg'>Security Questions</p>	
-			<input id='txtSecureQ1' type='text' placeholder='Question 1'>
-            <input id='txtSecureQ1Ans' type='text' placeholder='Answer'>
+			<input id='txtSecureQ1' type='text' placeholder='Question 1' name='txtSecureQ1'>
+            <input id='txtSecureQ1Ans' type='text' placeholder='Answer' name='txtSecureQ1Ans'>
             <p>
-            <input id='txtSecureQ2' type='text' placeholder='Question 2'>
-            <input id='txtSecureQ2Ans' type='text' placeholder='Answer'>
+            <input id='txtSecureQ2' type='text' placeholder='Question 2' name='txtSecureQ2'>
+            <input id='txtSecureQ2Ans' type='text' placeholder='Answer' name='txtSecureQ2Ans'>
             </p>
             <p>
-            <input id='txtSecureQ3' type='text' placeholder='Question 3'>
-            <input id='txtSecureQ3Ans' type='text' placeholder='Answer'>
+            <input id='txtSecureQ3' type='text' placeholder='Question 3' name='txtSecureQ3'>
+            <input id='txtSecureQ3Ans' type='text' placeholder='Answer' name='txtSecureQ3Ans'>
             </p>
             
             <!-- Sign up button -->
             <p>
-			<button id='btnSignUp' type='button' onClick=signUp()>Sign Up</button>
+			<button id='btnSignUp' type='submit' onClick=signUp()>Sign Up</button>
             </p>
 		</form>
 	</body>
@@ -64,7 +65,7 @@
     }
     
     // Todo: Account data storage + add names and email
-    function signUp()
+    function validateForm()
     {        
         username = getUsername();
         password = getPassword();        
@@ -72,9 +73,9 @@
         // Username and password requirements
         if(!usernameRequirementsMet(username) ||
            !passwordRequirementsMet(password, username))
-            return;
-                
-        createAccount();          
+            return false;
+
+        return true;     
     }
 
     function usernameRequirementsMet(username)
@@ -99,21 +100,6 @@
             setUserReqText("*Username must have at least 1 uppercase letter and 1 lowercase letter.");
             return false;
         }
-
-        // ############ Server contact required! #############
-        // Send username to server
-        // Receive duplicate or not
-
-        console.log("Server contact required. (function usernameRequirementsMet())");
-        // Confirm that the username is not a duplicate
-        //if(isDuplicate(username))
-        //{
-        //    console.log("Account already present.");
-        //    setUserReqText("*Username already in use");
-        //    return false;
-        //}
-
-        // Wait for server response for above
 
         setUserReqText("");
         console.log("Username requirements met.");
@@ -179,56 +165,8 @@
             return false;
     }
 
-    function createAccount()
-    {
-        // Entered information
-        firstName = document.getElementById('txtFirstName').value;
-        lastName = document.getElementById('txtLastName').value;
-        username = getUsername();
-        password = getPassword();  
-        email = document.getElementById('txtEmail').value;    
-        // Q1    
-        securityQ1 = document.getElementById('txtSecureQ1').value;
-        securityQ1Ans = document.getElementById('txtSecureQ1Ans').value;
-        // Q2
-        securityQ2 = document.getElementById('txtSecureQ2').value;
-        securityQ2Ans = document.getElementById('txtSecureQ2Ans').value;
-        // Q3
-        securityQ3 = document.getElementById('txtSecureQ3').value;
-        securityQ3Ans = document.getElementById('txtSecureQ3Ans').value;
-        
-        accountText = 
-            firstName + ' ' +
-            lastName + ' ' +
-            username + ' ' +
-            password + ' ' +
-            email + ' \n' +            
-            securityQ1 + ' \n' +
-            securityQ1Ans + ' \n' +
-            securityQ2 + ' \n' +
-            securityQ2Ans + ' \n' +
-            securityQ3 + ' \n' +
-            securityQ3Ans;
 
-        console.log("Account created: user=" + username + ", password=" + password);
-        console.log(accountText + "\n");
-
-        console.log("Server contact required. (function createAccount())");
-
-        // Encrypt (not needed at the moment)
-
-        // Send to server (server decrypts and stores)
-        // Log in the new user upon creation
-    }
-
-
-
-
-
-
-
-
-
+    
     // Sets the text below the Username input field
     function setUserReqText(stringText)
     {
