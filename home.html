@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Homepage</title>
+	</head>
+	
+	<style>
+        h1 {text-align: center;}
+        p {text-align: center;}
+        form {text-align: center;}
+
+        body {
+          background-image: url('website_background.jpg');
+          background-repeat: no-repeat;
+          background-attachment: fixed;  
+          background-size: cover;}
+    </style>
+
+	<body>
+		<h1>Homepage</h1>
+  		<form>         
+            <!-- Buttons and response text -->
+			<p id='ptxtPages' type='text'>Directory</p>
+
+            <!--<button id='btnLogin' onClick="document.location='default.loginpage'">Login</button> -->
+			<button type='button' id='btnLogin' onClick=redirectToLogin()>Login</button>
+			<button type='button' id='btnSignUp' onClick=redirectToSignUp()>Sign Up</button>
+		</form>
+	</body>
+</html>
+
+<script>
+    function redirectToLogin()
+    {
+        window.location.href = "http://localhost:8080/loginpage.html";
+    }
+    function redirectToSignUp()
+    {
+        window.location.href = "http://localhost:8080/signup.html";
+    }
+</script>
