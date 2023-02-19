@@ -78,7 +78,7 @@ function handleLoginSubmission(req, res)
   req.on('end', () => {
     const formData = querystring.parse(body);
     const uname = formData.textUname || '';
-    const pass = formData.textpass || '';
+    const pass = formData.textPass || '';
     console.log(uname)
     console.log(pass)
 
