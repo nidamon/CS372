@@ -3,6 +3,16 @@ var url = require('url');
 var fs = require('fs');
 const querystring = require('querystring');
 
+
+// Dictionary of usernames and passwords
+  var dict = {
+  user : "password",
+  u2 : "p2",
+  u3 : "p3",
+  u4 : "p2",
+  u5 : "p3"
+};
+
 http.createServer(function (req, res) {
     var q = url.parse(req.url, true);
 
@@ -55,7 +65,10 @@ function getPasswordResetPage()
 {
   return 'passwordreset.html';
 }
-
+function getLandingPage()
+{
+  return 'landingpage.html'
+}
 
 
 // ######################################################################################
@@ -91,29 +104,18 @@ function handleLoginSubmission(req, res)
 
   // TODO: Fix
   // Parse form data
-  req.on('end', () => {
+  req.on('end', function() {
     const formData = querystring.parse(body);
     const uname = formData.textUname || '';
     const pass = formData.textPass || '';
+
     console.log(uname)
     console.log(pass)
 
-    // Returned response
-    const html = `<!DOCTYPE html>
-      <html>
-        <head>
-          <title>Node.js Server Response</title>
-        </head>
-        <body>
-          <p>You entered for username: ${uname}</p>
-          <p>You entered for password: ${pass}</p>
-        </body>
-      </html>`;
-
-
-
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end(html);
+    // TEMP ACCESS PAGE
+    if (validateUser(uname, pass)){
+      sendPage(res, getLandingPage());
+    }
   });
 }
 
@@ -304,3 +306,47 @@ function redirect(res, page)
     );
     res.end();
 }
+
+// ######################################################################################
+// Validate User Credentials
+// Note: to be move to seperate modules
+// ######################################################################################
+
+// Validates User credentials
+// NOTE: Code to be added to server side
+  function validateUser(uname, pass){
+    
+    if((isValidUsername(uname) == true) && (isPasswordCorrect(uname, pass) == true))
+    {
+      return true // Exit function
+    }
+    else
+    {
+      return false
+    }
+  }
+    
+  // Checks if username is present in dictionary
+  function isValidUsername(uname)
+  {
+    if(dict[uname] == undefined)
+    {
+      console.log("There is no such username");
+      return false;
+    }
+      return true;
+  }
+    
+  // Checks if password is correct for the given username
+  function isPasswordCorrect(uname, pass)
+  {
+    // Does given password match stored password
+    console.log("Actual Password: " + dict[uname]);
+    console.log("Given Password:  " + pass);
+    if(dict[uname].localeCompare(pass) == 0)
+    {
+      console.log("User \"" + uname + "\" has logged in.");
+      return true;
+    }
+      return false;
+  }
