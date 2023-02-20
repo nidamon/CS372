@@ -7,40 +7,46 @@ var credentialModule = require('./credentialModule')
 
 // Dictionary of usernames and passwords
 var loginCredentials = retrieveLogins();
+var domain = "localhost";
+var port = 8080;
 
 http.createServer(function (req, res) {
-    var q = url.parse(req.url, true);
+  var q = url.parse(req.url, true);
 
-    console.log("Requested page: " + q.pathname);
+  console.log("Requested page: " + q.pathname);
 
-    // Page directing
-    if(q.pathname == '/' || q.pathname == '/' + getHomePage())    // Homepage
-    {    
-        sendPage(res, getHomePage());
-    }
-    else if(q.pathname == '/' + getLoginPage())    // Login page
-    {    
-        handleLoginPage(req, res);   
-    }
-    else if(q.pathname == '/' + getSignUpPage())    // Sign up page
-    {           
-        handleSignUpPage(req, res);
-    }
-    else if(q.pathname == '/' + getPasswordResetPage())    // Forgot password page
-    {           
-        handlePasswordResetPage(req, res);
-    }
-    else if(q.pathname == '/' + getLandingPage())    // Forgot password page
-    {           
-        sendPage(res, getLandingPage());
-    }
-    else // No page available
-    {        
-        res.writeHead(404, {'Content-Type': 'text/html'});
-        res.write("There is no page at this address.");
-        res.end();
-    }
-}).listen(8080); 
+  // Page directing
+  if(q.pathname == '/' || q.pathname == '/' + getHomePage())    // Homepage
+  {    
+    sendPagehtml(res, getHomePage());
+  }
+  else if(q.pathname == '/' + getLoginPage())    // Login page
+  {    
+    handleLoginPage(req, res);   
+  }
+  else if(q.pathname == '/' + getSignUpPage())    // Sign up page
+  {           
+    handleSignUpPage(req, res);
+  }
+  else if(q.pathname == '/' + getPasswordResetPage())    // Forgot password page
+  {           
+    handlePasswordResetPage(req, res);
+  }
+  else if(q.pathname == '/' + getLandingPage())    // Forgot password page
+  {           
+    sendPagehtml(res, getLandingPage());
+  }
+  else if(q.pathname.split('/')[1] == 'images') // Check if image request
+  {
+    sendjpg(res, "." + q.pathname);
+  }
+  else // No page available
+  {        
+    res.writeHead(404, {'Content-Type': 'text/html'});
+    res.write("There is no page at this address.");
+    res.end();
+  }
+}).listen(port); 
 
 
 
@@ -81,7 +87,7 @@ function handleLoginPage(req, res)
 {
     if(req.method === 'GET')
     {
-        sendPage(res, getLoginPage());
+      sendPagehtml(res, getLoginPage());
     }
     else if (req.method === 'POST')
     {
@@ -117,7 +123,7 @@ function handleLoginSubmission(req, res)
     else
     {
       // Notify
-      var message = 'The username or password is incorrect.';      
+      var message = 'The username or password is incorrect.';
       messageAndReturn(res, message);
     }
   });
@@ -131,12 +137,10 @@ function handleSignUpPage(req, res)
 {
     if(req.method === 'GET')
     {
-        console.log("Get sign up page");
-        sendPage(res, getSignUpPage());
+        sendPagehtml(res, getSignUpPage());
     }
     else if (req.method === 'POST')
     {
-        console.log("Handle sign up submission");
         handleSignUpSubmission(req, res);
     }
     else
@@ -199,7 +203,7 @@ function handleSignUpSubmission(req, res)
         addNewUser(username, password);
         
         // Redirect to homepage
-        redirect(res, getHomePage());
+        redirectOnSite(res, getHomePage());
     }
   });
 }
@@ -218,7 +222,7 @@ function handlePasswordResetPage(req, res)
 {
     if(req.method === 'GET')
     {
-        sendPage(res, getPasswordResetPage());
+      sendPagehtml(res, getPasswordResetPage());
     }
     else if (req.method === 'POST')
     {
@@ -272,7 +276,7 @@ function addNewUser(username, password)
 }
 
 // Sends the page of filename
-function sendPage(res, filename)
+function sendPagehtml(res, filename)
 {
     // Read the contents of the HTML file and send it back to the client
     fs.readFile(filename, function(err, data) {
@@ -285,24 +289,42 @@ function sendPage(res, filename)
         }
     });
 }
+// Sends the page of filename
+function sendjpg(res, filename)
+{
+    // Read the contents of the HTML file and send it back to the client
+    fs.readFile(filename, function(err, data) {
+        if (err) {
+          res.writeHead(500, {'Content-Type': 'text/plain'});
+          console.log('Error: failed to send image.');
+          res.end('Error reading file');
+        } else {
+          res.writeHead(200, {'Content-Type': 'image/jpeg'});
+          console.log('Sending image.');
+          res.end(data);
+        }
+    });
+}
 
-// Redirects to another page
+// Redirects to another page on this site
+function redirectOnSite(res, page)
+{
+  res.writeHead(301, {
+    Location: `${getBaseAddress()}/${page}`
+  }).end();
+}
+// Redirects to another page anywhere
 function redirect(res, page)
 {
-  // Small html code to send client to another page
-    res.write(
-        `<html>
-            <head>
-                <meta http-equiv="refresh" content="0; url=${page}" />
-            </head>
-        </html>`
-    );
-    res.end();
+  res.writeHead(302, {
+    Location: `${page}`
+  }).end();
 }
 
 function messageAndReturn(res, message)
 {
   res.writeHead(200, {'Content-Type': 'text/html'});
+  // Temporary
   res.write(
   `<!DOCTYPE html>
   <html>
@@ -319,4 +341,53 @@ function messageAndReturn(res, message)
   </script>`
   );
   res.end();
+}
+
+function getBaseAddress()
+{
+  return `http://${domain}:${port}`
+}
+
+
+// ######################################################################################
+// Validate User Credentials
+// Note: to be move to seperate modules
+// ######################################################################################
+
+// Validates User credentials
+function validateUser(uname, pass){
+
+  if((isValidUsername(uname) == true) && (isPasswordCorrect(uname, pass) == true))
+  {
+    return true // Exit function
+  }
+  else
+  {
+    return false
+  }
+}
+
+// Checks if username is present in dictionary
+function isValidUsername(uname)
+{
+  if(loginCredentials[uname] == undefined)
+  {
+    console.log("There is no such username as " + uname);
+    return false;
+  }
+    return true;
+}
+
+// Checks if password is correct for the given username
+function isPasswordCorrect(uname, pass)
+{
+  // Does given password match stored password
+  console.log("Actual Password: " + loginCredentials[uname]);
+  console.log("Given Password:  " + pass);
+  if(loginCredentials[uname].localeCompare(pass) == 0)
+  {
+    console.log("User \"" + uname + "\" has logged in.");
+    return true;
+  }
+    return false;
 }
