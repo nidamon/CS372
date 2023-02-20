@@ -2,6 +2,7 @@ var http = require('http');
 var url = require('url');
 var fs = require('fs');
 const querystring = require('querystring');
+var credentialModule = require('./credentialModule')
 
 
 // Dictionary of usernames and passwords
@@ -113,7 +114,7 @@ function handleLoginSubmission(req, res)
     console.log(pass)
 
     // TEMP ACCESS PAGE
-    if (validateUser(uname, pass)){
+    if (credentialModule.validateUser(uname, pass, dict)){
       sendPage(res, getLandingPage());
     }
   });
@@ -306,47 +307,3 @@ function redirect(res, page)
     );
     res.end();
 }
-
-// ######################################################################################
-// Validate User Credentials
-// Note: to be move to seperate modules
-// ######################################################################################
-
-// Validates User credentials
-// NOTE: Code to be added to server side
-  function validateUser(uname, pass){
-    
-    if((isValidUsername(uname) == true) && (isPasswordCorrect(uname, pass) == true))
-    {
-      return true // Exit function
-    }
-    else
-    {
-      return false
-    }
-  }
-    
-  // Checks if username is present in dictionary
-  function isValidUsername(uname)
-  {
-    if(dict[uname] == undefined)
-    {
-      console.log("There is no such username");
-      return false;
-    }
-      return true;
-  }
-    
-  // Checks if password is correct for the given username
-  function isPasswordCorrect(uname, pass)
-  {
-    // Does given password match stored password
-    console.log("Actual Password: " + dict[uname]);
-    console.log("Given Password:  " + pass);
-    if(dict[uname].localeCompare(pass) == 0)
-    {
-      console.log("User \"" + uname + "\" has logged in.");
-      return true;
-    }
-      return false;
-  }
