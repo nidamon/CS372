@@ -3,25 +3,37 @@
 	<head>
 		<title>Sign Up</title>
 	</head>
-	
+
+	<style>
+        h1 {text-align: center;}
+        p {text-align: center;}
+        form {text-align: center;}
+
+        body {
+          background-image: url('images/website_background2.jpg');
+          background-repeat: no-repeat;
+          background-attachment: fixed;  
+          background-size: cover;}
+    </style>
+
 	<body>
 		<h1>Account Creation</h1>
   		<form method='post' onsubmit="return validateForm()">     
             <!-- First name -->
-            <p id='pFirstNameMsg'>First name</p>
+            <p>
             <input id='txtFirstName' type='text' placeholder='First Name' name='txtFirstName'>
+            </p>
 
             <!-- Last name -->
-            <p id='pLastNameMsg'>Last name</p>
+            <p>
             <input id='txtLastName' type='text' placeholder='Last Name' name='txtLastName'>
-
+            </p>
+            
             <!-- Username -->
-		    <p id='pUsernameMsg'>Username</p>	
 			<input id='txtUname' type='text' placeholder='Username' name='txtUsername'>
             <p id='pUsernameReqMsg' style="color:red;"></p>  
 
-            <!-- Password -->
-			<p id='pPasswordMsg'>Enter Password</p>			
+            <!-- Password -->		
 			<p>
 			<input id='txtPass' type='password' placeholder='Password' name='txtPassword'>
 			<button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
@@ -29,7 +41,6 @@
             <p id='pPasswordReqMsg' style="color:red;"></p> 	
 
             <!-- Email -->
-            <p id='pEmailMsg'>Email</p>	
 			<input id='txtEmail' type='text' placeholder='Email' name='txtEmail'>
 
             <!-- Security Questions -->
