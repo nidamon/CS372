@@ -118,7 +118,7 @@ function handleLoginSubmission(req, res)
 
     // TEMP ACCESS PAGE
     if (credentialModule.validateUser(uname, pass, loginCredentials)){
-      sendPage(res, getLandingPage());
+      sendPagehtml(res, getLandingPage());
     }
     else
     {
@@ -346,48 +346,4 @@ function messageAndReturn(res, message)
 function getBaseAddress()
 {
   return `http://${domain}:${port}`
-}
-
-
-// ######################################################################################
-// Validate User Credentials
-// Note: to be move to seperate modules
-// ######################################################################################
-
-// Validates User credentials
-function validateUser(uname, pass){
-
-  if((isValidUsername(uname) == true) && (isPasswordCorrect(uname, pass) == true))
-  {
-    return true // Exit function
-  }
-  else
-  {
-    return false
-  }
-}
-
-// Checks if username is present in dictionary
-function isValidUsername(uname)
-{
-  if(loginCredentials[uname] == undefined)
-  {
-    console.log("There is no such username as " + uname);
-    return false;
-  }
-    return true;
-}
-
-// Checks if password is correct for the given username
-function isPasswordCorrect(uname, pass)
-{
-  // Does given password match stored password
-  console.log("Actual Password: " + loginCredentials[uname]);
-  console.log("Given Password:  " + pass);
-  if(loginCredentials[uname].localeCompare(pass) == 0)
-  {
-    console.log("User \"" + uname + "\" has logged in.");
-    return true;
-  }
-    return false;
 }
