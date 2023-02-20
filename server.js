@@ -299,3 +299,24 @@ function redirect(res, page)
     );
     res.end();
 }
+
+function messageAndReturn(res, message)
+{
+  res.writeHead(200, {'Content-Type': 'text/html'});
+  res.write(
+  `<!DOCTYPE html>
+  <html>
+    <body onload="goBack()">
+      <p>${message}</p>
+    </body>
+  </html>
+  <script>
+      function goBack(){
+          setTimeout(function(){
+              history.back();
+          }, 2000);                
+      }
+  </script>`
+  );
+  res.end();
+}
