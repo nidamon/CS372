@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>LoginPage</title>
 	</head>
-
+	
 	<style>
         h1 {text-align: center;}
         p {text-align: center;}
@@ -15,13 +16,13 @@
           background-size: cover;}
     </style>
 
-	<body>
-		<h1>Login</h1>		
-		<form method="post">
-			<!-- Username -->
+	<body> 
+		<h1>Login</h1>
+        <form method="post">
+            <!-- Username -->
 		    <p id='pUserMsg'>Enter Username</p>	
 			<input id='txtUname' type='text' placeholder='Username' name="textUname">
-            <p id='pUsernameReqMsg' style="color:red;"></p>
+            <p id='pUsernameNotifMsg' style="color:red;" name='pUsernameNotifMsg'></p>
 
             <!-- Password -->
 			<p id='pPasswordMsg'>Enter Password</p>			
@@ -29,75 +30,17 @@
 			<input id='txtPass' type='password' placeholder='Password' name="textPass">
 			<button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
 			</p>
-            <p id='pPasswordReqMsg' style="color:red;"></p>           
+            <p id='pPasswordNotifMsg' style="color:red;" name='pPasswordNotifMsg'></p>           
 			
-            <!-- Buttons and response text -->
-			<p id='ptxtLoginResult' type='text'></p>
-
-			<button type='submit' id='btnSubmit' onClick=validateUser()>Submit</button>
+            <!-- Buttons -->
+			<button type='submit' id='btnSubmit'>Login</button>
 			<button type='button' id='btnSignUp' onclick="window.location.href='signup.html'">Sign Up</button>
-			<button type='button' id='btnForgotPass' onClick=forgotPassword()>Forgot Password</button>
-			
-			<p id='ptxtBottom' type='text'></p>
-		</form>
+			<button type='button' id='btnForgotPass' onclick="window.location.href='passwordreset.html'">Reset Password</button>
+        </form>
 	</body>
 </html>
 
 <script>
-
-	
-    /*
-    // Validates User credentials
-    // NOTE: Code to be added to server side
-    function validateUser(){
-	//todo: write your code here
-
-    	// Clean up
-    	setBottomText("");
-
-    	if(isValidUsername() == false)
-    	{
-		    setLoginResult("Username is not within the system...");
-		    return; // Exit function
-    	}
-	    
-	    if(isPasswordCorrect() == false)
-    	{
-		    setLoginResult("Password is incorrect...");
-		    return; // Exit function
-    	}
-        else
-		    setLoginResult("Access Granted...");
-    }
-
-    // Checks if username is present in dictionary
-    function isValidUsername()
-    {
-        username = getUsername();
-        if(dict[username] == undefined)
-        {
-            console.log("There is no such username");
-            return false;
-        }
-        return true;
-    }
-
-    // Checks if password is correct for the given username
-    function isPasswordCorrect()
-    {
-        var username = getUsername();
-        var password = getPassword();
-        // Does given password match stored password
-        console.log("Actual Password: " + dict[username]);
-        console.log("Given Password:  " + password);
-        if(dict[username].localeCompare(password) == 0)
-        {
-            console.log("User \"" + username + "\" has logged in.");
-            return true;
-        }
-        return false;
-    }
-*/
     // Sets the visibility of the password field
     function passwordVisibility()
     {
@@ -107,171 +50,29 @@
         else
             showButton.type = "password";
     }
-    
 
-    // Removed signup function, now signup button just redirects
-    /*
-    function signUp()
+    /*function usernameNotFound()
     {
-        // Todo: redirect to a sign up page
-        username = getUsername();
-        password = getPassword();
-        // Create key-value pair
-
-        if (isValidUsername())
-        {
-            console.log("Account already present.");
-            setBottomText("Username already in use");
-            setLoginResult("");
-            return;
-        }
-
-        // Username and password requirements
-        if(!usernameRequirementsMet(username) ||
-           !passwordRequirementsMet(password, username))
-        {
-            setBottomText("Username or Password do not meet requirements.");
-            setLoginResult("");
-            return;
-        }
-
-        dict[username] = password;
-        if(dict[username] == undefined)
-            console.log("Account not created");
-        else
-        {
-            setBottomText("Account created");
-            console.log("Account created: user=" + username + ", password=" + password);
-        }
-        setLoginResult("");        
-    }
-    */
-
-    function usernameRequirementsMet(username)
-    {
-        // At least 8 characters long
-        if(username.length < 8)
-        {
-            setUserReqText("*Username needs to be at least 10 characters long.");
-            return false;
-        }
-
-        // No spacing in the username allowed
-        if(username.includes(' '))
-        {
-            setUserReqText("*Username cannot have spaces.");
-            return false;
-        }
-
-        // At least 1 uppercase letter and 1 lowercase letter        
-        if(!hasUpperAndLowerCaseLetters(username))
-        {
-            setUserReqText("*Username must have at least 1 uppercase letter and 1 lowercase letter.");
-            return false;
-        }
-
-        setUserReqText("");
-        console.log("Username requirements met.");
-        return true;
+        setUserNotificationText("*Username not Found");
     }
 
-    function passwordRequirementsMet(password, username)
+    function passwordIsIncorrect()
     {
-        // At least 10 characters long
-        if(password.length < 10)
-        {
-            setPassReqText("*Password needs to be at least 10 characters long.");
-            return false;
-        }
-
-        // No spacing in the password allowed
-        if(password.includes(' '))
-        {
-            setPassReqText("*Password cannot have spaces.");
-            return false;
-        }
-
-        // At least 1 uppercase letter and 1 lowercase letter        
-        if(!hasUpperAndLowerCaseLetters(password))
-        {
-            setPassReqText("*Password must have at least 1 uppercase letter and 1 lowercase letter.");
-            return false;
-        }
-
-        // The password should not contain the username (not case sensitive)
-        if(password.toUpperCase().includes(username.toUpperCase()))
-        {
-            setPassReqText("*Password should not contain the username.");
-            return false;
-        }
-
-        setPassReqText("");
-        console.log("Password requirements met.");
-        return true;
-    }
-
-    function hasUpperAndLowerCaseLetters(string)
-    {
-        // At least 1 uppercase letter and 1 lowercase letter
-        var oneUppercase = false;
-        var oneLowercase = false;
-        for (let index = 0; index < string.length; index++) {
-            const element = string[index];
-            if(!isNaN(element * 1)) 
-            {}// It is a number                
-            else
-            {
-                if(element == element.toUpperCase())
-                    oneUppercase = true;
-                else
-                    oneLowercase = true;
-            }
-        }
-
-        if(oneUppercase && oneLowercase)
-            return true;
-        else
-            return false;
-    }
+        setPassNotificationText("*Password is incorrect");
+    }*/
 
 
-    function forgotPassword()
-    {
-        // Todo: redirect to a page for answering security questions
-        document.getElementById('ptxtBottom').innerHTML = "Too bad...";
-        setBottomText("Too bad...");
-        setLoginResult("");
-    }
-
-
-
-
-
-
-
-
-    // Changes the text below the password input field
-    function setLoginResult(stringText)
-    {
-        document.getElementById('ptxtLoginResult').innerHTML = stringText;
-    }
-
-    // Changes the text below the buttons: Submit, Sign Up, and Forgot Password
-    function setBottomText(stringText)
-    {
-        document.getElementById('ptxtBottom').innerHTML = stringText;
-    }
-
+  
     // Sets the text below the Username input field
-    function setUserReqText(stringText)
+    function setUserNotificationText(stringText)
     {
-        document.getElementById('pUsernameReqMsg').innerHTML = stringText;
+        document.getElementById('pUsernameNotifMsg').innerHTML = stringText;
     }
 
     // Sets the text below the Password input field
-    function setPassReqText(stringText)
+    function setPassNotificationText(stringText)
     {
-        document.getElementById('pPasswordReqMsg').innerHTML = stringText;
+        document.getElementById('pPasswordNotifMsg').innerHTML = stringText;
     }
 
 
@@ -285,4 +86,3 @@
         return document.getElementById('txtPass').value;
     }
 </script>
-

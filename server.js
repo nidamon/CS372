@@ -6,13 +6,7 @@ var credentialModule = require('./credentialModule')
 
 
 // Dictionary of usernames and passwords
-  var dict = {
-  user : "password",
-  u2 : "p2",
-  u3 : "p3",
-  u4 : "p2",
-  u5 : "p3"
-};
+var loginCredentials = retrieveLogins();
 
 http.createServer(function (req, res) {
     var q = url.parse(req.url, true);
@@ -35,6 +29,10 @@ http.createServer(function (req, res) {
     else if(q.pathname == '/' + getPasswordResetPage())    // Forgot password page
     {           
         handlePasswordResetPage(req, res);
+    }
+    else if(q.pathname == '/' + getLandingPage())    // Forgot password page
+    {           
+        sendPage(res, getLandingPage());
     }
     else // No page available
     {        
@@ -103,7 +101,6 @@ function handleLoginSubmission(req, res)
     body += chunk.toString();
   });
 
-  // TODO: Fix
   // Parse form data
   req.on('end', function() {
     const formData = querystring.parse(body);
@@ -114,8 +111,14 @@ function handleLoginSubmission(req, res)
     console.log(pass)
 
     // TEMP ACCESS PAGE
-    if (credentialModule.validateUser(uname, pass, dict)){
+    if (credentialModule.validateUser(uname, pass, loginCredentials)){
       sendPage(res, getLandingPage());
+    }
+    else
+    {
+      // Notify
+      var message = 'The username or password is incorrect.';      
+      messageAndReturn(res, message);
     }
   });
 }
@@ -171,27 +174,9 @@ function handleSignUpSubmission(req, res)
     // Duplicate username checking
     if(isDuplicateUsername(res, username))
     {
-        // Tell client that the username needs to change   
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(
-        `<!DOCTYPE html>
-        <html>
-          <head>
-            <title>Sign Up</title>
-          </head>
-          <body onload="goBack()">
-            <p>The username: ${username} has already been used.</p>
-          </body>
-        </html>
-        <script>
-            function goBack(){
-                setTimeout(function(){
-                    history.back();
-                }, 2000);                
-            }
-        </script>`
-        );
-        res.end();
+        // Tell client that the username needs to change  
+        var message = 'The username: ' + username + ' has already been used.';
+        messageAndReturn(res, message);
     }
     else // Account creation
     {
@@ -210,13 +195,8 @@ function handleSignUpSubmission(req, res)
         
         //console.log(accountText + "\n");
 
-        // Create account and log user in
-        fs.appendFile("UsernamesPasswords.txt", '\n' + username + ' ' + password, function(err){
-            if (err) throw err;
-            console.log("Account created: user=" + username + ", password=" + password);
-        });
-        console.log("Need to add new user account information");
-
+        // Create account and log user in        
+        addNewUser(username, password);
         
         // Redirect to homepage
         redirect(res, getHomePage());
@@ -227,7 +207,7 @@ function handleSignUpSubmission(req, res)
 // Checks if there is another username that matches the given username
 function isDuplicateUsername(res, username)
 {
-    return retrieveLogins(res)[username] != undefined;
+  return loginCredentials[username] != undefined;
 }
 
 
@@ -257,28 +237,39 @@ function handlePasswordResetPage(req, res)
 // ######################################################################################
 
 // Gets the logins from a text file
-function retrieveLogins(res) {
-    var filename = "UsernamesPasswords.txt";    
-    var loginData = fs.readFileSync(filename, 'utf-8', function(err, data) {
-        if (err) {
-          console.log("Error: data not found");
-          res.end("404 Not Found");
-          return {};
-        }         
-        return data;
-    });
+function retrieveLogins() {
+  var filename = "UsernamesPasswords.txt";    
+  var loginData = fs.readFileSync(filename, 'utf-8', function(err, data) {
+      if (err) {
+        console.log("Error: login data not found");
+        return {};
+      }         
+      return data;
+  });
 
-    // Split file into username and password pairs
-    loginData = loginData.split('\r\n');
+  // Split file into username and password pairs
+  loginData = loginData.split('\n');
 
-    // Create dictionary
-    loginDictionary = {};
-    for (let index = 0; index < loginData.length; index ++) {
-        // Split usernames and passwords
-      loginDictionary[loginData[index].split(' ')[0]] = loginData[index].split(' ')[1];          
-    }            
-    return loginDictionary;
+  // Create dictionary
+  loginDictionary = {};
+  for (let index = 0; index < loginData.length; index ++) {
+      // Split usernames and passwords
+    loginDictionary[loginData[index].split(' ')[0]] = loginData[index].split(' ')[1];          
+  }            
+
+  // Set server dictionary of login credentials
+  return loginDictionary;    
 }; 
+
+function addNewUser(username, password)
+{
+    fs.appendFile("UsernamesPasswords.txt", '\n' + username + ' ' + password, function(err){
+    if (err) throw err;
+      console.log("Account created: user=" + username + ", password=" + password);
+    });
+    loginCredentials[username] = password;
+    console.log("Need to add new user account information");
+}
 
 // Sends the page of filename
 function sendPage(res, filename)
@@ -298,6 +289,7 @@ function sendPage(res, filename)
 // Redirects to another page
 function redirect(res, page)
 {
+  // Small html code to send client to another page
     res.write(
         `<html>
             <head>
