@@ -5,9 +5,9 @@
 	</head>
 	
 	<style>
-        h1 {text-align: center;}
-        p {text-align: center;}
-        form {text-align: center;}
+        .input-containers {text-align: center;}
+        .password-container {margin-left: 46px;}
+        .bottom-buttons{text-align: center;}
 
         body {
           background-image: url('images/website_background2.jpg');
@@ -17,25 +17,32 @@
     </style>
 
 	<body> 
-		<h1>Login</h1>
+        <div class="input-containers"><h1>Login</h1></div>
         <form method="post">
             <!-- Username -->
-		    <p id='pUserMsg'>Enter Username</p>	
-			<input id='txtUname' type='text' placeholder='Username' name="textUname">
-            <p id='pUsernameNotifMsg' style="color:red;" name='pUsernameNotifMsg'></p>
-
+            <div class="input-containers">
+		        <p id='pUserMsg'>Enter Username</p>	
+			    <input id='txtUname' type='text' placeholder='Username' name="textUname">
+                <p id='pUsernameNotifMsg' style="color:red;" name='pUsernameNotifMsg'></p>
+            </div>
             <!-- Password -->
-			<p id='pPasswordMsg'>Enter Password</p>			
-			<p>
-			<input id='txtPass' type='password' placeholder='Password' name="textPass">
-			<button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
-			</p>
-            <p id='pPasswordNotifMsg' style="color:red;" name='pPasswordNotifMsg'></p>           
+            <div class = "input-containers">
+                <p id='pPasswordMsg'>Enter Password</p>	
+                <div class="password-container">		
+			        <p>
+			        <input id='txtPass' type='password' placeholder='Password' name="textPass">
+			        <button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
+			        </p>
+                </div>
+                <p id='pPasswordNotifMsg' style="color:red;" name='pPasswordNotifMsg'></p>   
+            </div>        
 			
             <!-- Buttons -->
-			<button type='submit' id='btnSubmit'>Login</button>
-			<button type='button' id='btnSignUp' onclick="window.location.href='signup.html'">Sign Up</button>
-			<button type='button' id='btnForgotPass' onclick="window.location.href='passwordreset.html'">Reset Password</button>
+            <div class = "bottom-buttons">
+			    <button type='submit' id='btnSubmit'>Login</button>
+			    <button type='button' id='btnSignUp' onclick="window.location.href='signup.html'">Sign Up</button>
+			    <button type='button' id='btnForgotPass' onclick="window.location.href='passwordreset.html'">Reset Password</button>
+            </div>
         </form>
 	</body>
 </html>
