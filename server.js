@@ -3,6 +3,7 @@ var url = require('url');
 var fs = require('fs');
 const querystring = require('querystring');
 var credentialModule = require('./credentialModule')
+const mongoIsertRetrieve = require('./mongoInsertRetrieve')
 
 
 // Dictionary of usernames and passwords
@@ -184,6 +185,9 @@ function handleSignUpSubmission(req, res)
     }
     else // Account creation
     {
+      mongoIsertRetrieve.insertUser(firstName,lastName,
+        username,password,email,securityQ1,securityQ1Ans,
+        securityQ2,securityQ2Ans,securityQ3,securityQ3Ans)
         /* accountText = 
             firstName + ' ' +
             lastName + ' ' +
