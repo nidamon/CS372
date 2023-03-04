@@ -3,13 +3,11 @@ var url = require('url');
 var fs = require('fs');
 const querystring = require('querystring');
 var credentialModule = require('./credentialModule')
-const mongoIsertRetrieve = require('./mongoInsertRetrieve')
+var dataBaseModule = require('./databaseModule.js')
 
-
-// Dictionary of usernames and passwords
-var loginCredentials = retrieveLogins();
 var domain = "localhost";
 var port = 8080;
+
 
 http.createServer(function (req, res) {
   var q = url.parse(req.url, true);
@@ -40,6 +38,17 @@ http.createServer(function (req, res) {
   else if(q.pathname.split('/')[1] == 'images') // Check if image request
   {
     sendjpg(res, "." + q.pathname);
+  }
+  else if(q.pathname.split('/')[1] == 'users') // Check if request about users
+  {
+    var usersRequest = q.pathname.split('/')
+    if(requestedSecurityQuestions(res, usersRequest)){} // Security questions (send questions)    
+    else if(sentSecurityQuestionAnswers(req, res, usersRequest)){} // Security questions (receive and check answers)    
+    else // No page found
+    {
+      res.writeHead(404, {'Content-Type': 'text/plain'});
+      res.end('404 page not found'); 
+    }
   }
   else // No page available
   {        
@@ -86,18 +95,18 @@ function getLandingPage()
 
 function handleLoginPage(req, res)
 {
-    if(req.method === 'GET')
-    {
-      sendPagehtml(res, getLoginPage());
-    }
-    else if (req.method === 'POST')
-    {
-        handleLoginSubmission(req, res);
-    }
-    else
-    {
-        console.log("req.method was neither GET nor POST.");
-    }
+  if(req.method === 'GET')
+  {
+    sendPagehtml(res, getLoginPage());
+  }
+  else if (req.method === 'POST')
+  {
+    handleLoginSubmission(req, res);
+  }
+  else
+  {
+    console.log("req.method was neither GET nor POST.");
+  }
 }
 
 function handleLoginSubmission(req, res)
@@ -112,24 +121,24 @@ function handleLoginSubmission(req, res)
   req.on('end', function() {
     const formData = querystring.parse(body);
     const uname = formData.textUname || '';
-    const pass = formData.textPass || '';
+    const pass = formData.textPass || '';    
 
-    console.log(uname)
-    console.log(pass)
-
-    // TEMP ACCESS PAGE
-    if (credentialModule.validateUser(uname, pass, loginCredentials)){
-      sendPagehtml(res, getLandingPage());
-    }
-    else
-    {
-      // Notify
-      var message = 'The username or password is incorrect.';
-      messageAndReturn(res, message);
-    }
+    // Handle user validation
+    credentialModule.validateUser(uname, pass, function(validUserBool, message){      
+      console.log("Validation Complete")
+      if(validUserBool == true)
+      {
+        // Send to landing page
+        redirectOnSite(res, getLandingPage());
+        // Todo: Start a session on client side in credentialModule.loginUser()
+      }
+      else
+      {
+        messageAndReturn(res, message, 4000);
+      }
+    });
   });
 }
-
 
 
 // Sign up page #########################################################################
@@ -163,64 +172,30 @@ function handleSignUpSubmission(req, res)
     const formData = querystring.parse(body);
 
     // User data for account
-    const firstName = formData.txtFirstName || '';
-    const lastName = formData.txtLastName || '';
     const username = formData.txtUsername || '';
-    const password = formData.txtPassword || '';
-    const email = formData.txtEmail || '';
 
-    const securityQ1 = formData.txtSecureQ1 || '';
-    const securityQ1Ans = formData.txtSecureQ1Ans || '';
-    const securityQ2 = formData.txtSecureQ2 || '';
-    const securityQ2Ans = formData.txtSecureQ2Ans || '';
-    const securityQ3 = formData.txtSecureQ3 || '';
-    const securityQ3Ans = formData.txtSecureQ3Ans || '';
-
-    // Duplicate username checking
-    if(isDuplicateUsername(res, username))
-    {
-        // Tell client that the username needs to change  
-        var message = 'The username: ' + username + ' has already been used.';
-        messageAndReturn(res, message);
-    }
-    else // Account creation
-    {
-      mongoIsertRetrieve.insertUser(firstName,lastName,
-        username,password,email,securityQ1,securityQ1Ans,
-        securityQ2,securityQ2Ans,securityQ3,securityQ3Ans)
-        /* accountText = 
-            firstName + ' ' +
-            lastName + ' ' +
-            username + ' ' +
-            password + ' ' +
-            email + ' \n' +            
-            securityQ1 + ' \n' +
-            securityQ1Ans + ' \n' +
-            securityQ2 + ' \n' +
-            securityQ2Ans + ' \n' +
-            securityQ3 + ' \n' +
-            securityQ3Ans; */
-        
-        //console.log(accountText + "\n");
-
-        // Create account and log user in        
-        addNewUser(username, password);
-        
-        // Redirect to homepage
-        redirectOnSite(res, getHomePage());
-    }
+    // Checks if there is another username that matches the given username
+    dataBaseModule.doesUserExist(username, function(isDuplicateUsername){
+      if(isDuplicateUsername)
+      {
+          // Tell client that the username needs to change  
+          var message = 'The username: ' + username + ' has already been used.';
+          messageAndReturn(res, message);
+      }
+      else // Account creation
+      {
+          // Create account and log user in  
+          dataBaseModule.addNewUser(formData);
+          
+          // Redirect to homepage
+          redirectOnSite(res, getHomePage());
+      }
+    })    
   });
 }
 
-// Checks if there is another username that matches the given username
-function isDuplicateUsername(res, username)
-{
-  return loginCredentials[username] != undefined;
-}
 
-
-
-// Forgot password page #################################################################
+// Reset password page #################################################################
 
 function handlePasswordResetPage(req, res)
 {
@@ -230,7 +205,7 @@ function handlePasswordResetPage(req, res)
     }
     else if (req.method === 'POST')
     {
-        
+      passwordResetSubmission(req, res);
     }
     else
     {
@@ -238,46 +213,98 @@ function handlePasswordResetPage(req, res)
     }
 }
 
+function passwordResetSubmission(req, res)
+{
+  // Get form data
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+
+  // Parse form data
+  req.on('end', () => {
+    const formData = querystring.parse(body);
+
+    console.log(formData);
+    // User data for account
+    const username = formData.txtUsername || '';
+    const newPassword = formData.txtPassword || '';
+    credentialModule.changePassword(username, newPassword);
+
+    // Redirect to homepage
+    redirectOnSite(res, getHomePage());
+  });
+}
+
+// Security questions (send questions)    
+function requestedSecurityQuestions(res, usersRequest)
+{
+  if(usersRequest[3] == 'qs') // Security questions (send questions)
+  {
+    username = usersRequest[2];
+    console.log('Checking if user ' + username + ' exists');
+    // Check if user exists
+    dataBaseModule.doesUserExist(username, function(doesExist){
+      if(doesExist == false)
+      {
+        res.writeHead(200, {'Content-Type': 'text/plain'});
+        res.write(`er ${username} not found`);
+        res.end();     
+      }
+      else
+      {
+        console.log('User ' + username + ' exists');
+        // Get and send questions
+        dataBaseModule.getUserFieldData(username, "securityQuestions", function(securityQuestions){
+          res.writeHead(200, {'Content-Type': 'text/plain'});
+          res.write('ok\n' +
+            securityQuestions["securityQ1"] + ' \n' +
+            securityQuestions["securityQ2"] + ' \n' +
+            securityQuestions["securityQ3"]
+          );
+          console.log("Wrote questions");
+          res.end();
+        });        
+      }
+    });   
+    
+    return true; // This function was the end path (stop if else statements)
+  }
+  return false; // Continue through to next function
+}
+
+// Security questions (receive and check answers) 
+function sentSecurityQuestionAnswers(req, res, usersRequest)
+{
+  if(usersRequest[3] == 'ans') // Security questions (receive and check answers)
+  {
+    username = usersRequest[2];
+    var answers = url.parse(req.url, true).query;
+
+    dataBaseModule.getUserFieldData(username, "securityQuestions", function(securityQuestions){
+      if(securityQuestions["securityQ1Ans"] == answers.q1 && 
+         securityQuestions["securityQ2Ans"] == answers.q2 &&
+         securityQuestions["securityQ3Ans"] == answers.q3)
+      {
+        res.write('correct');
+      }
+      else
+      {
+        res.write('bad');
+      }
+      res.end();
+    });   
+
+    return true; // This function was the end path (stop if else statements)
+  }
+  return false; // Continue through to next function
+}
 
 
 // ######################################################################################
 // Misc
 // ######################################################################################
 
-// Gets the logins from a text file
-function retrieveLogins() {
-  var filename = "UsernamesPasswords.txt";    
-  var loginData = fs.readFileSync(filename, 'utf-8', function(err, data) {
-      if (err) {
-        console.log("Error: login data not found");
-        return {};
-      }         
-      return data;
-  });
-
-  // Split file into username and password pairs
-  loginData = loginData.split('\n');
-
-  // Create dictionary
-  loginDictionary = {};
-  for (let index = 0; index < loginData.length; index ++) {
-      // Split usernames and passwords
-    loginDictionary[loginData[index].split(' ')[0]] = loginData[index].split(' ')[1];          
-  }            
-
-  // Set server dictionary of login credentials
-  return loginDictionary;    
-}; 
-
-function addNewUser(username, password)
-{
-    fs.appendFile("UsernamesPasswords.txt", '\n' + username + ' ' + password, function(err){
-    if (err) throw err;
-      console.log("Account created: user=" + username + ", password=" + password);
-    });
-    loginCredentials[username] = password;
-    console.log("Need to add new user account information");
-}
 
 // Sends the page of filename
 function sendPagehtml(res, filename)
@@ -304,7 +331,6 @@ function sendjpg(res, filename)
           res.end('Error reading file');
         } else {
           res.writeHead(200, {'Content-Type': 'image/jpeg'});
-          console.log('Sending image.');
           res.end(data);
         }
     });
@@ -325,7 +351,7 @@ function redirect(res, page)
   }).end();
 }
 
-function messageAndReturn(res, message)
+function messageAndReturn(res, message, redirectTimer = 2000)
 {
   res.writeHead(200, {'Content-Type': 'text/html'});
   // Temporary
@@ -340,7 +366,7 @@ function messageAndReturn(res, message)
       function goBack(){
           setTimeout(function(){
               history.back();
-          }, 2000);                
+          }, ${redirectTimer});                
       }
   </script>`
   );
@@ -349,5 +375,5 @@ function messageAndReturn(res, message)
 
 function getBaseAddress()
 {
-  return `http://${domain}:${port}`
+  return `http://${domain}:${port}`;
 }
