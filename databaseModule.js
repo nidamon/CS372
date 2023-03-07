@@ -6,6 +6,8 @@ exports.client = new MongoClient(exports.uri);
 
 exports.mongoDataBase = "project";
 exports.userDataCollection = "userData";
+//
+exports.videoDataCollection = "videoData";
 
 // ################################################################################
 // Database communication
@@ -84,7 +86,7 @@ exports.editFieldData = async function(dataBase, collection, query, fieldNameStr
 
 
 // ################################################################################
-// Database wrappers 
+// User Database wrappers 
 // ################################################################################
 
 
@@ -161,4 +163,33 @@ exports.doesUserExist = function(username, callback_argBool)
     else
         callback_argBool(false);
   });
+}
+
+
+
+
+// ################################################################################
+// Video Database wrappers 
+// ################################################################################
+
+
+// Adds the user's data to the database
+exports.addNewVideo = function(formData)
+{
+    // Video data
+    const videoUploader = formData.txtVideoUploader || '';
+    const videoName = formData.txtVideoName || '';
+    const videoGenre = formData.txtVideoGenre || '';
+    const videoComment = formData.txtVideoComment || '';
+    const videoEmbedLink = formData.txtVideoEmbedLink || '';
+
+    newVideoData = { 
+        "videoUploader" : videoUploader, 
+        "videoName" : videoName,
+        "videoGenre" : videoGenre,
+        "videoComment" : videoComment,
+        "videoEmbedLink" : videoEmbedLink,
+    };   
+            
+    exports.addData(exports.mongoDataBase, exports.videoDataCollection, newVideoData, function(){console.log("New video added to server");})
 }
