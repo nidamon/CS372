@@ -6,7 +6,6 @@ exports.client = new MongoClient(exports.uri);
 
 exports.mongoDataBase = "project";
 exports.userDataCollection = "userData";
-//
 exports.videoDataCollection = "videoData";
 
 // ################################################################################
@@ -46,11 +45,11 @@ exports.getFieldData = async function(dataBase, collection, fieldNameString, que
 }
 
 // Retrieves data from the database and passes it to a callback function
-exports.getDocData = async function(dataBase, collection, query, callback_argData)
+exports.getDocData = async function(dataBase, collection, query, options, callback_argData)
 {
     try {        
         await exports.client.connect();
-        data = await exports.client.db(dataBase).collection(collection).findOne(query);
+        data = await exports.client.db(dataBase).collection(collection).findOne(query, options);
         console.log("Database Fetch:"); 
         console.log(data);
         console.log("Database Fetch End:"); 
@@ -60,6 +59,25 @@ exports.getDocData = async function(dataBase, collection, query, callback_argDat
             callback_argData(data[0]);  
         else
             callback_argData(data); 
+    }
+}
+
+// Retrieves a set of data from the database and passes it to a callback function
+exports.getMultiDocData = async function(dataBase, collection, query, options, callback_argData)
+{
+    try {        
+        await exports.client.connect();
+        cursor = await exports.client.db(dataBase).collection(collection).find(query, options);
+        console.log("Database Fetch:");
+        
+        data = await cursor.toArray();
+        console.log(data);
+        
+        console.log("Database Fetch End:"); 
+    } finally {
+        await cursor.close();
+        await exports.client.close();        
+        callback_argData(data); 
     }
 }
 
@@ -138,19 +156,23 @@ exports.addNewUser = function(formData)
 // Gets the user's data
 exports.getUserData = function(username, callback_argData)
 {
-    exports.getDocData(exports.mongoDataBase, exports.userDataCollection, {"username": username}, callback_argData);
+    query = {"username": username};
+    options = {}; // None
+    exports.getDocData(exports.mongoDataBase, exports.userDataCollection, query, options, callback_argData);
 }
 
 // Gets the user's field data
 exports.getUserFieldData = function(username, fieldNameString, callback_argData)
 {
-    exports.getFieldData(exports.mongoDataBase, exports.userDataCollection, fieldNameString, {"username": username}, callback_argData);
+    query = {"username": username};
+    exports.getFieldData(exports.mongoDataBase, exports.userDataCollection, fieldNameString, query, callback_argData);
 }
 
 // Edits a field within a user Account in the database
 exports.editUserFieldData = async function(username, fieldNameString, newValue, callback_argNone)
 {
-    exports.editFieldData(exports.mongoDataBase, exports.userDataCollection, {"username":username}, fieldNameString, newValue, callback_argNone)
+    query = {"username":username};
+    exports.editFieldData(exports.mongoDataBase, exports.userDataCollection, query, fieldNameString, newValue, callback_argNone)
 }
 
 // Checks if the user exists
@@ -182,6 +204,8 @@ exports.addNewVideo = function(formData)
     const videoGenre = formData.txtVideoGenre || '';
     const videoComment = formData.txtVideoComment || '';
     const videoEmbedLink = formData.txtVideoEmbedLink || '';
+    const videoThumbnail = formData.txtVideoThumbnail || '';
+    const videoLength = formData.txtVideoLength || '';
 
     newVideoData = { 
         "videoUploader" : videoUploader, 
@@ -189,7 +213,36 @@ exports.addNewVideo = function(formData)
         "videoGenre" : videoGenre,
         "videoComment" : videoComment,
         "videoEmbedLink" : videoEmbedLink,
+        "videoThumbnail" : videoThumbnail, 
+        "videoLength" : videoLength,
+        "videoViewCount" : 0 // No one has viewed the video yet
     };   
-            
+
     exports.addData(exports.mongoDataBase, exports.videoDataCollection, newVideoData, function(){console.log("New video added to server");})
+}
+
+// Finds videos based on text search matching the videoName
+exports.getVideos = function(searchParam, callback_argData)
+{
+    // Query: 
+    //   this -> document
+    //   fieldNameString -> field
+    //   make this.videoname a string and search its contents for substring in variable searchParam
+    //   If the location is not -1 (-1 = not present) then return the document
+    fieldNameString = "videoName";
+    query = {$where: `JSON.stringify(this.${fieldNameString}).toLowerCase().indexOf(('${searchParam}').toLowerCase())!=-1`};
+    options = {
+        projection: { _id: 0 }, // 0 means don't show
+        sort : { [fieldNameString]: 1 } // Sort alphabetically (1 = ascending)
+    };    
+    
+    exports.getMultiDocData(exports.mongoDataBase, exports.videoDataCollection, query, options, callback_argData);    
+}
+
+exports.getVideoData = function(name, callback_argData)
+{
+    query = {"videoName": name};
+    options = {};
+    // Issue: 2 videos have the same name
+    exports.getDocData(exports.mongoDataBase, exports.videoDataCollection, query, options, callback_argData);
 }
