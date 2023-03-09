@@ -2,14 +2,16 @@ var http = require('http');
 var url = require('url');
 var fs = require('fs');
 const querystring = require('querystring');
+
 var credentialModule = require('./credentialModule')
 var dataBaseModule = require('./databaseModule.js')
+var videoModule = require('./videoModule')
 
 var domain = "localhost";
 var port = 8080;
 
 
-http.createServer(function (req, res) {
+http.createServer(async function (req, res) {
   var q = url.parse(req.url, true);
 
   console.log("Requested page: " + q.pathname);
@@ -153,7 +155,22 @@ function userRoleRedirect(res, accountType)
 {
   if(accountType == "viewer") // A viewer account
   {
-    redirectOnSite(res, getLandingPage());
+    //redirectOnSite(res, getLandingPage());
+    /*
+    async function test() {
+      var result = await videoModule.createVideoList();
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(result);
+      res.end();
+    }
+    test();
+    */
+   dataBaseModule.getVideos("","Lofi", function(videos){
+    videoModule.createVideoList(videos,function(html){
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(html);
+      res.end();
+    });});
     console.log("Welcome viewer");
   }
   else if (accountType == "content editor") // A content editor account
