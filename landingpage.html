@@ -8,6 +8,11 @@
     .intro-container {text-align: center; color:antiquewhite;}
     .educationalVids-container {text-align: center;}
     .lofiVids-container{text-align: center;}
+    .videoUploadBtn{
+      border:none;
+      width:100px;
+      margin: auto;
+    }
 
     body {
       background-image: url('images/website_background3.jpg');
@@ -20,7 +25,7 @@
     <div class="intro-container">
     <p>Welcome to Netflix...</p>
     <p>I mean not Notflix... thats taken too... Well then</p>
-    <p>I mean it something else that aslo plays video</p>
+    <p>I mean it's something else that also plays video</p>
     </div>
 
     <p><h3>Educational Videos:</h3></p>
@@ -54,5 +59,10 @@
       web-share" allowfullscreen></iframe>
     </div>
 
+    <!-- Button to video upload page -->   
+    <div class="videoUploadBtn">  
+      <br>      
+      <button type='button' id='btnVideoUploadPage' onclick="window.location.href='videoupload.html'">Upload a video</button>
+    </div> 
   </body>
 </html>
