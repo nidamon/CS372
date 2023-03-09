@@ -35,7 +35,7 @@ http.createServer(function (req, res) {
   {           
     sendPagehtml(res, getLandingPage());
   }
-  else if(q.pathname == '/' + getVideoUploadPage())    // Forgot password page
+  else if(q.pathname == '/' + getVideoUploadPage())    // Video upload page
   {           
     handleVideoUploadPage(req, res);
   }
@@ -129,16 +129,17 @@ function handleLoginSubmission(req, res)
   req.on('end', function() {
     const formData = querystring.parse(body);
     const uname = formData.textUname || '';
-    const pass = formData.textPass || '';    
-
+    const pass = formData.textPass || ''; 
+    
     // Handle user validation
     credentialModule.validateUser(uname, pass, function(validUserBool, message){      
       console.log("Validation Complete")
       if(validUserBool == true)
       {
-        // Send to landing page
-        redirectOnSite(res, getLandingPage());
-        // Todo: Start a session on client side in credentialModule.loginUser()
+        // Send to role based landing page
+        dataBaseModule.getUserFieldData(uname, "accountType", function(accountType){
+          userRoleRedirect(res, accountType);   
+        });
       }
       else
       {
@@ -146,6 +147,30 @@ function handleLoginSubmission(req, res)
       }
     });
   });
+}
+
+function userRoleRedirect(res, accountType)
+{
+  if(accountType == "viewer") // A viewer account
+  {
+    redirectOnSite(res, getLandingPage());
+    console.log("Welcome viewer");
+  }
+  else if (accountType == "content editor") // A content editor account
+  {
+    redirectOnSite(res, getVideoUploadPage());
+    console.log("Welcome content editor");
+  }
+  else if(accountType == "content manager")  // A content manager account
+  {
+    redirectOnSite(res, getLandingPage());
+    console.log("Welcome content manager");
+  }
+  else  // Unknown account type
+  {
+    redirectOnSite(res, getLandingPage());
+    console.log("Not welcome unknown");
+  }
 }
 
 
