@@ -222,21 +222,30 @@ exports.addNewVideo = function(formData)
     exports.addData(exports.mongoDataBase, exports.videoDataCollection, newVideoData, function(){console.log("New video added to server");})
 }
 
-// Finds videos based on text search matching the videoName
-exports.getVideos = function(searchParam, callback_argData)
+// Finds videos based on text search of the videoName and text search of genres
+exports.getVideos = function(searchParamName, searchParamGenre, callback_argData)
 {
     // Query: 
     //   this -> document
-    //   fieldNameString -> field
+    //   videoName/videoGenre -> field
     //   make this.videoname a string and search its contents for substring in variable searchParam
     //   If the location is not -1 (-1 = not present) then return the document
-    fieldNameString = "videoName";
-    query = {$where: `JSON.stringify(this.${fieldNameString}).toLowerCase().indexOf(('${searchParam}').toLowerCase())!=-1`};
+
+    // Make search filter
+    var search = `JSON.stringify(this.videoName).toLowerCase().indexOf(('${searchParamName}').toLowerCase())!=-1`
+    var genres = searchParamGenre.split(' ');
+    genres.forEach(genre => {
+        search += `&& JSON.stringify(this.videoGenre).toLowerCase().indexOf(('${genre}').toLowerCase())!=-1`;
+    });
+                  
+    // Prepare query
+    query = {$where: search};
     options = {
         projection: { _id: 0 }, // 0 means don't show
-        sort : { [fieldNameString]: 1 } // Sort alphabetically (1 = ascending)
+        sort : { "videoName": 1 } // Sort alphabetically (1 = ascending)
     };    
     
+    // Conduct search
     exports.getMultiDocData(exports.mongoDataBase, exports.videoDataCollection, query, options, callback_argData);    
 }
 
