@@ -141,6 +141,7 @@ exports.addNewUser = function(formData)
             "securityQ3Ans" : securityQ3Ans
         },
 
+        "accountType" : "viewer",
         "loggedIn": "no",
         "locked": "no",
         "failedLogins": {
