@@ -16,7 +16,7 @@ http.createServer(function (req, res) {
 
   // Page directing
   if(q.pathname == '/' || q.pathname == '/' + getHomePage())    // Homepage
-  {    
+  { 
     sendPagehtml(res, getHomePage());
   }
   else if(q.pathname == '/' + getLoginPage())    // Login page
@@ -34,6 +34,10 @@ http.createServer(function (req, res) {
   else if(q.pathname == '/' + getLandingPage())    // Forgot password page
   {           
     sendPagehtml(res, getLandingPage());
+  }
+  else if(q.pathname == '/' + getVideoUploadPage())    // Forgot password page
+  {           
+    handleVideoUploadPage(req, res);
   }
   else if(q.pathname.split('/')[1] == 'images') // Check if image request
   {
@@ -83,6 +87,10 @@ function getPasswordResetPage()
 function getLandingPage()
 {
   return 'landingpage.html'
+}
+function getVideoUploadPage()
+{
+  return 'videoupload.html'
 }
 
 
@@ -300,6 +308,40 @@ function sentSecurityQuestionAnswers(req, res, usersRequest)
   return false; // Continue through to next function
 }
 
+
+// Video upload page #################################################################
+
+function handleVideoUploadPage(req, res)
+{
+  if(req.method === 'GET')
+  {
+    sendPagehtml(res, getVideoUploadPage());
+  }
+  else if (req.method === 'POST')
+  {
+    handleVideoUploadSubmission(req, res);
+  }
+  else
+  {
+    console.log("req.method was neither GET nor POST.");
+  }
+}
+
+function handleVideoUploadSubmission(req, res)
+{
+  // Get form data
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+
+  // Parse form data
+  req.on('end', () => {
+    const formData = querystring.parse(body);
+    dataBaseModule.addNewVideo(formData);    
+  });
+  redirectOnSite(res, getLandingPage());
+}
 
 // ######################################################################################
 // Misc
