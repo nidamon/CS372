@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Video Upload</title>
+	</head>
+
+    <style>
+        .inputFields {     
+            background-color:antiquewhite; 
+            width:500px;
+            margin: auto;
+        }    
+
+        body {
+            background-image: url('images/website_background.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;  
+            background-size: cover;
+        }
+
+        fieldset{
+            border:none;
+            width:100px;
+            margin: auto;
+        }
+      </style>
+	
+	<body>
+		<h1 style="text-align: center;">Video Upload</h1>
+  		<form method="post" id="formVideoUpload">
+            <div class="inputFields">
+
+                <fieldset>
+                    <!-- Video Uploader -->
+                    Video Uploader:
+                    <input id='txtVideoUploader' type='text' placeholder='Video Uploader' name='txtVideoUploader'> 
+                    <br>
+
+                    <!-- Video Name -->
+                    Video Name:
+                    <input id='txtVideoName' type='text' placeholder='Video Name' name='txtVideoName'>
+                    <br>
+                    
+                    <!-- Video Link -->
+                    Video Link:
+                    <input id='txtVideoEmbedLink' type='text' placeholder='Video Link' name='txtVideoEmbedLink'>           
+                    <br>
+
+                    <!-- Video Thumbnail -->
+                    Video Thumbnail:
+                    <input id='txtVideoThumbnail' type='text' placeholder='Video Thumbnail' name='txtVideoThumbnail'>            
+                    <br>
+
+                    <!-- Video Length -->
+                    Video Length:
+                    <input id='txtVideoLength' type='text' placeholder='Video Length' name='txtVideoLength'>
+                </fieldset>
+              
+                <fieldset>
+                    <!-- Video Genres -->
+                    Video Genres:<br>
+                    <input id='txtVideoGenre' type='text' placeholder='Video Genres' name='txtVideoGenres' size="69">
+                    <br>
+                    
+                    <!-- Video Synopsis -->
+                    Video Synopsis:<br>
+                    <textarea id='txtVideoComment' type='text' placeholder='Video Synopsis' name='txtVideoComment' rows="5" cols="60"></textarea>
+                    
+                    
+                    <!-- Requirements message -->
+                    <p id='pReqMsg' style="color:red;"></p>
+                    
+                </fieldset>
+
+                <fieldset>
+                    <!-- Submit video upload -->
+                    <button id='btnSubmitVideoUpload' type='button' onClick=uploadVideo()>Upload Video</button>
+                </fieldset>
+            </div>         
+		</form>
+	</body>
+</html>
+
+<script>
+    function uploadVideo()
+    {
+        if(uploadRequirementsMet())
+        {
+            document.getElementById('formVideoUpload').submit();
+        }
+    }
+
+    function uploadRequirementsMet()
+    {
+        var fields = [
+            [ "Video Uploader", getUploaderName() ],
+            [ "Video Name", getVideoName() ],
+            [ "Video Link", getVideoEmbedLink() ],
+            [ "Video Thunbnail", getVideoThunbnail() ],
+            [ "Video Length", getVideoLength() ],
+            [ "Video Genre", getVideoGenre() ],
+            [ "Video Comment", getVideoComment() ]
+        ];
+
+
+        var requirementsMet = true;
+        // Iterate over all the input fields and require them filled
+        fields.reverse().forEach(element => {
+            if(isEmpty(element[0], element[1]))
+                requirementsMet = false;  
+        });
+
+        
+        if(requirementsMet)
+            console.log("Requirements met.");
+        return requirementsMet;
+    }
+
+    // Returns true if the value passes is empty
+    function isEmpty(name, value)
+    {
+        if(value.length == 0)
+        {
+            setReqText(name + " must be filled out.");
+            return true;
+        }
+        return false;
+    }
+
+    // Sets the text below the input fields
+    function setReqText(stringText)
+    {
+        document.getElementById('pReqMsg').innerHTML = stringText;
+    }
+
+    function getUploaderName()
+    {
+        return document.getElementById('txtVideoUploader').value;
+    }
+    function getVideoName()
+    {
+        return document.getElementById('txtVideoName').value;
+    }
+    function getVideoEmbedLink()
+    {
+        return document.getElementById('txtVideoEmbedLink').value;
+    }
+    function getVideoThunbnail()
+    {
+        return document.getElementById('txtVideoThumbnail').value;
+    }
+    function getVideoLength()
+    {
+        return document.getElementById('txtVideoLength').value;
+    }
+    function getVideoGenre()
+    {
+        return document.getElementById('txtVideoGenre').value;
+    }
+    function getVideoComment()
+    {
+        return document.getElementById('txtVideoComment').value;
+    }
+</script>
