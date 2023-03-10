@@ -112,33 +112,20 @@ exports.editFieldData = async function(dataBase, collection, query, fieldNameStr
 exports.addNewUser = function(formData)
 {
     // User data for account
-    const username = formData.txtUsername || '';
-    const password = formData.txtPassword || '';
-    const firstName = formData.txtFirstName || '';
-    const lastName = formData.txtLastName || '';
-    const email = formData.txtEmail || '';
-
-    const securityQ1 = formData.txtSecureQ1 || '';
-    const securityQ1Ans = formData.txtSecureQ1Ans || '';
-    const securityQ2 = formData.txtSecureQ2 || '';
-    const securityQ2Ans = formData.txtSecureQ2Ans || '';
-    const securityQ3 = formData.txtSecureQ3 || '';
-    const securityQ3Ans = formData.txtSecureQ3Ans || '';
-
     newUserData = { 
-        "username" : username, 
-        "password" : password,
-        "firstName" : firstName, 
-        "lastName" : lastName, 
-        "email" : email, 
+        "username" : formData.txtUsername || '', 
+        "password" : formData.txtPassword || '',
+        "firstName" : formData.txtFirstName || '', 
+        "lastName" : formData.txtLastName || '', 
+        "email" : formData.txtEmail || '', 
 
         "securityQuestions": {
-            "securityQ1" : securityQ1, 
-            "securityQ1Ans" : securityQ1Ans, 
-            "securityQ2" : securityQ2, 
-            "securityQ2Ans" : securityQ2Ans, 
-            "securityQ3" : securityQ3, 
-            "securityQ3Ans" : securityQ3Ans
+            "securityQ1" : formData.txtSecureQ1 || '', 
+            "securityQ1Ans" : formData.txtSecureQ1Ans || '', 
+            "securityQ2" : formData.txtSecureQ2 || '', 
+            "securityQ2Ans" : formData.txtSecureQ2Ans || '', 
+            "securityQ3" : formData.txtSecureQ3 || '', 
+            "securityQ3Ans" : formData.txtSecureQ3Ans || ''
         },
 
         "accountType" : "viewer",
