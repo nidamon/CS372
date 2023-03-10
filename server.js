@@ -247,7 +247,7 @@ function passwordResetSubmission(req, res)
 
 function securityQuestionsDirecting(req, res)
 {
-  var usersRequest = q.pathname.split('/')
+  var usersRequest = url.parse(req.url, true).pathname.split('/')
   if(requestedSecurityQuestions(res, usersRequest)){} // Security questions (send questions)    
   else if(sentSecurityQuestionAnswers(req, res, usersRequest)){} // Security questions (receive and check answers)    
   else // No page found
