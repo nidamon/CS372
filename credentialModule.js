@@ -10,45 +10,30 @@ var dataBaseModule = require('./databaseModule.js')
 // and a dictionary of the logins (dict)
 exports.validateUser = function(uname, pass, callback_argBool_argStringMessage)
 {
-  exports.isValidUsername(uname, function(isValid)
-  {
+  exports.isValidUsername(uname, function(isValid){
     // Username valid
-    if(isValid)
-    {
-      exports.isAccountLocked(uname, function(isLocked)
-      {
-        if(isLocked == false)
-        {
-          exports.isPasswordCorrect(uname, pass, function(isCorrect)
-          {
+    if(isValid) {
+      exports.isAccountLocked(uname, function(isLocked){
+        if(isLocked == false) {
+          exports.isPasswordCorrect(uname, pass, function(isCorrect){
             // Password correct
-            if(isCorrect)
-            {
+            if(isCorrect){
               callback_argBool_argStringMessage(true, "Success");
-            }
-            else
-            {          
+            } else {          
               failedlogin(uname, function(message) {
                 callback_argBool_argStringMessage(false, 'The username or password is incorrect. ' + message);
               });
             }
-          }); 
-          // [End] - isPasswordCorrect callback
-        }
-        else // Account is currently locked
-        {
+          }); // [End] - isPasswordCorrect callback          
+        } else { // Account is currently locked        
           callback_argBool_argStringMessage(false, "Your account is currently locked");
         }
-      }); 
-      // [End] - isAccountLocked callback
-    }
-    else
-    {
+      }); // [End] - isAccountLocked callback      
+    } else {
       // Username not valid
       callback_argBool_argStringMessage(false, "Invalid Username");
     }
-  }); 
-  // [End] - isValidUsername callback
+  }); // [End] - isValidUsername callback  
 }
 
 // Checks if username is present in the database
@@ -124,49 +109,37 @@ async function failedlogin(username, callback_argStringMessage)
       callback_argStringMessage("Wrong password");
     }
   }); // [End] - cycleTimes callback
-
-  // #####################################
-  // Functions within this function below
-  // #####################################
-
-
-  // Adds the most recent login attempt and shifts the rest back discarding the oldest one.
-  async function cycleTimes(callback_argFailedLogins)
-  {    
-    dataBaseModule.getUserFieldData(username, "failedLogins", function(failedLogins){
-      failedLogins.oldest = failedLogins.secondOldest;
-      failedLogins.secondOldest = failedLogins.newest;
-      failedLogins.newest = Date.now();
-
-      console.log(failedLogins);
-
-      // Update user account
-      dataBaseModule.editUserFieldData(username, "failedLogins", failedLogins, function(){
-        // Send the failed logins out through the callback
-        callback_argFailedLogins(failedLogins);
-      });      
-    });
-  }
-
-  // Second failed login
-  function hasFailed2ndLogin(failedlogins)
-  {
-    // All time is in milliseconds
-    // minutes * seconds * milliseconds
-    var hour = 60*60*1000;
-
-    return failedlogins.newest - failedlogins.secondOldest < hour;     
-  }
-
-  // Returns true if there have been 3 failed login attempts within an hour
-  function threeFailedInAnHour(failedlogins)
-  {
-    // All time is in milliseconds
-    // minutes * seconds * milliseconds
-    var hour = 60*60*1000;
-
-    return failedlogins.newest - failedlogins.oldest < hour;
-  }
+}
+// Adds the most recent login attempt and shifts the rest back discarding the oldest one.
+async function cycleTimes(callback_argFailedLogins)
+{    
+  dataBaseModule.getUserFieldData(username, "failedLogins", function(failedLogins){
+    failedLogins.oldest = failedLogins.secondOldest;
+    failedLogins.secondOldest = failedLogins.newest;
+    failedLogins.newest = Date.now();
+    console.log(failedLogins);
+     // Update user account
+    dataBaseModule.editUserFieldData(username, "failedLogins", failedLogins, function(){
+      // Send the failed logins out through the callback
+      callback_argFailedLogins(failedLogins);
+    });      
+  });
+}
+// Second failed login
+function hasFailed2ndLogin(failedlogins)
+{
+  // All time is in milliseconds
+  // minutes * seconds * milliseconds
+  var hour = 60*60*1000;
+  return failedlogins.newest - failedlogins.secondOldest < hour;     
+}
+// Returns true if there have been 3 failed login attempts within an hour
+function threeFailedInAnHour(failedlogins)
+{
+  // All time is in milliseconds
+  // minutes * seconds * milliseconds
+  var hour = 60*60*1000;
+  return failedlogins.newest - failedlogins.oldest < hour;
 }
 
 exports.isAccountLocked = function(username, callback_argBool)
