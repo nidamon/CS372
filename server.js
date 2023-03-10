@@ -3,59 +3,36 @@ var url = require('url');
 var fs = require('fs');
 const querystring = require('querystring');
 
-var credentialModule = require('./credentialModule')
-var dataBaseModule = require('./databaseModule.js')
-var videoModule = require('./videoModule')
+var credentialModule = require('./credentialModule');
+var dataBaseModule = require('./databaseModule.js');
+var videoModule = require('./videoModule');
 
 var domain = "localhost";
 var port = 8080;
 
 
-http.createServer(async function (req, res) {
+http.createServer(function (req, res) {
   var q = url.parse(req.url, true);
 
   console.log("Requested page: " + q.pathname);
 
   // Page directing
   if(q.pathname == '/' || q.pathname == '/' + getHomePage())    // Homepage
-  { 
-    sendPagehtml(res, getHomePage());
-  }
+  { sendPagehtml(res, getHomePage()); }
   else if(q.pathname == '/' + getLoginPage())    // Login page
-  {    
-    handleLoginPage(req, res);   
-  }
+  { handleLoginPage(req, res); }
   else if(q.pathname == '/' + getSignUpPage())    // Sign up page
-  {           
-    handleSignUpPage(req, res);
-  }
+  { handleSignUpPage(req, res); }
   else if(q.pathname == '/' + getPasswordResetPage())    // Forgot password page
-  {           
-    handlePasswordResetPage(req, res);
-  }
+  { handlePasswordResetPage(req, res); }
   else if(q.pathname == '/' + getLandingPage())    // Landing page
-  {        
-    handleMoviesPage(req, res);
-  }
+  { handleMoviesPage(req, res); }
   else if(q.pathname == '/' + getVideoUploadPage())    // Video upload page
-  {           
-    handleVideoUploadPage(req, res);
-  }
+  { handleVideoUploadPage(req, res); }
   else if(q.pathname.split('/')[1] == 'images') // Check if image request
-  {
-    sendjpg(res, "." + q.pathname);
-  }
+  { sendjpg(res, "." + q.pathname); }
   else if(q.pathname.split('/')[1] == 'users') // Check if request about users
-  {
-    var usersRequest = q.pathname.split('/')
-    if(requestedSecurityQuestions(res, usersRequest)){} // Security questions (send questions)    
-    else if(sentSecurityQuestionAnswers(req, res, usersRequest)){} // Security questions (receive and check answers)    
-    else // No page found
-    {
-      res.writeHead(404, {'Content-Type': 'text/plain'});
-      res.end('404 page not found'); 
-    }
-  }
+  {securityQuestionsDirecting(req, res); }
   else // No page available
   {        
     res.writeHead(404, {'Content-Type': 'text/html'});
@@ -151,7 +128,7 @@ function handleLoginSubmission(req, res)
   });
 }
 
-async function userRoleRedirect(res, accountType)
+function userRoleRedirect(res, accountType)
 {
   if(accountType == "viewer") // A viewer account
   {
@@ -218,11 +195,8 @@ function handleSignUpSubmission(req, res)
           messageAndReturn(res, message);
       }
       else // Account creation
-      {
-          // Create account and log user in  
-          dataBaseModule.addNewUser(formData);
-          
-          // Redirect to homepage
+      {          
+          dataBaseModule.addNewUser(formData); // Create account and log user in         
           redirectOnSite(res, getHomePage());
       }
     })    
@@ -271,15 +245,25 @@ function passwordResetSubmission(req, res)
   });
 }
 
+function securityQuestionsDirecting(req, res)
+{
+  var usersRequest = q.pathname.split('/')
+  if(requestedSecurityQuestions(res, usersRequest)){} // Security questions (send questions)    
+  else if(sentSecurityQuestionAnswers(req, res, usersRequest)){} // Security questions (receive and check answers)    
+  else // No page found
+  {
+    res.writeHead(404, {'Content-Type': 'text/plain'});
+    res.end('404 page not found'); 
+  }
+}
+
 // Security questions (send questions)    
 function requestedSecurityQuestions(res, usersRequest)
 {
   if(usersRequest[3] == 'qs') // Security questions (send questions)
   {
-    username = usersRequest[2];
-    console.log('Checking if user ' + username + ' exists');
-    // Check if user exists
-    dataBaseModule.doesUserExist(username, function(doesExist){
+    username = usersRequest[2];    
+    dataBaseModule.doesUserExist(username, function(doesExist){ // Check if user exists
       if(doesExist == false)
       {
         res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -287,10 +271,8 @@ function requestedSecurityQuestions(res, usersRequest)
         res.end();     
       }
       else
-      {
-        console.log('User ' + username + ' exists');
-        // Get and send questions
-        dataBaseModule.getUserFieldData(username, "securityQuestions", function(securityQuestions){
+      {        
+        dataBaseModule.getUserFieldData(username, "securityQuestions", function(securityQuestions){ // Get and send questions
           res.writeHead(200, {'Content-Type': 'text/plain'});
           res.write('ok\n' +
             securityQuestions["securityQ1"] + ' \n' +
@@ -301,8 +283,7 @@ function requestedSecurityQuestions(res, usersRequest)
           res.end();
         });        
       }
-    });   
-    
+    });       
     return true; // This function was the end path (stop if else statements)
   }
   return false; // Continue through to next function
