@@ -33,15 +33,9 @@ http.createServer(async function (req, res) {
   {           
     handlePasswordResetPage(req, res);
   }
-  else if(q.pathname == '/' + getLandingPage())    // Landing Page page
-  {           
-    //sendPagehtml(res, getLandingPage());
-    dataBaseModule.getVideos("","Lofi", async function(videos){
-      await videoModule.createVideoList(videos,function(html){
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(html);
-        res.end();
-      });});
+  else if(q.pathname == '/' + getLandingPage())    // Landing page
+  {        
+    handleMoviesPage(req, res);
   }
   else if(q.pathname == '/' + getVideoUploadPage())    // Video upload page
   {           
@@ -94,7 +88,7 @@ function getPasswordResetPage()
 }
 function getLandingPage()
 {
-  return 'landingpage'
+  return 'landingpage' // Page is created dynamically now
 }
 function getVideoUploadPage()
 {
@@ -374,6 +368,57 @@ function handleVideoUploadSubmission(req, res)
     dataBaseModule.addNewVideo(formData);    
   });
   redirectOnSite(res, getLandingPage());
+}
+
+
+// Movies page #################################################################
+
+function handleMoviesPage(req, res)
+{
+  if(req.method === 'GET')
+  {
+    dataBaseModule.getVideos("", "", function(videos){
+      videoModule.createVideoList(videos,function(html){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(html);
+        res.end();
+      });
+    });
+  }
+  else if (req.method === 'POST')
+  {
+    handleVideoSearchSubmission(req, res);
+  }
+  else
+  {
+    console.log("req.method was neither GET nor POST.");
+  }
+}
+
+function handleVideoSearchSubmission(req, res)
+{
+  // Get form data
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+
+  // Parse form data
+  req.on('end', () => {
+    const formData = querystring.parse(body);
+
+    const titleSearch = formData.videoNameSearch || '';
+    const genreSeach = formData.videoGenreSearch || '';
+
+    dataBaseModule.getVideos(titleSearch, genreSeach, function(videos){
+      console.log(videos);
+      videoModule.createVideoList(videos,function(html){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(html);
+        res.end();
+      });
+    });
+  });
 }
 
 // ######################################################################################
