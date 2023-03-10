@@ -3,7 +3,7 @@ var dataBaseModule = require('./databaseModule.js')
 
 
 
-exports.createVideoList = function(videos, callback_HTMLData) {
+exports.createVideoList = async function(videos, callback_HTMLData) {
     let html = '<h3>Lofi Genre</h3>';
     try {
     /*
