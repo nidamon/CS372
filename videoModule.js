@@ -1,19 +1,14 @@
 var dataBaseModule = require('./databaseModule.js')
-// Search for Genre: Lofi 
-
-
 
 exports.createVideoList = async function(videos, callback_HTMLData) {
-    let html = '<h3>Lofi Genre</h3>';
+    let html = '<h3>Movies</h3>';
+    html += `
+    <form method="post">
+        <input id='txtVideoSearchName' type='text' placeholder='Search by Title' name='videoNameSearch'>
+        <input id='txtVideoSearchGenre' type='text' placeholder='Search by Genre' name='videoGenreSearch'>
+        <button id='btnSubmitSearch' type='submit' >Search</button>
+    </form>`;
     try {
-    /*
-    let videos = await new Promise((resolve, reject) => {
-      dataBaseModule.getVideos("", "Lofi", function(videos) {
-        resolve(videos);
-      });
-    });
-    */
-    console.log(videos);
     for (let i = 0; i < videos.length; i++) {
       html += `<div>
           <p>${videos[i].videoName}, Uploaded by: ${videos[i].videoUploader}</p>
@@ -31,21 +26,11 @@ exports.createVideoList = async function(videos, callback_HTMLData) {
       <br>      
       <button type='button' id='btnVideoUploadPage' onclick="window.location.href='videoupload.html'">Upload a video</button>
     </div>`;
-    //return html;
     callback_HTMLData(html);
     }
     catch{
         html = 'Glitched loading'
         callback_HTMLData(html);
     }
-  };
-  
-  /*
-  async function test() {
-    var result = await exports.createVideoList();
-    console.log(result);
-    console.log("hello");
-  }
-  test();
-  */
+};
   
