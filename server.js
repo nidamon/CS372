@@ -33,11 +33,11 @@ http.createServer(async function (req, res) {
   {           
     handlePasswordResetPage(req, res);
   }
-  else if(q.pathname == '/' + getLandingPage())    // Forgot Landing Page page
+  else if(q.pathname == '/' + getLandingPage())    // Landing Page page
   {           
     //sendPagehtml(res, getLandingPage());
-    dataBaseModule.getVideos("","Lofi", function(videos){
-      videoModule.createVideoList(videos,function(html){
+    dataBaseModule.getVideos("","Lofi", async function(videos){
+      await videoModule.createVideoList(videos,function(html){
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.write(html);
         res.end();
