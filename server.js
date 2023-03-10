@@ -33,9 +33,15 @@ http.createServer(async function (req, res) {
   {           
     handlePasswordResetPage(req, res);
   }
-  else if(q.pathname == '/' + getLandingPage())    // Forgot password page
+  else if(q.pathname == '/' + getLandingPage())    // Forgot Landing Page page
   {           
-    sendPagehtml(res, getLandingPage());
+    //sendPagehtml(res, getLandingPage());
+    dataBaseModule.getVideos("","Lofi", function(videos){
+      videoModule.createVideoList(videos,function(html){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(html);
+        res.end();
+      });});
   }
   else if(q.pathname == '/' + getVideoUploadPage())    // Video upload page
   {           
@@ -88,7 +94,7 @@ function getPasswordResetPage()
 }
 function getLandingPage()
 {
-  return 'landingpage.html'
+  return 'landingpage'
 }
 function getVideoUploadPage()
 {
@@ -151,26 +157,11 @@ function handleLoginSubmission(req, res)
   });
 }
 
-function userRoleRedirect(res, accountType)
+async function userRoleRedirect(res, accountType)
 {
   if(accountType == "viewer") // A viewer account
   {
-    //redirectOnSite(res, getLandingPage());
-    /*
-    async function test() {
-      var result = await videoModule.createVideoList();
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write(result);
-      res.end();
-    }
-    test();
-    */
-   dataBaseModule.getVideos("","Lofi", function(videos){
-    videoModule.createVideoList(videos,function(html){
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write(html);
-      res.end();
-    });});
+    redirectOnSite(res, getLandingPage());
     console.log("Welcome viewer");
   }
   else if (accountType == "content editor") // A content editor account
