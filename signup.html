@@ -98,10 +98,10 @@
             return false;
         }
 
-        // No spacing in the username allowed
-        if(username.includes(' '))
+        // Cannot have '&', '=', '/', or ' ' (spaces)
+        if(!hasNoInvalidChars(username))
         {
-            setUserReqText("*Username cannot have spaces.");
+            setUserReqText("*Username must not contain the following: \"&\", \"=\", \"/\" or spaces.");
             return false;
         }
 
@@ -120,29 +120,25 @@
     function passwordRequirementsMet(password, username)
     {
         // At least 10 characters long
-        if(password.length < 10)
-        {
+        if(password.length < 10){
             setPassReqText("*Password needs to be at least 10 characters long.");
             return false;
         }
 
-        // No spacing in the password allowed
-        if(password.includes(' '))
-        {
-            setPassReqText("*Password cannot have spaces.");
-            return false;
-        }
-
         // At least 1 uppercase letter and 1 lowercase letter        
-        if(!hasUpperAndLowerCaseLetters(password))
-        {
+        if(!hasUpperAndLowerCaseLetters(password)){
             setPassReqText("*Password must have at least 1 uppercase letter and 1 lowercase letter.");
             return false;
         }
 
+        // Cannot have '&', '=', '/', or ' ' (spaces)
+        if(!hasNoInvalidChars(password)){
+            setPassReqText("*Password must not contain the following: \"&\", \"=\", \"/\" or spaces.");
+            return false;
+        }
+        
         // The password should not contain the username (not case sensitive)
-        if(password.toUpperCase().includes(username.toUpperCase()))
-        {
+        if(password.toUpperCase().includes(username.toUpperCase())){
             setPassReqText("*Password should not contain the username.");
             return false;
         }
@@ -174,6 +170,20 @@
             return true;
         else
             return false;
+    }
+
+    // False if '&', '=', or '/' is present
+    function hasNoInvalidChars(string)
+    {
+        // Check for '&', '=', and '/'
+        for (let index = 0; index < string.length; index++) {
+            const element = string[index];
+            if(element == '&' || element == '=' || element == '/' || element == '0')
+                return false;            
+        }
+
+        // No invalid chars found
+        return true;
     }
 
 
