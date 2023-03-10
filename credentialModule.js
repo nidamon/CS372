@@ -93,12 +93,12 @@ exports.logoutUser = function(username)
 async function failedlogin(username, callback_argStringMessage)
 {    
   // Function code
-  cycleTimes(function(failedlogins){
+  cycleTimes(username, function(failedlogins){
     // Lock account on third failed attempt
     if(threeFailedInAnHour(failedlogins))
     {
       exports.lockAccount(username);
-      callback_argStringMessage("Account has been locked");
+      callback_argStringMessage("Account has been locked for 24 hours");
     }
     else if (hasFailed2ndLogin(failedlogins))
     {
@@ -111,7 +111,7 @@ async function failedlogin(username, callback_argStringMessage)
   }); // [End] - cycleTimes callback
 }
 // Adds the most recent login attempt and shifts the rest back discarding the oldest one.
-async function cycleTimes(callback_argFailedLogins)
+async function cycleTimes(username, callback_argFailedLogins)
 {    
   dataBaseModule.getUserFieldData(username, "failedLogins", function(failedLogins){
     failedLogins.oldest = failedLogins.secondOldest;
