@@ -66,18 +66,24 @@ exports.getDocData = async function(dataBase, collection, query, options, callba
 exports.getMultiDocData = async function(dataBase, collection, query, options, callback_argData)
 {
     try {        
-        await exports.client.connect();
+        client = await exports.client.connect();
         cursor = await exports.client.db(dataBase).collection(collection).find(query, options);
         console.log("Database Fetch:");
         
         data = await cursor.toArray();
         console.log(data);
         
-        console.log("Database Fetch End:"); 
-    } finally {
+        console.log("Database Fetch End:");
+
         await cursor.close();
-        await exports.client.close();        
-        callback_argData(data); 
+        await client.close();
+
+        callback_argData(data);
+    } catch(err) {
+        console.error(err);
+        if (client) {
+            await client.close();
+        }
     }
 }
 
