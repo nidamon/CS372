@@ -26,21 +26,37 @@ exports.addData = async function(dataBase, collection, document, callback_argNon
     }
 }
 
+// Removes a document from the specified database and collection that matches the filter
+exports.removeData = async function(dataBase, collection, filter, callback_argNone = null)
+{
+    try {        
+        await exports.client.connect();
+        await exports.client.db(dataBase).collection(collection).deleteOne(filter);            
+    } finally {
+        await exports.client.close();
+        if(callback_argNone != null)
+            callback_argNone();    
+    }
+}
+
 // Retrieves field data from a document in the database and passes it to a callback function
 exports.getFieldData = async function(dataBase, collection, fieldNameString, query, callback_argFieldData)
 {
     try {        
+        console.log("Database Fetch:");     
         await exports.client.connect();
         data = await exports.client.db(dataBase).collection(collection).distinct(fieldNameString, query); 
-        console.log("Database Fetch:"); 
-        console.log(data);
-        console.log("Database Fetch End:"); 
+        console.log(data);        
+    } catch(err) {
+        console.log("Database Fetch Failed:");  
+        throw(err);  
     } finally {
-        await exports.client.close();
+        await exports.client.close()
+        console.log("Database Fetch End:"); 
         if(data != null)
             callback_argFieldData(data[0]);  
         else
-            callback_argFieldData(data);         
+            callback_argFieldData(data);
     }
 }
 
@@ -54,11 +70,8 @@ exports.getDocData = async function(dataBase, collection, query, options, callba
         console.log(data);
         console.log("Database Fetch End:"); 
     } finally {
-        await exports.client.close();
-        if(data != null)
-            callback_argData(data[0]);  
-        else
-            callback_argData(data); 
+        await exports.client.close();        
+        callback_argData(data); 
     }
 }
 
@@ -106,7 +119,6 @@ exports.editFieldData = async function(dataBase, collection, query, fieldNameStr
             callback_argNone();    
     }
 }
-
 
 
 // ################################################################################
@@ -189,7 +201,7 @@ exports.doesUserExist = function(username, callback_argBool)
 // ################################################################################
 
 
-// Adds the user's data to the database
+// Adds the video's data to the database
 exports.addNewVideo = function(formData)
 {
     // Video data
@@ -209,10 +221,25 @@ exports.addNewVideo = function(formData)
         "videoEmbedLink" : videoEmbedLink,
         "videoThumbnail" : videoThumbnail, 
         "videoLength" : videoLength,
-        "videoViewCount" : 0 // No one has viewed the video yet
+        "videoViewCount" : 0, // No one has viewed the video yet
+        "videoFeedback" : "No feedback yet"
     };   
 
     exports.addData(exports.mongoDataBase, exports.videoDataCollection, newVideoData, function(){console.log("New video added to server");})
+}
+
+// Edits a field within a video's data in the database
+exports.editVideoFieldData = async function(videoName, fieldNameString, newValue, callback_argNone)
+{
+    query = { "videoName" : videoName };
+    exports.editFieldData(exports.mongoDataBase, exports.userDataCollection, query, fieldNameString, newValue, callback_argNone)
+}
+
+// Removes the video with the matching name
+exports.removeVideo = function(videoName)
+{
+    filter = { "videoName" : videoName };
+    exports.removeData(exports.mongoDataBase, exports.videoDataCollection, filter, function(){console.log(`The video "${videoName}" has been removed.`);});
 }
 
 // Finds videos based on text search of the videoName and text search of genres
@@ -242,6 +269,7 @@ exports.getVideos = function(searchParamName, searchParamGenre, callback_argData
     exports.getMultiDocData(exports.mongoDataBase, exports.videoDataCollection, query, options, callback_argData);    
 }
 
+// Gets a specific video's data
 exports.getVideoData = function(name, callback_argData)
 {
     query = {"videoName": name};
