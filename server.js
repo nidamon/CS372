@@ -13,7 +13,6 @@ var port = 8080;
 
 http.createServer(function (req, res) {
   var q = url.parse(req.url, true);
-
   console.log("Requested page: " + q.pathname);
 
   // Page directing
@@ -33,11 +32,12 @@ http.createServer(function (req, res) {
   { sendjpg(res, "." + q.pathname); }
   else if(q.pathname.split('/')[1] == 'users') // Check if request about users
   {securityQuestionsDirecting(req, res); }
+  else if(q.pathname.split('/')[1] == 'video') // Check if request about a video
+  {handleVideoPage(req, res); }
   else // No page available
   {        
     res.writeHead(404, {'Content-Type': 'text/html'});
-    res.write("There is no page at this address.");
-    res.end();
+    res.end("There is no page at this address.");
   }
 }).listen(port); 
 
@@ -117,7 +117,7 @@ function handleLoginSubmission(req, res)
       {
         // Send to role based landing page
         dataBaseModule.getUserFieldData(uname, "accountType", function(accountType){
-          userRoleRedirect(res, accountType);   
+          userRoleRedirect(res, uname, accountType); 
         });
       }
       else
@@ -128,30 +128,56 @@ function handleLoginSubmission(req, res)
   });
 }
 
-function userRoleRedirect(res, accountType)
+function userRoleRedirect(res, username, accountType)
 {
   if(accountType == "viewer") // A viewer account
-  {
-    redirectOnSite(res, getLandingPage());
+  {    
+    createSessionAndRedirect(res, username, accountType, getLandingPage());
     console.log("Welcome viewer");
   }
   else if (accountType == "content editor") // A content editor account
   {
-    redirectOnSite(res, getVideoUploadPage());
+    createSessionAndRedirect(res, username, accountType, getVideoUploadPage());
     console.log("Welcome content editor");
   }
   else if(accountType == "content manager")  // A content manager account
   {
-    redirectOnSite(res, getLandingPage());
+    createSessionAndRedirect(res, username, accountType, getLandingPage());
     console.log("Welcome content manager");
   }
   else  // Unknown account type
   {
-    redirectOnSite(res, getLandingPage());
+    redirectOnSite(res, getHomePage());
     console.log("Not welcome unknown");
   }
 }
 
+function createSessionAndRedirect(res, username, accountType, location)
+{
+  res.writeHead(200, {'Content-Type': 'text/html'})
+  res.write(`
+  <!DOCTYPE html>
+  <html>
+    <body onload=addSessionRole()>Creating session...
+    </body>
+  </html>
+  <script>
+      function addSessionRole(){
+        console.log("Adding session role");
+        sessionStorage.setItem("UserId", "${username}");
+        sessionStorage.setItem("AccountType", "${accountType}");    
+        console.log("Beginning redirect");
+        redirectOnSite();            
+      }
+      function redirectOnSite()
+      {
+        console.log("Redirecting");
+        window.location.href="${getBaseAddress()}/${location}";
+      }
+  </script>      
+  `);
+  res.end();
+}
 
 // Sign up page #########################################################################
 
@@ -401,6 +427,120 @@ function handleVideoSearchSubmission(req, res)
     });
   });
 }
+
+
+// Movie watch page #################################################################
+
+function handleVideoPage(req, res)
+{
+  if(req.method === 'GET')
+  {
+    handleVideoPageGET(req, res);
+  }
+  else if (req.method === 'POST')
+  { 
+    handleVideoPagePOST(req, res);
+  }
+  else
+  {
+    console.log("req.method was neither GET nor POST.");
+  }
+}
+
+// GET area #################
+
+// Sends the video page and handles the following fetch for additional page content
+function handleVideoPageGET(req, res)
+{
+  // localhost:port/video/videoname/"userRole here"
+  var userRequest = url.parse(req.url, true).pathname.split('/');
+  dataBaseModule.getVideoData(decodeURI(userRequest[2]), function(videoData){
+    if(videoData != null){ // Video exists
+      if(userRequest.length > 3) // Fetch response
+      {
+        userRole = userRequest[3] // User's role 
+        if(userRole == encodeURI("content manager")) {
+          videoPageAddContentManagerNeeds(res, videoData);
+        }
+        else if(userRole == encodeURI("content editor")) {
+          videoPageAddContentEditorNeeds(res, videoData);
+        }
+        else{
+          console.log("Unclear user role: " + userRole);
+          res.end();
+        }
+      }
+      else{          
+        console.log("Sending video");
+        videoModule.sendVideoPage(res, videoData);
+      } 
+    }else { // Video does not exist    
+      res.writeHead(404, {'Content-Type': 'text/plain'});
+      res.end('404 page not found'); 
+    }    
+  });
+}
+
+// Adds the video's viewcount and a feedback input field
+function videoPageAddContentManagerNeeds(res, videoData){
+  res.writeHead(200, {'Content-Type': 'text/html'});
+  feedback = "temp feedback holder";//videoData.videoFeedback;
+  html = `
+    Video view count: ${videoData.videoViewCount} <br>
+    Video Feedback for content editor:<br>
+    <form method='post'>
+      <textarea id='txtVideoFeedback' type='text' placeholder='${feedback}' name='txtVideoFeedback' rows="5" cols="60"></textarea>
+      <button id='btnSubmitFeedback' type='submit'>Submit Feedback</button>
+    </form>  
+  `;
+  res.end(html);
+}
+// Adds the video feedback and a button for removing the video 
+function videoPageAddContentEditorNeeds(res, videoData){
+  res.writeHead(200, {'Content-Type': 'text/html'});
+  feedback = "temp feedback holder";//videoData.videoFeedback;
+  html = `
+    Video Feedback for content editor:<br>
+    <p>${feedback}</p>
+    <form method='post'>     
+      <button id='btnRemoveVideo' type='submit' name='btnRemoveVideo' value='yes'>Remove Video</button>
+    </form> 
+  `;
+  res.end(html);
+}
+
+// POST area #################
+
+function handleVideoPagePOST(req, res)
+{  
+  // Get form data
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+
+  // Parse form data
+  req.on('end', () => {
+    // localhost:port/video/videoname/"userRole here"
+    const videoName = decodeURI(url.parse(req.url, true).pathname.split('/')[2]);
+    const formData = querystring.parse(body);
+
+    const videoFeedback = formData.txtVideoFeedback || '';
+    const removeVideo = formData.btnRemoveVideo || '';
+
+    if(videoFeedback != ''){
+      dataBaseModule.editVideoFieldData(videoName, "videoFeedback", videoFeedback);
+    }else if(removeVideo == 'yes'){
+      dataBaseModule.removeVideo(videoName);
+    }else{
+      console.log("handleVideoPagePOST: neither feedback nor video removal.");
+    }
+
+    // Resend same page
+    handleVideoPageGET(req, res);
+  });
+}
+
 
 // ######################################################################################
 // Misc
