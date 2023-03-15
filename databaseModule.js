@@ -70,7 +70,7 @@ exports.getDocData = async function(dataBase, collection, query, options, callba
         console.log(data);
         console.log("Database Fetch End:"); 
     } finally {
-        await exports.client.close();        
+        await exports.client.close();
         callback_argData(data); 
     }
 }
@@ -232,14 +232,14 @@ exports.addNewVideo = function(formData)
 exports.editVideoFieldData = async function(videoName, fieldNameString, newValue, callback_argNone)
 {
     query = { "videoName" : videoName };
-    exports.editFieldData(exports.mongoDataBase, exports.userDataCollection, query, fieldNameString, newValue, callback_argNone)
+    exports.editFieldData(exports.mongoDataBase, exports.videoDataCollection, query, fieldNameString, newValue, callback_argNone)
 }
 
 // Removes the video with the matching name
-exports.removeVideo = function(videoName)
+exports.removeVideo = function(videoName, callback_argNone)
 {
     filter = { "videoName" : videoName };
-    exports.removeData(exports.mongoDataBase, exports.videoDataCollection, filter, function(){console.log(`The video "${videoName}" has been removed.`);});
+    exports.removeData(exports.mongoDataBase, exports.videoDataCollection, filter, callback_argNone);
 }
 
 // Finds videos based on text search of the videoName and text search of genres
