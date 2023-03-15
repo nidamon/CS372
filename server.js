@@ -222,8 +222,8 @@ function handleSignUpSubmission(req, res)
       }
       else // Account creation
       {          
-          dataBaseModule.addNewUser(formData); // Create account and log user in         
-          redirectOnSite(res, getHomePage());
+          dataBaseModule.addNewUser(formData); // Create account and log user in 
+          createSessionAndRedirect(res, username, "viewer", getLandingPage());
       }
     })    
   });
@@ -484,7 +484,7 @@ function handleVideoPageGET(req, res)
 // Adds the video's viewcount and a feedback input field
 function videoPageAddContentManagerNeeds(res, videoData){
   res.writeHead(200, {'Content-Type': 'text/html'});
-  feedback = videoData.videoFeedback;
+  feedback = videoData.videoFeedback.replace("'", "&#39"); // Replacement for adding to html code
   html = `
     Video view count: ${videoData.videoViewCount} <br>
     Video Feedback for content editor:<br>
