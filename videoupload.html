@@ -31,6 +31,9 @@
             <div class="inputFields">
 
                 <fieldset>
+                    <!-- Uploader Name -->
+                    <input id='txtVideoName' type='hidden' name='txtVideoUploader'>
+                    
                     <!-- Video Name -->
                     Video Name:
                     <input id='txtVideoName' type='text' placeholder='Video Name' name='txtVideoName'>
@@ -90,6 +93,8 @@
 
     function uploadRequirementsMet()
     {
+        // Set the hidden value to the uploaders UserId
+        document.getElementById('txtVideoName').value = getUploaderName();
         var fields = [
             [ "Video Uploader", getUploaderName() ],
             [ "Video Name", getVideoName() ],
