@@ -484,7 +484,7 @@ function handleVideoPageGET(req, res)
 // Adds the video's viewcount and a feedback input field
 function videoPageAddContentManagerNeeds(res, videoData){
   res.writeHead(200, {'Content-Type': 'text/html'});
-  feedback = "temp feedback holder";//videoData.videoFeedback;
+  feedback = videoData.videoFeedback;
   html = `
     Video view count: ${videoData.videoViewCount} <br>
     Video Feedback for content editor:<br>
@@ -498,7 +498,7 @@ function videoPageAddContentManagerNeeds(res, videoData){
 // Adds the video feedback and a button for removing the video 
 function videoPageAddContentEditorNeeds(res, videoData){
   res.writeHead(200, {'Content-Type': 'text/html'});
-  feedback = "temp feedback holder";//videoData.videoFeedback;
+  feedback = videoData.videoFeedback;
   html = `
     Video Feedback for content editor:<br>
     <p>${feedback}</p>
@@ -518,26 +518,28 @@ function handleVideoPagePOST(req, res)
   req.on('data', chunk => {
     body += chunk.toString();
   });
-
   // Parse form data
   req.on('end', () => {
     // localhost:port/video/videoname/"userRole here"
     const videoName = decodeURI(url.parse(req.url, true).pathname.split('/')[2]);
     const formData = querystring.parse(body);
-
     const videoFeedback = formData.txtVideoFeedback || '';
     const removeVideo = formData.btnRemoveVideo || '';
-
     if(videoFeedback != ''){
-      dataBaseModule.editVideoFieldData(videoName, "videoFeedback", videoFeedback);
+      dataBaseModule.editVideoFieldData(videoName, "videoFeedback", videoFeedback, function(){
+        // Resend same page
+        handleVideoPageGET(req, res);
+      });
     }else if(removeVideo == 'yes'){
-      dataBaseModule.removeVideo(videoName);
+      dataBaseModule.removeVideo(videoName, function(){
+        console.log(`The video "${videoName}" has been removed.`);
+        redirectOnSite(res, getLandingPage());
+      });
     }else{
       console.log("handleVideoPagePOST: neither feedback nor video removal.");
-    }
-
-    // Resend same page
-    handleVideoPageGET(req, res);
+      // Resend same page
+      handleVideoPageGET(req, res);
+    }    
   });
 }
 
