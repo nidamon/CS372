@@ -31,11 +31,6 @@
             <div class="inputFields">
 
                 <fieldset>
-                    <!-- Video Uploader -->
-                    Video Uploader:
-                    <input id='txtVideoUploader' type='text' placeholder='Video Uploader' name='txtVideoUploader'> 
-                    <br>
-
                     <!-- Video Name -->
                     Video Name:
                     <input id='txtVideoName' type='text' placeholder='Video Name' name='txtVideoName'>
@@ -48,7 +43,7 @@
 
                     <!-- Video Thumbnail -->
                     Video Thumbnail:
-                    <input id='txtVideoThumbnail' type='text' placeholder='Video Thumbnail' name='txtVideoThumbnail'>            
+                    <input id='txtVideoThumbnail' type='text' placeholder='Video Thumbnail Link' name='txtVideoThumbnail'>            
                     <br>
 
                     <!-- Video Length -->
@@ -84,9 +79,12 @@
 <script>
     function uploadVideo()
     {
-        if(uploadRequirementsMet())
-        {
-            document.getElementById('formVideoUpload').submit();
+        // First, does the uploader have permission to upload?
+        if(sessionStorage.getItem("AccountType") == "content editor"){
+            if(uploadRequirementsMet())
+                document.getElementById('formVideoUpload').submit();
+        }else{
+            setReqText("You do not have permission to upload.");
         }
     }
 
@@ -102,14 +100,12 @@
             [ "Video Comment", getVideoComment() ]
         ];
 
-
         var requirementsMet = true;
         // Iterate over all the input fields and require them filled
         fields.reverse().forEach(element => {
             if(isEmpty(element[0], element[1]))
                 requirementsMet = false;  
         });
-
         
         if(requirementsMet)
             console.log("Requirements met.");
@@ -135,7 +131,7 @@
 
     function getUploaderName()
     {
-        return document.getElementById('txtVideoUploader').value;
+        return sessionStorage.getItem("UserId");
     }
     function getVideoName()
     {
