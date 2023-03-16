@@ -61,13 +61,14 @@ function addButtonsAndSearching()
 function addVideoToList(video)
 {
     // Video display on listings page
-    return `<div>
+    return `<div class="video-thumbnail">
     <a href="/video/${encodeURI(video.videoName)}" title="${video.videoName}" 
     data-toggle="tooltip">
         <img src="${video.videoThumbnail}" alt="${video.videoName} thumbnail" width="240" height="135">
     </a>
     <p>${video.videoName}</p>          
     </div>`;
+    
 }
 function addUploadButton()
 {
