@@ -31,6 +31,12 @@
             <div class="inputFields">
 
                 <fieldset>
+                    <button type='button' id='btnMoviesPage' onclick="window.location.href='landingpage'">Go to movies</button>
+                    <button type='button' id='btnLogout' onclick="(function(){ 
+                        let uname = sessionStorage.getItem('UserId'); 
+                        window.location.href=('logout/' + uname);
+                        })()">Logout</button>
+                    <br><br>
                     <!-- Uploader Name -->
                     <input id='txtVideoName' type='hidden' name='txtVideoUploader'>
                     
