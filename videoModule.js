@@ -3,58 +3,81 @@ var dataBaseModule = require('./databaseModule.js')
 // Creates an html page that displays the videos that have been passed to it
 exports.createVideoList = async function(videos, callback_HTMLData) {
     let html = '<h3>Movies</h3>';
-    html += `
-    <form method="post">
-        <input id='txtVideoSearchName' type='text' placeholder='Search by Title' name='videoNameSearch'>
-        <input id='txtVideoSearchGenre' type='text' placeholder='Search by Genre' name='videoGenreSearch'>
-        <button id='btnSubmitSearch' type='submit' >Search</button>
-    </form>`;
+    html += addButtonsAndSearching();
     try {
         for (let i = 0; i < videos.length; i++) {
-            html += `<div>
-            <a href="/video/${encodeURI(videos[i].videoName)}" title="${videos[i].videoName}" 
-            data-toggle="tooltip">
-                <img src="${videos[i].videoThumbnail}" alt="${videos[i].videoName} thumbnail" width="240" height="135">
-            </a>
-            <p>${videos[i].videoName}</p>          
-            </div>`;
+            html += addVideoToList(videos[i])
         }
 
         // Add upload video button
-        html +=
-        `<div class="videoUploadBtn">  
-        <br>      
-        <button type='button' id='btnVideoUploadPage' onclick="window.location.href='videoupload.html'">Upload a video</button>
-        </div>`
-        
+        html += addUploadButton();
         // Toggle popovers
-        html +=
-        `<script>
-            $(document).ready(function(){
-                $('[data-toggle="tooltip"]').tooltip();
-            });
-        </script>`;
+        html += addTooltipToggle();
 
         callback_HTMLData(html);
-    }
-    catch{
+    }catch{
         html = 'Glitched loading'
         callback_HTMLData(html);
     }
 };
 
+function addButtonsAndSearching()
+{
+    // Search by name and/or genre
+    // Search button
+    // Logout button
+    return `
+    <form method="post">
+        <input id='txtVideoSearchName' type='text' placeholder='Search by Title' name='videoNameSearch'>
+        <input id='txtVideoSearchGenre' type='text' placeholder='Search by Genre' name='videoGenreSearch'>
+        <button id='btnSubmitSearch' type='submit' >Search</button>
+        <button type='button' id='btnLogout' onclick="(function(){ 
+            let uname = sessionStorage.getItem('UserId'); 
+            window.location.href=('logout/' + uname);
+            })()">Logout</button>
+    </form>`;
+}
+function addVideoToList(video)
+{
+    // Video display on listings page
+    return `<div>
+    <a href="/video/${encodeURI(video.videoName)}" title="${video.videoName}" 
+    data-toggle="tooltip">
+        <img src="${video.videoThumbnail}" alt="${video.videoName} thumbnail" width="240" height="135">
+    </a>
+    <p>${video.videoName}</p>          
+    </div>`;
+}
+function addUploadButton()
+{
+    return `<div class="videoUploadBtn">  
+    <br>      
+    <button type='button' id='btnVideoUploadPage' onclick="window.location.href='videoupload.html'">Upload a video</button>
+    </div>`;
+}
+function addTooltipToggle()
+{
+    // Turns tooltips on
+    return `<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+    </script>`;
+}
 // Creates a video watching page and sends it with a fetch to retrieve more after.
-exports.sendVideoPage = function(res, videoData)
+exports.sendVideoPage = function(res, videoData, serverBaseAddress)
 {
     let html = `<h3>${videoData.videoName}</h3>`;
     try {     
-        html += 
-        `<iframe width="960" height="540" src="https://www.youtube.com/embed/${videoData.videoEmbedLink}" 
-        title="YouTube video player" frameborder="0" allow="accelerometer; 
-        autoplay; clipboard-write; encrypted-media; gyroscope; 
-        picture-in-picture; web-share" allowfullscreen></iframe>
-        <p>Comment: ${videoData.videoComment}</p>
-        <body onload=retrieveAdditionalVideoData()>
+        html += // Embeded youtube video, comment, and html body for adding role based actions on fetch
+        `<body onload=retrieveAdditionalVideoData()>
+            <button type='button' id='btnBackToMovies' onclick="window.location='${serverBaseAddress}/landingpage'">Back To Movies</button>
+            <br>
+            <iframe width="960" height="540" src="https://www.youtube.com/embed/${videoData.videoEmbedLink}" 
+            title="YouTube video player" frameborder="0" allow="accelerometer; 
+            autoplay; clipboard-write; encrypted-media; gyroscope; 
+            picture-in-picture; web-share" allowfullscreen></iframe>
+            <p>Comment: ${videoData.videoComment}</p>        
             <div id="roleBasedArea"></div>
         </body>`;  
         html += addFetchingForVideoPage(videoData.videoName);  
