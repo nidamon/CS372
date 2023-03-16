@@ -3,6 +3,25 @@ var dataBaseModule = require('./databaseModule.js')
 // Creates an html page that displays the videos that have been passed to it
 exports.createVideoList = async function(videos, callback_HTMLData) {
     let html = '<h3>Movies</h3>';
+
+    // Add the CSS for the row-column format and repeating backgound
+    html +=
+    `<style>
+        .video-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            }
+        .video-thumbnail {
+            margin: 10px;
+            text-align: center;
+        }
+        body {
+            background-image: url('images/website_background3.jpg');
+            background-repeat: repeat-y;
+          }
+    </style>`;
+
     html += `
     <form method="post">
         <input id='txtVideoSearchName' type='text' placeholder='Search by Title' name='videoNameSearch'>
@@ -10,15 +29,18 @@ exports.createVideoList = async function(videos, callback_HTMLData) {
         <button id='btnSubmitSearch' type='submit' >Search</button>
     </form>`;
     try {
+        html += `<div class="video-container">`;
         for (let i = 0; i < videos.length; i++) {
-            html += `<div>
+            html += `<div class="video-thumbnail">
             <a href="/video/${encodeURI(videos[i].videoName)}" title="${videos[i].videoName}" 
             data-toggle="tooltip">
-                <img src="${videos[i].videoThumbnail}" alt="${videos[i].videoName} thumbnail" width="240" height="135">
+            <img src="${videos[i].videoThumbnail}" 
+            alt="${videos[i].videoName} thumbnail" width="240" height="135">
             </a>
             <p>${videos[i].videoName}</p>          
             </div>`;
         }
+        html += `</div>`;
 
         // Add upload video button
         html +=
