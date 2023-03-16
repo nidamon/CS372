@@ -87,8 +87,8 @@ exports.sendVideoPage = function(res, videoData, serverBaseAddress)
             title="YouTube video player" frameborder="0" allow="accelerometer; 
             autoplay; clipboard-write; encrypted-media; gyroscope; 
             picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
             <p>Comment: ${videoData.videoComment}</p>   
-            </div>     
             <div id="roleBasedArea"></div>
         </body>`;  
         html += addFetchingForVideoPage(videoData.videoName);       
@@ -139,8 +139,10 @@ function videoWrapAndBackgound()
             text-align: center;
         }
         body {
-            background-image: url('images/website_background3.jpg');
-            background-repeat: repeat-y;
+            background-image: url('images/website_background2.jpg');
+            background-repeat: repeat;
+            background-attachment: fixed;  
+            background-size: cover;}
         }
     </style>`;
 
