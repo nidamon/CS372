@@ -61,19 +61,29 @@ exports.getFieldData = async function(dataBase, collection, fieldNameString, que
 }
 
 // Retrieves data from the database and passes it to a callback function
-exports.getDocData = async function(dataBase, collection, query, options, callback_argData)
-{
-    try {        
-        await exports.client.connect();
-        data = await exports.client.db(dataBase).collection(collection).findOne(query, options);
-        console.log("Database Fetch:"); 
+exports.getDocData = async function (dataBase, collection, query, options, callback_argData) {
+    try {
+        // Create a new MongoClient for each operation
+        const localClient = new MongoClient(exports.uri, exports.options);
+
+        // Connect the local client
+        await localClient.connect();
+
+        const data = await localClient.db(dataBase).collection(collection).findOne(query, options);
+        console.log("Database Fetch:");
         console.log(data);
-        console.log("Database Fetch End:"); 
-    } finally {
-        await exports.client.close();
-        callback_argData(data); 
+        console.log("Database Fetch End:");
+
+        // Close the local client connection
+        await localClient.close();
+
+        callback_argData(data);
+    } catch (err) {
+        console.error("Error fetching data:", err);
+        callback_argData(null);
     }
-}
+};
+
 
 // Retrieves a set of data from the database and passes it to a callback function
 exports.getMultiDocData = async function(dataBase, collection, query, options, callback_argData)
