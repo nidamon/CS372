@@ -4,27 +4,11 @@ var dataBaseModule = require('./databaseModule.js')
 exports.createVideoList = async function(videos, callback_HTMLData) {
     let html = '<h3>Movies</h3>';
 
-    // Add the CSS for the row-column format and repeating backgound
-    html +=
-    `<style>
-        .video-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            }
-        .video-thumbnail {
-            margin: 10px;
-            text-align: center;
-        }
-        body {
-            background-image: url('images/website_background3.jpg');
-            background-repeat: repeat-y;
-          }
-    </style>`;
+    html += videoWrapAndBackgound();
 
     html += addButtonsAndSearching();
     try {
-        html += `<div class="video-container">`;
+        html += `<div class="video-container">`; //needed for videoWrapAndBackgound()
         for (let i = 0; i < videos.length; i++) {
             html += addVideoToList(videos[i])
         }
@@ -86,24 +70,28 @@ function addTooltipToggle()
     });
     </script>`;
 }
+
 // Creates a video watching page and sends it with a fetch to retrieve more after.
 exports.sendVideoPage = function(res, videoData, serverBaseAddress)
 {
     let html = `<h3>${videoData.videoName}</h3>`;
+    html += videoWrapAndBackgound();  
+
     try {     
         html += // Embeded youtube video, comment, and html body for adding role based actions on fetch
         `<body onload=retrieveAdditionalVideoData()>
             <button type='button' id='btnBackToMovies' onclick="window.location='${serverBaseAddress}/landingpage'">Back To Movies</button>
             <br>
+            <div class="video-container"> <!-- Needed for videoWrapAndBackgound() -->
             <iframe width="960" height="540" src="https://www.youtube.com/embed/${videoData.videoEmbedLink}" 
             title="YouTube video player" frameborder="0" allow="accelerometer; 
             autoplay; clipboard-write; encrypted-media; gyroscope; 
             picture-in-picture; web-share" allowfullscreen></iframe>
-            <p>Comment: ${videoData.videoComment}</p>        
+            <p>Comment: ${videoData.videoComment}</p>   
+            </div>     
             <div id="roleBasedArea"></div>
         </body>`;  
-        html += addFetchingForVideoPage(videoData.videoName);  
-       
+        html += addFetchingForVideoPage(videoData.videoName);       
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(html);
     }
@@ -136,3 +124,24 @@ function addFetchingForVideoPage(videoName)
         }
         </script>`;
 };
+
+// Add the CSS for the row-column format and repeating backgound
+function videoWrapAndBackgound()
+{
+    return `<style>
+        .video-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            }
+        .video-thumbnail {
+            margin: 10px;
+            text-align: center;
+        }
+        body {
+            background-image: url('images/website_background3.jpg');
+            background-repeat: repeat-y;
+        }
+    </style>`;
+
+}
