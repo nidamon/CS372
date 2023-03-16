@@ -20,6 +20,8 @@ http.createServer(function (req, res) {
   { sendPagehtml(res, getHomePage()); }
   else if(q.pathname == '/' + getLoginPage())    // Login page
   { handleLoginPage(req, res); }
+  else if(q.pathname.split('/')[1] == 'logout')    // Login page
+  { handleLogout(req, res); }
   else if(q.pathname == '/' + getSignUpPage())    // Sign up page
   { handleSignUpPage(req, res); }
   else if(q.pathname == '/' + getPasswordResetPage())    // Forgot password page
@@ -177,6 +179,28 @@ function createSessionAndRedirect(res, username, accountType, location)
   </script>      
   `);
   res.end();
+}
+
+// Logout 
+function handleLogout(req, res)
+{
+  var username = url.parse(req.url, true).pathname.split('/')[2];
+  credentialModule.logoutUser(username);
+  let html = `<!DOCTYPE html>
+    <html>
+      <head>You have been logged out.</head>
+      <body onload="logout()"></body>
+    </html>
+    <script>
+        function logout(){
+          sessionStorage.clear();
+          setTimeout(function(){
+            window.location='${getBaseAddress()}/${getHomePage()}';
+          }, 1000)
+        }
+    </script>`;
+  res.writeHead(200, {'Content-Type': 'text/html'});
+  res.end(html);
 }
 
 // Sign up page #########################################################################
@@ -472,7 +496,7 @@ function handleVideoPageGET(req, res)
       }
       else{          
         console.log("Sending video");
-        videoModule.sendVideoPage(res, videoData);
+        videoModule.sendVideoPage(res, videoData, getBaseAddress());
       } 
     }else { // Video does not exist    
       res.writeHead(404, {'Content-Type': 'text/plain'});
