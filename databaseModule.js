@@ -83,7 +83,6 @@ exports.getDocData = async function (dataBase, collection, query, options, callb
     }
 };
 
-
 // Retrieves a set of data from the database and passes it to a callback function
 exports.getMultiDocData = async function(dataBase, collection, query, options, callback_argData)
 {
@@ -281,10 +280,17 @@ exports.getVideos = function(searchParamName, searchParamGenre, callback_argData
 }
 
 // Gets a specific video's data
-exports.getVideoData = function(name, callback_argData)
+exports.getVideoData = function(videoName, callback_argData)
 {
-    query = {"videoName": name};
+    query = {"videoName": videoName};
     options = {};
     // Issue: 2 videos have the same name
     exports.getDocData(exports.mongoDataBase, exports.videoDataCollection, query, options, callback_argData);
+}
+
+// Gets a specific video's field data
+exports.getVideoFieldData = function(videoName, fieldNameString, callback_argData)
+{
+    query = {"videoName": videoName};
+    exports.getFieldData(exports.mongoDataBase, exports.videoDataCollection, fieldNameString, query, callback_argData);
 }
