@@ -38,7 +38,7 @@
                         })()">Logout</button>
                     <br><br>
                     <!-- Uploader Name -->
-                    <input id='txtVideoName' type='hidden' name='txtVideoUploader'>
+                    <input id='txtVideoUploader' type='hidden' name='txtVideoUploader'>
                     
                     <!-- Video Name -->
                     Video Name:
@@ -100,7 +100,7 @@
     function uploadRequirementsMet()
     {
         // Set the hidden value to the uploaders UserId
-        document.getElementById('txtVideoName').value = getUploaderName();
+        document.getElementById('txtVideoUploader').value = getUploaderName();
         var fields = [
             [ "Video Uploader", getUploaderName() ],
             [ "Video Name", getVideoName() ],
