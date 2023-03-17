@@ -1,10 +1,10 @@
 var dataBaseModule = require('./databaseModule.js')
 
 // Creates an html page that displays the videos that have been passed to it
-exports.createVideoList = async function(videos, callback_HTMLData) {
+exports.createVideoList = async function(videos, serverBaseAddress, callback_HTMLData) {
     let html = '<h3>Movies</h3>';
 
-    html += videoWrapAndBackgound();
+    html += videoWrapAndBackgound(serverBaseAddress);
 
     html += addButtonsAndSearching();
     try {
@@ -75,7 +75,7 @@ function addTooltipToggle()
 exports.sendVideoPage = function(res, videoData, serverBaseAddress)
 {
     let html = `<h3>${videoData.videoName}</h3>`;
-    html += videoWrapAndBackgound();  
+    html += videoWrapAndBackgound(serverBaseAddress);  
 
     try {     
         html += // Embeded youtube video, comment, and html body for adding role based actions on fetch
@@ -126,7 +126,7 @@ function addFetchingForVideoPage(videoName)
 };
 
 // Add the CSS for the row-column format and repeating backgound
-function videoWrapAndBackgound()
+function videoWrapAndBackgound(serverBaseAddress)
 {
     return `<style>
         .video-container {
@@ -139,7 +139,7 @@ function videoWrapAndBackgound()
             text-align: center;
         }
         body {
-            background-image: url('images/website_background2.jpg');
+            background-image: url('${serverBaseAddress}/images/website_background2.jpg');
             background-repeat: repeat;
             background-attachment: fixed;  
             background-size: cover;}
@@ -147,6 +147,7 @@ function videoWrapAndBackgound()
     </style>`;
 
 }
+
 
 // Exracts the video ID form a youtube link.
 function extractVideoId(url) {
@@ -157,3 +158,4 @@ function extractVideoId(url) {
     }
     return match[1];
 }
+
