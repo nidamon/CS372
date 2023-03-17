@@ -20,7 +20,7 @@ http.createServer(function (req, res) {
   { sendPagehtml(res, getHomePage()); }
   else if(q.pathname == '/' + getLoginPage())    // Login page
   { handleLoginPage(req, res); }
-  else if(q.pathname.split('/')[1] == 'logout')    // Login page
+  else if(q.pathname.split('/')[1] == 'logout')    // Logout
   { handleLogout(req, res); }
   else if(q.pathname == '/' + getSignUpPage())    // Sign up page
   { handleSignUpPage(req, res); }
@@ -97,18 +97,10 @@ function handleLoginPage(req, res)
     console.log("req.method was neither GET nor POST.");
   }
 }
-
+// Handles a user's login submission by either notifying them of incorrect credentials or redirecting them to a role-based landing page
 function handleLoginSubmission(req, res)
 {
-  // Get form data
-  let body = '';
-  req.on('data', chunk => {
-    body += chunk.toString();
-  });
-
-  // Parse form data
-  req.on('end', function() {
-    const formData = querystring.parse(body);
+  formParse(req, function(formData){
     const uname = formData.textUname || '';
     const pass = formData.textPass || ''; 
     
@@ -129,7 +121,7 @@ function handleLoginSubmission(req, res)
     });
   });
 }
-
+// Redirects a user to a page based on their account type
 function userRoleRedirect(res, username, accountType)
 {
   if(accountType == "viewer") // A viewer account
@@ -153,7 +145,7 @@ function userRoleRedirect(res, username, accountType)
     console.log("Not welcome unknown");
   }
 }
-
+// Sends html to the client to create a client side session and then redirects to "location"
 function createSessionAndRedirect(res, username, accountType, location)
 {
   res.writeHead(200, {'Content-Type': 'text/html'})
@@ -181,7 +173,7 @@ function createSessionAndRedirect(res, username, accountType, location)
   res.end();
 }
 
-// Logout 
+// Logs out the user 
 function handleLogout(req, res)
 {
   var username = url.parse(req.url, true).pathname.split('/')[2];
@@ -220,19 +212,10 @@ function handleSignUpPage(req, res)
         console.log("req.method was neither GET nor POST.");
     }
 }
-
+// Creates a new user account and logs them in or notifies them to change their username
 function handleSignUpSubmission(req, res)
 {
-  // Get form data
-  let body = '';
-  req.on('data', chunk => {
-    body += chunk.toString();
-  });
-
-  // Parse form data
-  req.on('end', () => {
-    const formData = querystring.parse(body);
-
+  formParse(req, function(formData){
     // User data for account
     const username = formData.txtUsername || '';
 
@@ -271,19 +254,10 @@ function handlePasswordResetPage(req, res)
         console.log("req.method was neither GET nor POST.");
     }
 }
-
+// Resets a user's password and redirects to the homepage
 function passwordResetSubmission(req, res)
 {
-  // Get form data
-  let body = '';
-  req.on('data', chunk => {
-    body += chunk.toString();
-  });
-
-  // Parse form data
-  req.on('end', () => {
-    const formData = querystring.parse(body);
-
+  formParse(req, function(formData){
     console.log(formData);
     // User data for account
     const username = formData.txtUsername || '';
@@ -294,7 +268,7 @@ function passwordResetSubmission(req, res)
     redirectOnSite(res, getHomePage());
   });
 }
-
+// Calls code to handle user secuity questions and answers
 function securityQuestionsDirecting(req, res)
 {
   var usersRequest = url.parse(req.url, true).pathname.split('/')
@@ -306,7 +280,6 @@ function securityQuestionsDirecting(req, res)
     res.end('404 page not found'); 
   }
 }
-
 // Security questions (send questions)    
 function requestedSecurityQuestions(res, usersRequest)
 {
@@ -338,7 +311,6 @@ function requestedSecurityQuestions(res, usersRequest)
   }
   return false; // Continue through to next function
 }
-
 // Security questions (receive and check answers) 
 function sentSecurityQuestionAnswers(req, res, usersRequest)
 {
@@ -384,18 +356,10 @@ function handleVideoUploadPage(req, res)
     console.log("req.method was neither GET nor POST.");
   }
 }
-
+// Adds the new video to the database and then redirects
 function handleVideoUploadSubmission(req, res)
 {
-  // Get form data
-  let body = '';
-  req.on('data', chunk => {
-    body += chunk.toString();
-  });
-
-  // Parse form data
-  req.on('end', () => {
-    const formData = querystring.parse(body);
+  formParse(req, function(formData){
     dataBaseModule.addNewVideo(formData);    
   });
   redirectOnSite(res, getLandingPage());
@@ -408,13 +372,7 @@ function handleMoviesPage(req, res)
 {
   if(req.method === 'GET')
   {
-    dataBaseModule.getVideos("", "", function(videos){
-      videoModule.createVideoList(videos,function(html){
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(html);
-        res.end();
-      });
-    });
+    sendMoviesPage(res, '', ''); // Load everything
   }
   else if (req.method === 'POST')
   {
@@ -425,29 +383,24 @@ function handleMoviesPage(req, res)
     console.log("req.method was neither GET nor POST.");
   }
 }
-
+// Takes the user's search and returns a list of matching movies
 function handleVideoSearchSubmission(req, res)
 {
-  // Get form data
-  let body = '';
-  req.on('data', chunk => {
-    body += chunk.toString();
-  });
-
-  // Parse form data
-  req.on('end', () => {
-    const formData = querystring.parse(body);
-
+  formParse(req, function(formData){
     const titleSearch = formData.videoNameSearch || '';
     const genreSeach = formData.videoGenreSearch || '';
 
-    dataBaseModule.getVideos(titleSearch, genreSeach, function(videos){
-      console.log(videos);
-      videoModule.createVideoList(videos,function(html){
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(html);
-        res.end();
-      });
+    sendMoviesPage(res, titleSearch, genreSeach);
+  });
+}
+// Send Movies page
+function sendMoviesPage(res, titleSearch, genreSeach)
+{
+  dataBaseModule.getVideos(titleSearch, genreSeach, function(videos){
+    videoModule.createVideoList(videos, getBaseAddress(), function(html){
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(html);
+      res.end();
     });
   });
 }
@@ -458,7 +411,7 @@ function handleVideoSearchSubmission(req, res)
 function handleVideoPage(req, res)
 {
   if(req.method === 'GET')
-  {
+  {    
     handleVideoPageGET(req, res);
   }
   else if (req.method === 'POST')
@@ -473,6 +426,13 @@ function handleVideoPage(req, res)
 
 // GET area #################
 
+// Increases the view count when a video's page is first accessed
+function incrementVideoViewCount(videoData, callback_argNone)
+{
+  dataBaseModule.editVideoFieldData(videoData.videoName, "videoViewCount", videoData.videoViewCount + 1, function(){
+    callback_argNone();
+  });
+}
 // Sends the video page and handles the following fetch for additional page content
 function handleVideoPageGET(req, res)
 {
@@ -480,31 +440,36 @@ function handleVideoPageGET(req, res)
   var userRequest = url.parse(req.url, true).pathname.split('/');
   dataBaseModule.getVideoData(decodeURI(userRequest[2]), function(videoData){
     if(videoData != null){ // Video exists
-      if(userRequest.length > 3) // Fetch response
-      {
-        userRole = userRequest[3] // User's role 
-        if(userRole == encodeURI("content manager")) {
-          videoPageAddContentManagerNeeds(res, videoData);
-        }
-        else if(userRole == encodeURI("content editor")) {
-          videoPageAddContentEditorNeeds(res, videoData);
-        }
-        else{
-          console.log("Unclear user role: " + userRole);
-          res.end();
-        }
-      }
-      else{          
+      if(userRequest.length > 3){ // Fetch response
+        handleRoleFetch(userRequest, res, videoData)
+      }else{          
         console.log("Sending video");
-        videoModule.sendVideoPage(res, videoData, getBaseAddress());
+        incrementVideoViewCount(videoData, function(){ // Increment view count
+          videoModule.sendVideoPage(res, videoData, getBaseAddress());
+        });
       } 
-    }else { // Video does not exist    
+    }else{ // Video does not exist    
       res.writeHead(404, {'Content-Type': 'text/plain'});
       res.end('404 page not found'); 
     }    
   });
 }
-
+// Handles the fetch that is made after the video page is sent
+function handleRoleFetch(userRequest, res, videoData)
+{
+  userRole = userRequest[3] // User's role 
+  if(userRole == encodeURI("content manager")) {
+    videoPageAddContentManagerNeeds(res, videoData);
+  }else if(userRole == encodeURI("content editor")) {
+    videoPageAddContentEditorNeeds(res, videoData);
+  }else if(userRole == encodeURI("viewer")){
+    // Do nothing on fetch
+    res.end();
+  }else{
+    console.log("Unclear user role: " + userRole);
+    res.end();
+  }
+}
 // Adds the video's viewcount and a feedback input field
 function videoPageAddContentManagerNeeds(res, videoData){
   res.writeHead(200, {'Content-Type': 'text/html'});
@@ -535,18 +500,12 @@ function videoPageAddContentEditorNeeds(res, videoData){
 
 // POST area #################
 
+// Adds the new feedback to the video in the database or removes the video from the database
 function handleVideoPagePOST(req, res)
 {  
-  // Get form data
-  let body = '';
-  req.on('data', chunk => {
-    body += chunk.toString();
-  });
-  // Parse form data
-  req.on('end', () => {
+  formParse(req, function(formData){
     // localhost:port/video/videoname/"userRole here"
     const videoName = decodeURI(url.parse(req.url, true).pathname.split('/')[2]);
-    const formData = querystring.parse(body);
     const videoFeedback = formData.txtVideoFeedback || '';
     const removeVideo = formData.btnRemoveVideo || '';
     if(videoFeedback != ''){
@@ -572,7 +531,20 @@ function handleVideoPagePOST(req, res)
 // Misc
 // ######################################################################################
 
+// Gets the form data from a submission and passes it to a callback
+function formParse(req, callback_formData){
+  // Get form data
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
 
+  // Parse form data
+  req.on('end', function() {
+    const formData = querystring.parse(body);
+    callback_formData(formData);
+  });
+}
 // Sends the page of filename
 function sendPagehtml(res, filename)
 {
@@ -602,7 +574,6 @@ function sendjpg(res, filename)
         }
     });
 }
-
 // Redirects to another page on this site
 function redirectOnSite(res, page)
 {
@@ -617,7 +588,7 @@ function redirect(res, page)
     Location: `${page}`
   }).end();
 }
-
+// Sends a message to the client and then redirects them to another page after some time
 function messageAndReturn(res, message, redirectTimer = 2000)
 {
   res.writeHead(200, {'Content-Type': 'text/html'});
@@ -639,7 +610,7 @@ function messageAndReturn(res, message, redirectTimer = 2000)
   );
   res.end();
 }
-
+// Returns the base address of the server
 function getBaseAddress()
 {
   return `http://${domain}:${port}`;
