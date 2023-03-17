@@ -83,7 +83,7 @@ exports.sendVideoPage = function(res, videoData, serverBaseAddress)
             <button type='button' id='btnBackToMovies' onclick="window.location='${serverBaseAddress}/landingpage'">Back To Movies</button>
             <br>
             <div class="video-container"> <!-- Needed for videoWrapAndBackgound() -->
-            <iframe width="960" height="540" src="https://www.youtube.com/embed/${videoData.videoEmbedLink}" 
+            <iframe width="960" height="540" src="https://www.youtube.com/embed/${extractVideoId(videoData.videoEmbedLink)}" 
             title="YouTube video player" frameborder="0" allow="accelerometer; 
             autoplay; clipboard-write; encrypted-media; gyroscope; 
             picture-in-picture; web-share" allowfullscreen></iframe>
@@ -146,4 +146,14 @@ function videoWrapAndBackgound()
         }
     </style>`;
 
+}
+
+// Exracts the video ID form a youtube link.
+function extractVideoId(url) {
+    const regExpression = /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?/;
+    const match = url.match(regExpression);
+    if (match == null){
+        return null
+    }
+    return match[1];
 }
