@@ -8,6 +8,41 @@ exports.mongoDataBase = "project";
 exports.userDataCollection = "userData";
 exports.videoDataCollection = "videoData";
 
+
+// ################################################################################
+// MongoDB Client Connection and Client Closing 
+// ################################################################################
+
+// Calls closeDatabaseConnection function upon proper
+// closing of node.js server
+process.on('SIGINT', closeDatabaseConnection);
+process.on('SIGTERM', closeDatabaseConnection);
+// press ctr + c in terminal to close mongoDB connection and node.js
+
+
+// Connect to the database when the module is loaded
+(async () => {
+    try {
+        await exports.client.connect();
+        console.log('MongoDB connection established.');
+    } catch (err) {
+        console.error("Error connecting to MongoDB:", err);
+    }
+})(); // empty () is to invoke function immediately
+
+// Close mongoDB client connection 
+async function closeDatabaseConnection() {
+    try {
+        await exports.client.close();
+        console.log('MongoDB connection closed.');
+    } catch (error) {
+        console.error('Error closing MongoDB connection:', error);
+    } finally {
+        process.exit(0); // kill all process
+    }
+}
+  
+  
 // ################################################################################
 // Database communication
 // ################################################################################
@@ -17,10 +52,8 @@ exports.videoDataCollection = "videoData";
 exports.addData = async function(dataBase, collection, document, callback_argNone = null)
 {
     try {        
-        await exports.client.connect();
         await exports.client.db(dataBase).collection(collection).insertOne(document);            
     } finally {
-        await exports.client.close();
         if(callback_argNone != null)
             callback_argNone();    
     }
@@ -30,10 +63,8 @@ exports.addData = async function(dataBase, collection, document, callback_argNon
 exports.removeData = async function(dataBase, collection, filter, callback_argNone = null)
 {
     try {        
-        await exports.client.connect();
         await exports.client.db(dataBase).collection(collection).deleteOne(filter);            
     } finally {
-        await exports.client.close();
         if(callback_argNone != null)
             callback_argNone();    
     }
@@ -44,14 +75,12 @@ exports.getFieldData = async function(dataBase, collection, fieldNameString, que
 {
     try {        
         console.log("Database Fetch:");     
-        await exports.client.connect();
         data = await exports.client.db(dataBase).collection(collection).distinct(fieldNameString, query); 
         console.log(data);        
     } catch(err) {
         console.log("Database Fetch Failed:");  
         throw(err);  
     } finally {
-        await exports.client.close()
         console.log("Database Fetch End:"); 
         if(data != null)
             callback_argFieldData(data[0]);  
@@ -64,22 +93,16 @@ exports.getFieldData = async function(dataBase, collection, fieldNameString, que
 exports.getDocData = async function (dataBase, collection, query, options, callback_argData) {
     try {
         // Create a new MongoClient for each operation
-        const client = await exports.client.connect();
 
-        const data = await client.db(dataBase).collection(collection).findOne(query, options);
+        const data = await exports.client.db(dataBase).collection(collection).findOne(query, options);
         console.log("Database Fetch:");
         console.log(data);
         console.log("Database Fetch End:");
 
-        // Close the local client connection
-        await client.close();
 
         callback_argData(data);
     } catch (err) {
         console.error("Error fetching data:", err);
-        if (client) {
-            await client.close();
-        }
     }
 };
 
@@ -87,8 +110,6 @@ exports.getDocData = async function (dataBase, collection, query, options, callb
 exports.getMultiDocData = async function(dataBase, collection, query, options, callback_argData)
 {
     try {        
-        // Create a new MongoClient for each operation
-        const client = await exports.client.connect();
 
         const cursor = await exports.client.db(dataBase).collection(collection).find(query, options);
         console.log("Database Fetch:");
@@ -99,14 +120,10 @@ exports.getMultiDocData = async function(dataBase, collection, query, options, c
         console.log("Database Fetch End:");
 
         await cursor.close();
-        await client.close();
 
         callback_argData(data);
     } catch(err) {
         console.error("Error fetching data:", err);
-        if (client) {
-            await client.close();
-        }
     }
 }
 
@@ -114,7 +131,6 @@ exports.getMultiDocData = async function(dataBase, collection, query, options, c
 exports.editFieldData = async function(dataBase, collection, query, fieldNameString, newValue, callback_argNone = null)
 {
     try {        
-        await exports.client.connect();
         await exports.client.db(dataBase).collection(collection).updateOne(
             query, // Used to find the document
             {
@@ -124,7 +140,6 @@ exports.editFieldData = async function(dataBase, collection, query, fieldNameStr
             }
             );
     } finally {
-        await exports.client.close();
         if(callback_argNone != null)
             callback_argNone();    
     }
