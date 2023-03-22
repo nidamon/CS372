@@ -76,14 +76,20 @@ exports.changePassword = async function(username, newPassword)
 // Login handling
 exports.loginUser = function(username)
 {
-  // Todo: Start a session on client side
   dataBaseModule.editUserFieldData(username, "loggedIn", "yes");
   console.log("User \"" + username + "\" has logged in.");
+}
+// Checks if the account tied to the username is currently logged in
+exports.isLoggedin = function(username, callback_argBool)
+{
+  console.log("Is user: " + username + " logged in?");
+  dataBaseModule.getUserFieldData(username, "loggedIn", function(loggedInValue){
+    callback_argBool(loggedInValue == "yes"); // Passes true if user is logged in
+  });
 }
 // Logout handling
 exports.logoutUser = function(username)
 {
-  // Todo: Session handling
   dataBaseModule.editUserFieldData(username, "loggedIn", "no");
   console.log("User \"" + username + "\" has logged out.");
 }
