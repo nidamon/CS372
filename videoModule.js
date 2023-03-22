@@ -24,7 +24,7 @@ exports.createVideoList = async function(videos, serverBaseAddress, callback_HTM
         html = 'Glitched loading'
         callback_HTMLData(html);
     }
-};
+}
 
 function addButtonsAndSearching()
 {
@@ -91,7 +91,7 @@ exports.sendVideoPage = function(res, videoData, serverBaseAddress)
             <p>Comment: ${videoData.videoComment}</p>   
             <div id="roleBasedArea"></div>
         </body>`;  
-        html += addFetchingForVideoPage(videoData.videoName);       
+        html += addFetchingForVideoPage(videoData.videoName, serverBaseAddress);       
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(html);
     }
@@ -101,30 +101,32 @@ exports.sendVideoPage = function(res, videoData, serverBaseAddress)
         html = 'Failed to load content'
         res.end(html);
     }
-};
-
+}
 // Fetch code to get role-based additions to the video page
-function addFetchingForVideoPage(videoName)
+function addFetchingForVideoPage(videoName, serverBaseAddress)
 {
     return `<script>
         function retrieveAdditionalVideoData()
         {        
-            const url = "${videoName}/" + sessionStorage.getItem("AccountType");       
+            const url = "${videoName}/" + sessionStorage.getItem("AccountType") + "/" + sessionStorage.getItem("UserId");       
             fetch(url) // About fetch: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Fetching_data
             .then( response => {
                 if (!response.ok) {
-                throw new Error(\`HTTP error: \${response.status}\`);
+                    throw new Error(\`HTTP error: \${response.status}\`);
                 }
                 return response.text();
             })          
             .then( html => { // When response.text() has succeeded
-                document.getElementById("roleBasedArea").innerHTML = html;
+                console.log("Html:" + html + ":");
+                if(html == "sendToLogin")
+                    window.location = '${serverBaseAddress}/loginpage.html';
+                else
+                    document.getElementById("roleBasedArea").innerHTML = html;
             })
             .catch(error => { console.log("Fetch error")});        
         }
         </script>`;
-};
-
+}
 // Add the CSS for the row-column format and repeating backgound
 function videoWrapAndBackgound(serverBaseAddress)
 {
@@ -147,8 +149,6 @@ function videoWrapAndBackgound(serverBaseAddress)
     </style>`;
 
 }
-
-
 // Exracts the video ID form a youtube link.
 function extractVideoId(url) {
     const regExpression = /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?/;
