@@ -457,17 +457,29 @@ function handleVideoPageGET(req, res)
 // Handles the fetch that is made after the video page is sent
 function handleRoleFetch(userRequest, res, videoData)
 {
-  userRole = userRequest[3] // User's role 
-  if(userRole == encodeURI("content manager")) {
-    videoPageAddContentManagerNeeds(res, videoData);
-  }else if(userRole == encodeURI("content editor")) {
-    videoPageAddContentEditorNeeds(res, videoData);
-  }else if(userRole == encodeURI("viewer")){
-    // Do nothing on fetch
-    res.end();
+  let userRole = userRequest[3]; // User's role 
+  let username = userRequest[4]; // User's username
+  if(username == "null"){
+    res.end("sendToLogin");
   }else{
-    console.log("Unclear user role: " + userRole);
-    res.end();
+    credentialModule.isLoggedin(username, function(userLoggedIn){
+      if(userLoggedIn)
+      {
+        if(userRole == encodeURI("content manager")) {
+          videoPageAddContentManagerNeeds(res, videoData);
+        }else if(userRole == encodeURI("content editor")) {
+          videoPageAddContentEditorNeeds(res, videoData);
+        }else if(userRole == encodeURI("viewer")){
+          // Do nothing on fetch
+          res.end();
+        }else{
+          console.log("Unclear user role: " + userRole);
+          res.end("sendToLogin"); // Fetch redirects to login page
+        }
+      }else{ // User not logged in
+        res.end("sendToLogin");
+      }
+    });
   }
 }
 // Adds the video's viewcount and a feedback input field
