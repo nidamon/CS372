@@ -166,7 +166,7 @@ function createSessionAndRedirect(res, username, accountType, location)
       function redirectOnSite()
       {
         console.log("Redirecting");
-        window.location.href="${getBaseAddress()}/${location}";
+        window.location.href="/${location}";
       }
   </script>      
   `);
@@ -187,7 +187,7 @@ function handleLogout(req, res)
         function logout(){
           sessionStorage.clear();
           setTimeout(function(){
-            window.location='${getBaseAddress()}/${getHomePage()}';
+            window.location='/${getHomePage()}';
           }, 1000)
         }
     </script>`;
@@ -397,7 +397,7 @@ function handleVideoSearchSubmission(req, res)
 function sendMoviesPage(res, titleSearch, genreSeach)
 {
   dataBaseModule.getVideos(titleSearch, genreSeach, function(videos){
-    videoModule.createVideoList(videos, getBaseAddress(), function(html){
+    videoModule.createVideoList(videos, "", function(html){ //use to have getBaseAddress() now ""
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.write(html);
       res.end();
@@ -445,7 +445,7 @@ function handleVideoPageGET(req, res)
       }else{          
         console.log("Sending video");
         incrementVideoViewCount(videoData, function(){ // Increment view count
-          videoModule.sendVideoPage(res, videoData, getBaseAddress());
+          videoModule.sendVideoPage(res, videoData, ""); //use to have getBaseAddress() now ""
         });
       } 
     }else{ // Video does not exist    
@@ -590,7 +590,7 @@ function sendjpg(res, filename)
 function redirectOnSite(res, page)
 {
   res.writeHead(301, {
-    Location: `${getBaseAddress()}/${page}`
+    Location: `/${page}`
   }).end();
 }
 // Redirects to another page anywhere
@@ -622,6 +622,7 @@ function messageAndReturn(res, message, redirectTimer = 2000)
   );
   res.end();
 }
+/*
 // Returns the base address of the server
 // turns out not necessary to get base add, but function is used
 // in multiple location, and will break server if removed.
@@ -630,3 +631,4 @@ function getBaseAddress()
   return ``; // returns empty string HOTFIX
   //return `http://${domain}:${port}`;
 }
+*/
