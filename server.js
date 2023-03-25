@@ -623,7 +623,10 @@ function messageAndReturn(res, message, redirectTimer = 2000)
   res.end();
 }
 // Returns the base address of the server
-function getBaseAddress()
+// turns out not necessary to get base add, but function is used
+// in multiple location, and will break server if removed.
+function getBaseAddress()  
 {
-  return `http://${domain}:${port}`;
+  return ``; // returns empty string HOTFIX
+  //return `http://${domain}:${port}`;
 }
