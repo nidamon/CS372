@@ -20,27 +20,29 @@
 		<h1>Account Creation</h1>
   		<form method='post' onsubmit="return validateForm()">     
             <!-- First name -->
-            <p>
+            <p> First Name
             <input id='txtFirstName' type='text' placeholder='First Name' name='txtFirstName'>
             </p>
 
             <!-- Last name -->
-            <p>
+            <p> Last Name
             <input id='txtLastName' type='text' placeholder='Last Name' name='txtLastName'>
             </p>
             
             <!-- Username -->
+            Username
 			<input id='txtUname' type='text' placeholder='Username' name='txtUsername'>
             <p id='pUsernameReqMsg' style="color:red;"></p>  
 
             <!-- Password -->		
-			<p>
+			<p> Password
 			<input id='txtPass' type='password' placeholder='Password' name='txtPassword'>
 			<button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
 			</p>
             <p id='pPasswordReqMsg' style="color:red;"></p> 	
 
             <!-- Email -->
+            Email
 			<input id='txtEmail' type='text' placeholder='Email' name='txtEmail'>
 
             <!-- Security Questions -->
@@ -58,7 +60,7 @@
             
             <!-- Sign up button -->
             <p>
-			<button id='btnSignUp' type='submit' onClick=signUp()>Sign Up</button>
+			<button id='btnSignUp' type='submit'>Sign Up</button>
             </p>
 		</form>
 	</body>
@@ -94,7 +96,7 @@
         // At least 8 characters long
         if(username.length < 8)
         {
-            setUserReqText("*Username needs to be at least 10 characters long.");
+            setUserReqText("*Username needs to be at least 8 characters long.");
             return false;
         }
 
@@ -178,7 +180,7 @@
         // Check for '&', '=', and '/'
         for (let index = 0; index < string.length; index++) {
             const element = string[index];
-            if(element == '&' || element == '=' || element == '/' || element == '0')
+            if(element == '&' || element == '=' || element == '/' || element == ' ')
                 return false;            
         }
 
