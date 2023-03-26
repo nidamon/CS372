@@ -15,7 +15,7 @@ To install the required dependencies, run the following command:
 This will install the latest version of Express, body-parser, and MongoDB driver in your project's node_modules directory.
 
 ## Configuration
-By default, the website connects to a MongoDB instance running at mongodb://127.0.0.1:27017/project and uses two collections named "userData" and "videoData". You can customize this by updating the databaseModule.js file
+By default, the website connects to a MongoDB instance running at mongodb://127.0.0.1:27017 and uses two collections named "userData" and "videoData". You can customize this by updating the databaseModule.js file
 
 ## Usage
 To start the website, run the following command:
