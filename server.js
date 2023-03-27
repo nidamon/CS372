@@ -131,7 +131,7 @@ function userRoleRedirect(res, username, accountType)
   }
   else if (accountType == "content editor") // A content editor account
   {
-    createSessionAndRedirect(res, username, accountType, getVideoUploadPage());
+    createSessionAndRedirect(res, username, accountType, getLandingPage());
     console.log("Welcome content editor");
   }
   else if(accountType == "content manager")  // A content manager account
