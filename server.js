@@ -36,6 +36,8 @@ http.createServer(function (req, res) {
   {securityQuestionsDirecting(req, res); }
   else if(q.pathname.split('/')[1] == 'video') // Check if request about a video
   {handleVideoPage(req, res); }
+  else if(q.pathname == '/' + getInvalidUserPage())    // bad user page
+  {sendPagehtml(res, getInvalidUserPage()); }
   else // No page available
   {        
     res.writeHead(404, {'Content-Type': 'text/html'});
@@ -73,7 +75,10 @@ function getVideoUploadPage()
 {
   return 'videoupload.html'
 }
-
+function getInvalidUserPage()
+{
+  return 'notInMyHouse.html'
+}
 
 // ######################################################################################
 // Page handling 
@@ -537,6 +542,7 @@ function handleVideoPagePOST(req, res)
     }    
   });
 }
+
 
 
 // ######################################################################################

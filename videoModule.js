@@ -2,7 +2,8 @@ var dataBaseModule = require('./databaseModule.js')
 
 // Creates an html page that displays the videos that have been passed to it
 exports.createVideoList = async function(videos, serverBaseAddress, callback_HTMLData) {
-    let html = '<h3>Movies</h3>';
+    // "<body onload=isUser() is for addInvalidUserRdirect() to redirect invalid users
+    let html = `<body onload=isUser()> <h3>Movies</h3>`
 
     html += videoWrapAndBackgound(serverBaseAddress);
 
@@ -18,12 +19,27 @@ exports.createVideoList = async function(videos, serverBaseAddress, callback_HTM
         html += addUploadButton();
         // Toggle popovers
         html += addTooltipToggle();
+        // add script to redirect invalid users
+        html += addInvalidUserRdirect();
+        
 
         callback_HTMLData(html);
     }catch{
         html = 'Glitched loading'
         callback_HTMLData(html);
     }
+}
+
+// html script to redirect invalid users to not-in-my-house.html
+function addInvalidUserRdirect(){
+    return `<script>
+        function isUser()
+        {
+            if (sessionStorage.getItem("UserId") == null){
+                window.location = '/notInMyHouse.html';
+            }
+        }
+        </script>`
 }
 
 function addButtonsAndSearching()
