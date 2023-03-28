@@ -1,5 +1,5 @@
 // Creates an html page that displays the videos that have been passed to it
-exports.createVideoList = async function(videos, serverBaseAddress, callback_HTMLData) {
+exports.createVideoList = async function(videos, callback_HTMLData) {
     // "<body onload=isUser() is for addInvalidUserRdirect() to redirect invalid users
     let html = `<body onload=isUser()> <h3>Movies</h3>`
 
