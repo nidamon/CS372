@@ -93,30 +93,61 @@
 
     function usernameRequirementsMet(username)
     {
+        if(hasSpace(username))
+        {
+            setUserReqText("*Username can not have spaces.");
+            return false;
+        }
         // At least 8 characters long
         if(username.length < 8)
         {
             setUserReqText("*Username needs to be at least 8 characters long.");
             return false;
-        }
-
-        // Cannot have '&', '=', '/', or ' ' (spaces)
-        if(!hasNoInvalidChars(username))
-        {
-            setUserReqText("*Username must not contain the following: \"&\", \"=\", \"/\" or spaces.");
-            return false;
-        }
-
-        // At least 1 uppercase letter and 1 lowercase letter        
+        }    
         if(!hasUpperAndLowerCaseLetters(username))
         {
             setUserReqText("*Username must have at least 1 uppercase letter and 1 lowercase letter.");
             return false;
         }
 
+        if(!hasNum(username))
+        {
+            setUserReqText("*Username must have at least 1 number.");
+            return false;
+        }
+
+        if(!hasSymbols(username))
+        {
+            setUserReqText("*Username must have at least 1 special character like: !, @, #, $, %, ^, &, *, (, or )");
+            return false;
+        }
+        /*
+        // Cannot have '&', '=', '/', or ' ' (spaces)
+        if(!hasNoInvalidChars(username))
+        {
+            setUserReqText("*Username must not contain the following: \"&\", \"=\", \"/\" or spaces.");
+            return false;
+        }
+        */
+
+        // At least 1 uppercase letter and 1 lowercase letter    
+
         setUserReqText("");
         console.log("Username requirements met.");
         return true;
+    }
+
+    function hasNum(str)
+    {
+        return /\d/.test(str);
+    }
+    function hasSpace(str) 
+    {
+        return /\s/.test(str);
+    }
+    function hasSymbols(str)
+    {
+        return /[!@#$%^&*()]/.test(str);
     }
 
     function passwordRequirementsMet(password, username)
