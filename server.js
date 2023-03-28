@@ -33,7 +33,7 @@ http.createServer(function (req, res) {
   else if(q.pathname.split('/')[1] == 'images') // Check if image request
   { sendjpg(res, "." + q.pathname); }
   else if(q.pathname.split('/')[1] == 'users') // Check if request about users
-  {securityQuestionsDirecting(req, res); }
+  {handleUserInfoQuery(req, res); }
   else if(q.pathname.split('/')[1] == 'video') // Check if request about a video
   {handleVideoPage(req, res); }
   else // No page available
@@ -269,9 +269,8 @@ function passwordResetSubmission(req, res)
   });
 }
 // Calls code to handle user secuity questions and answers
-function securityQuestionsDirecting(req, res)
+function securityQuestionsDirecting(usersRequest, req, res)
 {
-  var usersRequest = url.parse(req.url, true).pathname.split('/')
   if(requestedSecurityQuestions(res, usersRequest)){} // Security questions (send questions)    
   else if(sentSecurityQuestionAnswers(req, res, usersRequest)){} // Security questions (receive and check answers)    
   else // No page found
@@ -397,7 +396,7 @@ function handleVideoSearchSubmission(req, res)
 function sendMoviesPage(res, titleSearch, genreSeach)
 {
   dataBaseModule.getVideos(titleSearch, genreSeach, function(videos){
-    videoModule.createVideoList(videos, "", function(html){ //use to have getBaseAddress() now ""
+    videoModule.createVideoList(videos, function(html){ //use to have getBaseAddress() now ""
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.write(html);
       res.end();
@@ -445,7 +444,7 @@ function handleVideoPageGET(req, res)
       }else{          
         console.log("Sending video");
         incrementVideoViewCount(videoData, function(){ // Increment view count
-          videoModule.sendVideoPage(res, videoData, ""); //use to have getBaseAddress() now ""
+          videoModule.sendVideoPage(res, videoData); //use to have getBaseAddress() now ""
         });
       } 
     }else{ // Video does not exist    
@@ -542,6 +541,41 @@ function handleVideoPagePOST(req, res)
 // ######################################################################################
 // Misc
 // ######################################################################################
+
+// Directs to different functions to handle a request about a user
+function handleUserInfoQuery(req, res)
+{
+  var usersRequest = url.parse(req.url, true).pathname.split('/')
+  // Security questions
+  if(usersRequest[3] == 'qs' || usersRequest[3] == 'ans')
+    securityQuestionsDirecting(usersRequest, req, res);
+  else if (usersRequest[4] == 'verify') // Handles fetch on videoupload.html
+  {
+    verifyUserSession(usersRequest, res);
+  }
+}
+
+// Verifies some user information sent from the client
+function verifyUserSession(usersRequest, res)
+{
+  let username = usersRequest[2];
+    if(username == "null") { // No user session on client side
+      res.end("sendToLogin"); // Redirect to loginpage
+    } else {
+      let accountType = usersRequest[3];
+      dataBaseModule.getUserData(username, function(userData){
+        if(userData.loggedIn == "yes") // This user is logged in
+        {
+          if(userData.accountType == decodeURI(accountType)) // This user has the correct account type
+            res.end(); // Stay on page
+          else
+            res.end("sendToLogin"); // Redirect to landingpage
+        }
+        else
+          res.end("sendToLogin"); // Redirect to loginpage
+      });
+    }
+}
 
 // Gets the form data from a submission and passes it to a callback
 function formParse(req, callback_formData){
