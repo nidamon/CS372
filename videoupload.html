@@ -85,7 +85,31 @@
 	</body>
 </html>
 
-<script>
+<script>    
+    isAnEditorLoggedIn();
+
+    function isAnEditorLoggedIn()
+    {
+        const url = `users/${sessionStorage.getItem("UserId")}/${sessionStorage.getItem("AccountType")}/verify`;       
+        fetch(url) // About fetch: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Fetching_data
+          .then( response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error: ${response.status}`);
+            }
+            return response.text();
+          })          
+          .then( html => { // When response.text() has succeeded
+            if(html == "sendToLogin") // Invalid user
+                window.location.replace('loginpage.html');
+            else // Verified user, check account type
+            {
+                if(sessionStorage.getItem("AccountType") != "content editor")
+                    setReqText("You do not have permission to upload.");
+            }
+          })
+          .catch( error => {window.location.replace('landingpage')}); 
+    }
+
     function uploadVideo()
     {
         // First, does the uploader have permission to upload?
