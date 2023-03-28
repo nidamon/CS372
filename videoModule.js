@@ -1,18 +1,20 @@
-var dataBaseModule = require('./databaseModule.js')
-
 // Creates an html page that displays the videos that have been passed to it
-exports.createVideoList = async function(videos, serverBaseAddress, callback_HTMLData) {
+exports.createVideoList = async function(videos, callback_HTMLData) {
     let html = '<h3>Movies</h3>';
 
-    html += videoWrapAndBackgound(serverBaseAddress);
+    html += videoWrapAndBackgound();
 
     html += addButtonsAndSearching();
     try {
-        html += `<div class="video-container">`; //needed for videoWrapAndBackgound()
-        for (let i = 0; i < videos.length; i++) {
-            html += addVideoToList(videos[i])
+        if(videos.length > 0) {
+            html += `<div class="video-container">`; //needed for videoWrapAndBackgound()
+            for (let i = 0; i < videos.length; i++) {
+                html += addVideoToList(videos[i]);
+            }
+            html += `</div>`;
+        } else {
+            html += `No search results`;
         }
-        html += `</div>`;
 
         // Add upload video button
         html += addUploadButton();
@@ -72,15 +74,15 @@ function addTooltipToggle()
 }
 
 // Creates a video watching page and sends it with a fetch to retrieve more after.
-exports.sendVideoPage = function(res, videoData, serverBaseAddress)
+exports.sendVideoPage = function(res, videoData)
 {
     let html = `<h3>${videoData.videoName}</h3>`;
-    html += videoWrapAndBackgound(serverBaseAddress);  
+    html += videoWrapAndBackgound();  
 
     try {     
         html += // Embeded youtube video, comment, and html body for adding role based actions on fetch
-        `<body onload=retrieveAdditionalVideoData()>
-            <button type='button' id='btnBackToMovies' onclick="window.location='${serverBaseAddress}/landingpage'">Back To Movies</button>
+        `<body>
+            <button type='button' id='btnBackToMovies' onclick="window.location='/landingpage'">Back To Movies</button>
             <br>
             <div class="video-container"> <!-- Needed for videoWrapAndBackgound() -->
             <iframe width="960" height="540" src="https://www.youtube.com/embed/${extractVideoId(videoData.videoEmbedLink)}" 
@@ -91,7 +93,7 @@ exports.sendVideoPage = function(res, videoData, serverBaseAddress)
             <p>Comment: ${videoData.videoComment}</p>   
             <div id="roleBasedArea"></div>
         </body>`;  
-        html += addFetchingForVideoPage(videoData.videoName, serverBaseAddress);       
+        html += addFetchingForVideoPage(videoData.videoName);       
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(html);
     }
@@ -103,9 +105,10 @@ exports.sendVideoPage = function(res, videoData, serverBaseAddress)
     }
 }
 // Fetch code to get role-based additions to the video page
-function addFetchingForVideoPage(videoName, serverBaseAddress)
+function addFetchingForVideoPage(videoName)
 {
     return `<script>
+        retrieveAdditionalVideoData()
         function retrieveAdditionalVideoData()
         {        
             const url = "${videoName}/" + sessionStorage.getItem("AccountType") + "/" + sessionStorage.getItem("UserId");       
@@ -119,7 +122,7 @@ function addFetchingForVideoPage(videoName, serverBaseAddress)
             .then( html => { // When response.text() has succeeded
                 console.log("Html:" + html + ":");
                 if(html == "sendToLogin")
-                    window.location = '${serverBaseAddress}/loginpage.html';
+                    window.location.replace('/loginpage.html');
                 else
                     document.getElementById("roleBasedArea").innerHTML = html;
             })
@@ -128,7 +131,7 @@ function addFetchingForVideoPage(videoName, serverBaseAddress)
         </script>`;
 }
 // Add the CSS for the row-column format and repeating backgound
-function videoWrapAndBackgound(serverBaseAddress)
+function videoWrapAndBackgound()
 {
     return `<style>
         .video-container {
@@ -141,7 +144,7 @@ function videoWrapAndBackgound(serverBaseAddress)
             text-align: center;
         }
         body {
-            background-image: url('${serverBaseAddress}/images/website_background2.jpg');
+            background-image: url('/images/website_background2.jpg');
             background-repeat: repeat;
             background-attachment: fixed;  
             background-size: cover;}
