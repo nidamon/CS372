@@ -1,5 +1,5 @@
 ## Chillflix Website:
-This is a simple Node.js website that uses Express, body-parser, and MongoDB to store and retrieve data.
+This is a simple Node.js website that uses body-parser and mongodb.
 
 ## Dependencies
 This website uses the following dependencies:
@@ -12,14 +12,14 @@ To install the required dependencies, run the following command:
 
 - npm install
 
-This will install the latest version of Express, body-parser, and MongoDB driver in your project's node_modules directory.
+This will install the latest version of body-parser and mongodb driver in your project's node_modules directory.
 
 ## Configuration
 By default, the website connects to a MongoDB instance running at mongodb://127.0.0.1:27017 and uses two collections named "userData" and "videoData". You can customize this by updating the databaseModule.js file
 
 ## Usage
 To start the website, run the following command:
-node server.js
+- node server.js
 
 This will start the server on port 8080. You can access the website by opening a web browser and navigating to http://localhost:8080
 
