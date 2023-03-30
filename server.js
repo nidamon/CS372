@@ -7,78 +7,51 @@ var credentialModule = require('./credentialModule');
 var dataBaseModule = require('./databaseModule.js');
 var videoModule = require('./videoModule');
 
-var domain = "localhost";
 var port = 8080;
+
+// Page names 
+
+const homePage = 'home.html';
+const loginPage = 'loginpage.html';
+const signUpPage = 'signup.html';
+const passwordResetPage = 'passwordreset.html';
+const landingPage = 'landingpage';
+const videoUploadPage = 'videoupload.html';
+const invalidUserPage = 'notInMyHouse.html';
 
 
 http.createServer(function (req, res) {
-  var q = url.parse(req.url, true);
-  console.log("Requested page: " + q.pathname);
-
+  var query = url.parse(req.url, true).pathname;
+  console.log("Requested page: " + query);
   // Page directing
-  if(q.pathname == '/' || q.pathname == '/' + getHomePage())    // Homepage
-  { sendPagehtml(res, getHomePage()); }
-  else if(q.pathname == '/' + getLoginPage())    // Login page
+  if(query == '/' || query == '/' + homePage)    // Homepage
+  { sendPagehtml(res, homePage); }
+  else if(query == '/' + loginPage)    // Login page
   { handleLoginPage(req, res); }
-  else if(q.pathname.split('/')[1] == 'logout')    // Logout
+  else if(query.split('/')[1] == 'logout')    // Logout
   { handleLogout(req, res); }
-  else if(q.pathname == '/' + getSignUpPage())    // Sign up page
+  else if(query == '/' + signUpPage)    // Sign up page
   { handleSignUpPage(req, res); }
-  else if(q.pathname == '/' + getPasswordResetPage())    // Forgot password page
+  else if(query == '/' + passwordResetPage)    // Forgot password page
   { handlePasswordResetPage(req, res); }
-  else if(q.pathname == '/' + getLandingPage())    // Landing page
+  else if(query == '/' + landingPage)    // Landing page
   { handleMoviesPage(req, res); }
-  else if(q.pathname == '/' + getVideoUploadPage())    // Video upload page
+  else if(query == '/' + videoUploadPage)    // Video upload page
   { handleVideoUploadPage(req, res); }
-  else if(q.pathname.split('/')[1] == 'images') // Check if image request
-  { sendjpg(res, "." + q.pathname); }
-  else if(q.pathname.split('/')[1] == 'users') // Check if request about users
-  {handleUserInfoQuery(req, res); }
-  else if(q.pathname.split('/')[1] == 'video') // Check if request about a video
-  {handleVideoPage(req, res); }
-  else if(q.pathname == '/' + getInvalidUserPage())    // bad user page
-  {sendPagehtml(res, getInvalidUserPage()); }
-  else // No page available
-  {        
+  else if(query.split('/')[1] == 'images') // Check if image request
+  { sendjpg(res, "." + query); }
+  else if(query.split('/')[1] == 'users') // Check if request about users
+  { handleUserInfoQuery(req, res); }
+  else if(query.split('/')[1] == 'video') // Check if request about a video
+  { handleVideoPage(req, res); }
+  else if(query == '/' + invalidUserPage)    // bad user page
+  { sendPagehtml(res, invalidUserPage); }
+  else { // No page available
     res.writeHead(404, {'Content-Type': 'text/html'});
     res.end("There is no page at this address.");
   }
 }).listen(port); 
 
-
-
-// ######################################################################################
-// File names 
-// ######################################################################################
-
-function getHomePage()
-{
-  return 'home.html';
-}
-function getLoginPage()
-{
-  return 'loginpage.html';
-}
-function getSignUpPage()
-{
-  return 'signup.html';
-}
-function getPasswordResetPage()
-{
-  return 'passwordreset.html';
-}
-function getLandingPage()
-{
-  return 'landingpage' // Page is created dynamically now
-}
-function getVideoUploadPage()
-{
-  return 'videoupload.html'
-}
-function getInvalidUserPage()
-{
-  return 'notInMyHouse.html'
-}
 
 // ######################################################################################
 // Page handling 
@@ -91,7 +64,7 @@ function handleLoginPage(req, res)
 {
   if(req.method === 'GET')
   {
-    sendPagehtml(res, getLoginPage());
+    sendPagehtml(res, loginPage);
   }
   else if (req.method === 'POST')
   {
@@ -106,17 +79,17 @@ function handleLoginPage(req, res)
 function handleLoginSubmission(req, res)
 {
   formParse(req, function(formData){
-    const uname = formData.textUname || '';
+    const uName = formData.textUname || '';
     const pass = formData.textPass || ''; 
     
     // Handle user validation
-    credentialModule.validateUser(uname, pass, function(validUserBool, message){      
+    credentialModule.validateUser(uName, pass, function(validUserBool, message){      
       console.log("Validation Complete")
       if(validUserBool == true)
       {
         // Send to role based landing page
-        dataBaseModule.getUserFieldData(uname, "accountType", function(accountType){
-          userRoleRedirect(res, uname, accountType); 
+        dataBaseModule.getUserFieldData(uName, "accountType", function(accountType){
+          userRoleRedirect(res, uName, accountType); 
         });
       }
       else
@@ -131,22 +104,22 @@ function userRoleRedirect(res, username, accountType)
 {
   if(accountType == "viewer") // A viewer account
   {    
-    createSessionAndRedirect(res, username, accountType, getLandingPage());
+    createSessionAndRedirect(res, username, accountType, landingPage);
     console.log("Welcome viewer");
   }
   else if (accountType == "content editor") // A content editor account
   {
-    createSessionAndRedirect(res, username, accountType, getLandingPage());
+    createSessionAndRedirect(res, username, accountType, landingPage);
     console.log("Welcome content editor");
   }
   else if(accountType == "content manager")  // A content manager account
   {
-    createSessionAndRedirect(res, username, accountType, getLandingPage());
+    createSessionAndRedirect(res, username, accountType, landingPage);
     console.log("Welcome content manager");
   }
   else  // Unknown account type
   {
-    redirectOnSite(res, getHomePage());
+    redirectOnSite(res, homePage);
     console.log("Not welcome unknown");
   }
 }
@@ -192,7 +165,7 @@ function handleLogout(req, res)
         function logout(){
           sessionStorage.clear();
           setTimeout(function(){
-            window.location='/${getHomePage()}';
+            window.location='/${homePage}';
           }, 1000)
         }
     </script>`;
@@ -206,7 +179,7 @@ function handleSignUpPage(req, res)
 {
     if(req.method === 'GET')
     {
-        sendPagehtml(res, getSignUpPage());
+        sendPagehtml(res, signUpPage);
     }
     else if (req.method === 'POST')
     {
@@ -235,7 +208,7 @@ function handleSignUpSubmission(req, res)
       else // Account creation
       {          
           dataBaseModule.addNewUser(formData); // Create account and log user in 
-          createSessionAndRedirect(res, username, "viewer", getLandingPage());
+          createSessionAndRedirect(res, username, "viewer", landingPage);
       }
     })    
   });
@@ -248,7 +221,7 @@ function handlePasswordResetPage(req, res)
 {
     if(req.method === 'GET')
     {
-      sendPagehtml(res, getPasswordResetPage());
+      sendPagehtml(res, passwordResetPage);
     }
     else if (req.method === 'POST')
     {
@@ -270,7 +243,7 @@ function passwordResetSubmission(req, res)
     credentialModule.changePassword(username, newPassword);
 
     // Redirect to homepage
-    redirectOnSite(res, getHomePage());
+    redirectOnSite(res, homePage);
   });
 }
 // Calls code to handle user secuity questions and answers
@@ -349,7 +322,7 @@ function handleVideoUploadPage(req, res)
 {
   if(req.method === 'GET')
   {
-    sendPagehtml(res, getVideoUploadPage());
+    sendPagehtml(res, videoUploadPage);
   }
   else if (req.method === 'POST')
   {
@@ -366,7 +339,7 @@ function handleVideoUploadSubmission(req, res)
   formParse(req, function(formData){
     dataBaseModule.addNewVideo(formData);    
   });
-  redirectOnSite(res, getLandingPage());
+  redirectOnSite(res, landingPage);
 }
 
 
@@ -532,7 +505,7 @@ function handleVideoPagePOST(req, res)
     }else if(removeVideo == 'yes'){
       dataBaseModule.removeVideo(videoName, function(){
         console.log(`The video "${videoName}" has been removed.`);
-        redirectOnSite(res, getLandingPage());
+        redirectOnSite(res, landingPage);
       });
     }else{
       console.log("handleVideoPagePOST: neither feedback nor video removal.");
@@ -633,13 +606,6 @@ function redirectOnSite(res, page)
     Location: `/${page}`
   }).end();
 }
-// Redirects to another page anywhere
-function redirect(res, page)
-{
-  res.writeHead(302, {
-    Location: `${page}`
-  }).end();
-}
 // Sends a message to the client and then redirects them to another page after some time
 function messageAndReturn(res, message, redirectTimer = 2000)
 {
@@ -662,13 +628,3 @@ function messageAndReturn(res, message, redirectTimer = 2000)
   );
   res.end();
 }
-/*
-// Returns the base address of the server
-// turns out not necessary to get base add, but function is used
-// in multiple location, and will break server if removed.
-function getBaseAddress()  
-{
-  return ``; // returns empty string HOTFIX
-  //return `http://${domain}:${port}`;
-}
-*/
