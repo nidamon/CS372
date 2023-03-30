@@ -19,15 +19,21 @@
     <div class="text-containers">
 	<h1>Nice Try!</h1>
     <p> Redirecting to Login Page </p>
-    <img id="gif-image" src="images/not-in-my-house.gif" alt="Animated GIF">
+    <img id="gifImage" src="images/not-in-my-house.gif" alt="Animated GIF">
     </div>
-	<meta http-equiv="refresh" content="5; url=loginpage.html">
+	<meta id="timedRedirect" http-equiv="refresh" url="loginpage.html">
     </body>
 
 </html>
 
 <script>
     const gifWidth = '300';
-    const gifImage = document.getElementById('gif-image');
+    const redirectTime = '5'; // time in sec
+    const urlRedirect = 'loginpage.html'
+
+    const gifImage = document.getElementById('gifImage');
     gifImage.style.width = gifWidth + 'px';
+
+    const refreshMeta = document.getElementById('timedRedirect');
+    refreshMeta.setAttribute('content', `${redirectTime}; url=${urlRedirect}`);
 </script>
