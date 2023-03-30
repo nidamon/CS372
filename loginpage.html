@@ -19,7 +19,7 @@
 	<body>
          
         <div class="input-containers">
-            <img src="images/ChillflixLogo.png" alt="A logo" width="200" height="133" >
+            <img id="logoImage" src="images/ChillflixLogo.png" alt="A logo">
             <h1>Login</h1>
         </div>
         <form method="post">
@@ -62,17 +62,6 @@
             showButton.type = "password";
     }
 
-    /*function usernameNotFound()
-    {
-        setUserNotificationText("*Username not Found");
-    }
-
-    function passwordIsIncorrect()
-    {
-        setPassNotificationText("*Password is incorrect");
-    }*/
-
-
   
     // Sets the text below the Username input field
     function setUserNotificationText(stringText)
@@ -96,4 +85,10 @@
     {
         return document.getElementById('txtPass').value;
     }
+
+    const logoWidth = '200';
+    const logoHeight = '133';
+    const logoImage = document.getElementById('logoImage');
+    logoImage.style.width = logoWidth + 'px';
+    logoImage.style.height = logoHeight + 'px';
 </script>

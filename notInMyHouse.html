@@ -19,9 +19,15 @@
     <div class="text-containers">
 	<h1>Nice Try!</h1>
     <p> Redirecting to Login Page </p>
-    <img src="images/not-in-my-house.gif" alt="Animated GIF" width="300">
+    <img id="gif-image" src="images/not-in-my-house.gif" alt="Animated GIF">
     </div>
 	<meta http-equiv="refresh" content="5; url=loginpage.html">
     </body>
 
 </html>
+
+<script>
+    const gifWidth = '300';
+    const gifImage = document.getElementById('gif-image');
+    gifImage.style.width = gifWidth + 'px';
+</script>

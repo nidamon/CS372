@@ -22,7 +22,7 @@
 	<body>
 		<!--<h1>Homepage</h1>-->
   		<form>
-            <img src="images/ChillflixLogo.png" alt="A logo" width="200" height="133" >
+            <img id="logoImage" src="images/ChillflixLogo.png" alt="A logo">
 
             <!-- Buttons and response text -->
 			<p id='ptxtPages' type='text'>Directory</p>
@@ -43,4 +43,10 @@
     {
         window.location.href = "signup.html";
     }
+
+    const logoWidth = '300';
+    const logoHeight = '200';
+    const logoImage = document.getElementById('logoImage');
+    logoImage.style.width = logoWidth + 'px';
+    logoImage.style.height = logoHeight + 'px';
 </script>

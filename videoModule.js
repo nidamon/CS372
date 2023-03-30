@@ -1,9 +1,15 @@
+
+const logoWidth = 200;
+const logoHeight = 133;
+const videoWidth = 240;
+const videoHeight = 135;
+
 // Creates an html page that displays the videos that have been passed to it
 exports.createVideoList = async function(videos, callback_HTMLData) {
     // "<body onload=isUser() is for addInvalidUserRdirect() to redirect invalid users
     let html = `<body onload=isUser()>
     <div class ='topPage-container'>
-    <img src="images/ChillflixLogo.png" alt="A logo" width="200" height="133" > </div>`
+    <img src="images/ChillflixLogo.png" alt="A logo" width="${logoWidth}" height="${logoHeight}" > </div>`
 
     html += videoWrapAndBackgound();
 
@@ -69,7 +75,7 @@ function addVideoToList(video)
     return `<div class="video-thumbnail">
     <a href="/video/${encodeURI(video.videoName)}" title="${video.videoName}" 
     data-toggle="tooltip">
-        <img src="${video.videoThumbnail}" alt="${video.videoName} thumbnail" width="240" height="135">
+        <img src="${video.videoThumbnail}" alt="${video.videoName} thumbnail" width="${videoWidth}" height="${videoHeight}">
     </a>
     <p>${video.videoName}</p>          
     </div>`;

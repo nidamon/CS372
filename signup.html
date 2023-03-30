@@ -18,7 +18,7 @@
 
 	<body>
         <div class="topPage">
-            <img src="images/ChillflixLogo.png" alt="A logo" width="200" height="133" >
+            <img id="logoImage" src="images/ChillflixLogo.png" alt="A logo">
 		    <h3>Account Creation</h3>
         </div>
 
@@ -235,4 +235,10 @@
     {
         return document.getElementById('txtPass').value;
     }
+
+    const logoWidth = '200';
+    const logoHeight = '133';
+    const logoImage = document.getElementById('logoImage');
+    logoImage.style.width = logoWidth + 'px';
+    logoImage.style.height = logoHeight + 'px';
 </script>
