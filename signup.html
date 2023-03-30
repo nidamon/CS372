@@ -5,7 +5,7 @@
 	</head>
 
 	<style>
-        h1 {text-align: center;}
+        .topPage{text-align: center;}
         p {text-align: center;}
         form {text-align: center;}
 
@@ -17,12 +17,10 @@
     </style>
 
 	<body>
-		<h1>Account Creation</h1>
-
-        <p>
-        <!-- Button to go back to login page -->
-        <button type='button' id='btnBackToLogin' onclick="window.location='/loginpage.html'">Back To Login</button>
-        </p>
+        <div class="topPage">
+            <img src="images/ChillflixLogo.png" alt="A logo" width="200" height="133" >
+		    <h3>Account Creation</h3>
+        </div>
 
   		<form method='post' onsubmit="return validateForm()">     
             <!-- First name -->
@@ -64,8 +62,9 @@
             <input id='txtSecureQ3Ans' type='text' placeholder='Answer' name='txtSecureQ3Ans'>
             </p>
             
-            <!-- Sign up button -->
+            <!-- Back to Login and Sign up button -->
             <p>
+            <button type='button' id='btnBackToLogin' onclick="window.location='/loginpage.html'">Back To Login</button>
 			<button id='btnSignUp' type='submit'>Sign Up</button>
             </p>
 		</form>

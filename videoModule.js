@@ -1,7 +1,9 @@
 // Creates an html page that displays the videos that have been passed to it
 exports.createVideoList = async function(videos, callback_HTMLData) {
     // "<body onload=isUser() is for addInvalidUserRdirect() to redirect invalid users
-    let html = `<body onload=isUser()> <h3>Movies</h3>`
+    let html = `<body onload=isUser()>
+    <div class ='topPage-container'>
+    <img src="images/ChillflixLogo.png" alt="A logo" width="200" height="133" > </div>`
 
     html += videoWrapAndBackgound();
 
@@ -49,16 +51,17 @@ function addButtonsAndSearching()
     // Search by name and/or genre
     // Search button
     // Logout button
-    return `
-    <form method="post">
-        <input id='txtVideoSearchName' type='text' placeholder='Search by Title' name='videoNameSearch'>
-        <input id='txtVideoSearchGenre' type='text' placeholder='Search by Genre' name='videoGenreSearch'>
-        <button id='btnSubmitSearch' type='submit' >Search</button>
-        <button type='button' id='btnLogout' onclick="(function(){ 
-            let uname = sessionStorage.getItem('UserId'); 
-            window.location.href=('logout/' + uname);
-            })()">Logout</button>
-    </form>`;
+    return `<div class ='topPage-container'>
+        <form method="post">
+            <input id='txtVideoSearchName' type='text' placeholder='Search by Title' name='videoNameSearch'>
+            <input id='txtVideoSearchGenre' type='text' placeholder='Search by Genre' name='videoGenreSearch'>
+            <button id='btnSubmitSearch' type='submit' >Search</button>
+            <button type='button' id='btnLogout' onclick="(function(){ 
+                let uname = sessionStorage.getItem('UserId'); 
+                window.location.href=('logout/' + uname);
+                })()">Logout</button>
+        </form>
+    </div>`;
 }
 function addVideoToList(video)
 {
@@ -150,6 +153,9 @@ function addFetchingForVideoPage(videoName)
 function videoWrapAndBackgound()
 {
     return `<style>
+        .topPage-container{
+            text-align: center;
+        }
         .video-container {
             display: flex;
             flex-wrap: wrap;
