@@ -12,7 +12,6 @@ exports.createVideoList = async function(videos, callback_HTMLData) {
     <img src="images/ChillflixLogo.png" alt="A logo" width="${logoWidth}" height="${logoHeight}" > </div>`
 
     html += videoWrapAndBackgound();
-
     html += addButtonsAndSearching();
     try {
         if(videos.length > 0) {
@@ -28,7 +27,6 @@ exports.createVideoList = async function(videos, callback_HTMLData) {
         html += addUploadButton();
         html += addTooltipToggle();
         html += addInvalidUserRdirect();
-        
 
         callback_HTMLData(html);
     }catch{
@@ -48,7 +46,6 @@ function addInvalidUserRdirect(){
         }
         </script>`
 }
-
 function addButtonsAndSearching()
 {
     // Search by name and/or genre
@@ -185,4 +182,3 @@ function extractVideoId(url) {
     }
     return match[1];
 }
-
