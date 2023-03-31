@@ -6,7 +6,7 @@ var dataBaseModule = require('./databaseModule.js')
 // ######################################################################################
 
 // Validates User credentials
-// Takes in a two stings (uname = username and pass = password)
+// Takes in a two stings username, password
 // and a dictionary of the logins (dict)
 exports.validateUser = function(uname, pass, callback_argBool_argStringMessage)
 {
@@ -98,7 +98,6 @@ exports.logoutUser = function(username)
 // Handles the failed login attempts
 async function failedlogin(username, callback_argStringMessage)
 {    
-  // Function code
   cycleTimes(username, function(failedlogins){
     // Lock account on third failed attempt
     if(threeFailedInAnHour(failedlogins))
@@ -126,7 +125,6 @@ async function cycleTimes(username, callback_argFailedLogins)
     console.log(failedLogins);
      // Update user account
     dataBaseModule.editUserFieldData(username, "failedLogins", failedLogins, function(){
-      // Send the failed logins out through the callback
       callback_argFailedLogins(failedLogins);
     });      
   });
@@ -134,16 +132,14 @@ async function cycleTimes(username, callback_argFailedLogins)
 // Second failed login
 function hasFailed2ndLogin(failedlogins)
 {
-  // All time is in milliseconds
-  // minutes * seconds * milliseconds
+  // All time is in milliseconds (conv: minutes * seconds * milliseconds)
   var hour = 60*60*1000;
   return failedlogins.newest - failedlogins.secondOldest < hour;     
 }
 // Returns true if there have been 3 failed login attempts within an hour
 function threeFailedInAnHour(failedlogins)
 {
-  // All time is in milliseconds
-  // minutes * seconds * milliseconds
+  // All time is in milliseconds (conv: minutes * seconds * milliseconds)
   var hour = 60*60*1000;
   return failedlogins.newest - failedlogins.oldest < hour;
 }
@@ -157,8 +153,7 @@ exports.isAccountLocked = function(username, callback_argBool)
     else
       dataBaseModule.getUserFieldData(username, "failedLogins", function(failedLogins)
       {
-        // All time is in milliseconds
-        // minutes * seconds * milliseconds
+        // All time is in milliseconds (conv: hours * minutes * seconds * milliseconds)
         var day = 24*60*60*1000;
 
         // 24 hour unlock check
