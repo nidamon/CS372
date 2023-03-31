@@ -110,19 +110,10 @@
         } if(!hasNum(username)) {
             setUserReqText("*Username must have at least 1 number.");
             return false;
-        }if(!hasSymbols(username))
-        {
+        } if(!hasSymbols(username)) {
             setUserReqText("*Username must have at least 1 special character like: !, @, #, $, %, ^, &, *, (, or )");
             return false;
         }
-        /*
-        // Cannot have '&', '=', '/', or ' ' (spaces)
-        if(!hasNoInvalidChars(username))
-        {
-            setUserReqText("*Username must not contain the following: \"&\", \"=\", \"/\" or spaces.");
-            return false;
-        }
-        */  
 
         setUserReqText("");
         console.log("Username requirements met.");
@@ -148,22 +139,13 @@
         if(password.length < 10){
             setPassReqText("*Password needs to be at least 10 characters long.");
             return false;
-        }
-
-        // At least 1 uppercase letter and 1 lowercase letter        
-        if(!hasUpperAndLowerCaseLetters(password)){
+        } if(!hasUpperAndLowerCaseLetters(password)){ // At least 1 uppercase letter and 1 lowercase letter
             setPassReqText("*Password must have at least 1 uppercase letter and 1 lowercase letter.");
             return false;
-        }
-
-        // Cannot have '&', '=', '/', or ' ' (spaces)
-        if(!hasNoInvalidChars(password)){
+        } if(!hasNoInvalidChars(password)){ // Cannot have '&', '=', '/', or ' ' (spaces)
             setPassReqText("*Password must not contain the following: \"&\", \"=\", \"/\" or spaces.");
             return false;
-        }
-        
-        // The password should not contain the username (not case sensitive)
-        if(password.toUpperCase().includes(username.toUpperCase())){
+        } if(password.toUpperCase().includes(username.toUpperCase())){ // The password should not contain the username (not case sensitive)
             setPassReqText("*Password should not contain the username.");
             return false;
         }
@@ -197,7 +179,7 @@
             return false;
     }
 
-    // False if '&', '=', or '/' is present
+    // False if '&', '=', '/', or ' ' is present
     function hasNoInvalidChars(string)
     {
         // Check for '&', '=', and '/'
@@ -211,8 +193,6 @@
         return true;
     }
 
-
-    
     // Sets the text below the Username input field
     function setUserReqText(stringText)
     {
