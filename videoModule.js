@@ -25,11 +25,8 @@ exports.createVideoList = async function(videos, callback_HTMLData) {
             html += `No search results`;
         }
 
-        // Add upload video button
         html += addUploadButton();
-        // Toggle popovers
         html += addTooltipToggle();
-        // add script to redirect invalid users
         html += addInvalidUserRdirect();
         
 
@@ -90,7 +87,6 @@ function addUploadButton()
 }
 function addTooltipToggle()
 {
-    // Turns tooltips on
     return `<script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
