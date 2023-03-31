@@ -1,6 +1,5 @@
 const bodyParser = require("body-parser");
 const { MongoClient } = require("mongodb"); 
-// localhost -> 127.0.0.1
 exports.uri = "mongodb://127.0.0.1:27017";
 exports.client = new MongoClient(exports.uri);
 
@@ -17,7 +16,6 @@ exports.videoDataCollection = "videoData";
 // closing of node.js server
 process.on('SIGINT', closeDatabaseConnection);
 process.on('SIGTERM', closeDatabaseConnection);
-// press ctr + c in terminal to close mongoDB connection and node.js
 
 
 // Connect to the database when the module is loaded
@@ -28,7 +26,7 @@ process.on('SIGTERM', closeDatabaseConnection);
     } catch (err) {
         console.error("Error connecting to MongoDB:", err);
     }
-})(); // empty () is to invoke function immediately
+})();
 
 // Close mongoDB client connection 
 async function closeDatabaseConnection() {
@@ -38,7 +36,7 @@ async function closeDatabaseConnection() {
     } catch (error) {
         console.error('Error closing MongoDB connection:', error);
     } finally {
-        process.exit(0); // kill all process
+        process.exit(0);
     }
 }
   
@@ -132,10 +130,10 @@ exports.editFieldData = async function(dataBase, collection, query, fieldNameStr
 {
     try {        
         await exports.client.db(dataBase).collection(collection).updateOne(
-            query, // Used to find the document
+            query,
             {
                 $set: {
-                    [fieldNameString] : newValue // Change value
+                    [fieldNameString] : newValue
                 }
             }
             );
@@ -188,7 +186,7 @@ exports.addNewUser = function(formData)
 exports.getUserData = function(username, callback_argData)
 {
     query = {"username": username};
-    options = {}; // None
+    options = {};
     exports.getDocData(exports.mongoDataBase, exports.userDataCollection, query, options, callback_argData);
 }
 
@@ -246,7 +244,7 @@ exports.addNewVideo = function(formData)
         "videoEmbedLink" : videoEmbedLink,
         "videoThumbnail" : videoThumbnail, 
         "videoLength" : videoLength,
-        "videoViewCount" : 0, // No one has viewed the video yet
+        "videoViewCount" : 0,
         "videoFeedback" : "No feedback yet"
     };   
 
@@ -273,7 +271,7 @@ exports.getVideos = function(searchParamName, searchParamGenre, callback_argData
     // Query: 
     //   this -> document
     //   videoName/videoGenre -> field
-    //   make this.videoname a string and search its contents for substring in variable searchParam
+    //   make this.videoName a string and search its contents for substring in variable searchParam
     //   If the location is not -1 (-1 = not present) then return the document
 
     // Make search filter
@@ -299,7 +297,6 @@ exports.getVideoData = function(videoName, callback_argData)
 {
     query = {"videoName": videoName};
     options = {};
-    // Issue: 2 videos have the same name
     exports.getDocData(exports.mongoDataBase, exports.videoDataCollection, query, options, callback_argData);
 }
 
