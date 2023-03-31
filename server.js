@@ -102,17 +102,17 @@ function handleLoginSubmission(req, res)
 // Redirects a user to a page based on their account type
 function userRoleRedirect(res, username, accountType)
 {
-  if(accountType == "viewer") // A viewer account
+  if(accountType == "viewer")
   {    
     createSessionAndRedirect(res, username, accountType, landingPage);
     console.log("Welcome viewer");
   }
-  else if (accountType == "content editor") // A content editor account
+  else if (accountType == "content editor")
   {
     createSessionAndRedirect(res, username, accountType, landingPage);
     console.log("Welcome content editor");
   }
-  else if(accountType == "content manager")  // A content manager account
+  else if(accountType == "content manager")
   {
     createSessionAndRedirect(res, username, accountType, landingPage);
     console.log("Welcome content manager");
@@ -201,13 +201,12 @@ function handleSignUpSubmission(req, res)
     dataBaseModule.doesUserExist(username, function(isDuplicateUsername){
       if(isDuplicateUsername)
       {
-          // Tell client that the username needs to change  
           var message = 'The username: ' + username + ' has already been used.';
           messageAndReturn(res, message);
       }
       else // Account creation
       {          
-          dataBaseModule.addNewUser(formData); // Create account and log user in 
+          dataBaseModule.addNewUser(formData);
           createSessionAndRedirect(res, username, "viewer", landingPage);
       }
     })    
@@ -237,12 +236,10 @@ function passwordResetSubmission(req, res)
 {
   formParse(req, function(formData){
     console.log(formData);
-    // User data for account
     const username = formData.txtUsername || '';
     const newPassword = formData.txtPassword || '';
     credentialModule.changePassword(username, newPassword);
 
-    // Redirect to homepage
     redirectOnSite(res, homePage);
   });
 }
@@ -260,10 +257,10 @@ function securityQuestionsDirecting(usersRequest, req, res)
 // Security questions (send questions)    
 function requestedSecurityQuestions(res, usersRequest)
 {
-  if(usersRequest[3] == 'qs') // Security questions (send questions)
+  if(usersRequest[3] == 'qs')
   {
     username = usersRequest[2];    
-    dataBaseModule.doesUserExist(username, function(doesExist){ // Check if user exists
+    dataBaseModule.doesUserExist(username, function(doesExist){
       if(doesExist == false)
       {
         res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -291,7 +288,7 @@ function requestedSecurityQuestions(res, usersRequest)
 // Security questions (receive and check answers) 
 function sentSecurityQuestionAnswers(req, res, usersRequest)
 {
-  if(usersRequest[3] == 'ans') // Security questions (receive and check answers)
+  if(usersRequest[3] == 'ans')
   {
     username = usersRequest[2];
     var answers = url.parse(req.url, true).query;
@@ -349,7 +346,7 @@ function handleMoviesPage(req, res)
 {
   if(req.method === 'GET')
   {
-    sendMoviesPage(res, '', ''); // Load everything
+    sendMoviesPage(res, '', '');
   }
   else if (req.method === 'POST')
   {
@@ -374,7 +371,7 @@ function handleVideoSearchSubmission(req, res)
 function sendMoviesPage(res, titleSearch, genreSeach)
 {
   dataBaseModule.getVideos(titleSearch, genreSeach, function(videos){
-    videoModule.createVideoList(videos, function(html){ //use to have getBaseAddress() now ""
+    videoModule.createVideoList(videos, function(html){
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.write(html);
       res.end();
@@ -416,13 +413,13 @@ function handleVideoPageGET(req, res)
   // localhost:port/video/videoname/"userRole here"
   var userRequest = url.parse(req.url, true).pathname.split('/');
   dataBaseModule.getVideoData(decodeURI(userRequest[2]), function(videoData){
-    if(videoData != null){ // Video exists
+    if(videoData != null){ // if Video exists
       if(userRequest.length > 3){ // Fetch response
         handleRoleFetch(userRequest, res, videoData)
       }else{          
         console.log("Sending video");
-        incrementVideoViewCount(videoData, function(){ // Increment view count
-          videoModule.sendVideoPage(res, videoData); //use to have getBaseAddress() now ""
+        incrementVideoViewCount(videoData, function(){
+          videoModule.sendVideoPage(res, videoData);
         });
       } 
     }else{ // Video does not exist    
@@ -434,8 +431,8 @@ function handleVideoPageGET(req, res)
 // Handles the fetch that is made after the video page is sent
 function handleRoleFetch(userRequest, res, videoData)
 {
-  let userRole = userRequest[3]; // User's role 
-  let username = userRequest[4]; // User's username
+  let userRole = userRequest[3]; 
+  let username = userRequest[4];
   if(username == "null"){
     res.end("sendToLogin");
   }else{
@@ -451,9 +448,9 @@ function handleRoleFetch(userRequest, res, videoData)
           res.end();
         }else{
           console.log("Unclear user role: " + userRole);
-          res.end("sendToLogin"); // Fetch redirects to login page
+          res.end("sendToLogin");
         }
-      }else{ // User not logged in
+      }else{
         res.end("sendToLogin");
       }
     });
@@ -462,7 +459,7 @@ function handleRoleFetch(userRequest, res, videoData)
 // Adds the video's viewcount and a feedback input field
 function videoPageAddContentManagerNeeds(res, videoData){
   res.writeHead(200, {'Content-Type': 'text/html'});
-  feedback = videoData.videoFeedback.replace("'", "&#39"); // Replacement for adding to html code
+  feedback = videoData.videoFeedback.replace("'", "&#39"); // prevents ' from causing html errors
   html = `
     Video view count: ${videoData.videoViewCount} <br>
     Video Feedback for content editor:<br>
@@ -539,19 +536,20 @@ function verifyUserSession(usersRequest, res)
 {
   let username = usersRequest[2];
     if(username == "null") { // No user session on client side
-      res.end("sendToLogin"); // Redirect to loginpage
+      res.end("sendToLogin");
     } else {
       let accountType = usersRequest[3];
       dataBaseModule.getUserData(username, function(userData){
-        if(userData.loggedIn == "yes") // This user is logged in
+        if(userData.loggedIn == "yes")
         {
-          if(userData.accountType == decodeURI(accountType)) // This user has the correct account type
-            res.end(); // Stay on page
+          // if user is valid stay on page
+          if(userData.accountType == decodeURI(accountType))
+            res.end();
           else
-            res.end("sendToLogin"); // Redirect to landingpage
+            res.end("sendToLogin");
         }
         else
-          res.end("sendToLogin"); // Redirect to loginpage
+          res.end("sendToLogin");
       });
     }
 }
@@ -610,7 +608,6 @@ function redirectOnSite(res, page)
 function messageAndReturn(res, message, redirectTimer = 2000)
 {
   res.writeHead(200, {'Content-Type': 'text/html'});
-  // Temporary
   res.write(
   `<!DOCTYPE html>
   <html>
