@@ -85,15 +85,12 @@ function handleLoginSubmission(req, res)
     // Handle user validation
     credentialModule.validateUser(uName, pass, function(validUserBool, message){      
       console.log("Validation Complete")
-      if(validUserBool == true)
-      {
+      if(validUserBool == true) {
         // Send to role based landing page
         dataBaseModule.getUserFieldData(uName, "accountType", function(accountType){
           userRoleRedirect(res, uName, accountType); 
         });
-      }
-      else
-      {
+      } else {
         messageAndReturn(res, message, 4000);
       }
     });
@@ -257,7 +254,7 @@ function securityQuestionsDirecting(usersRequest, req, res)
 // Security questions (send questions)    
 function requestedSecurityQuestions(res, usersRequest)
 {
-  if(usersRequest[3] == 'qs')
+  if(usersRequest[3] == 'questions')
   {
     username = usersRequest[2];    
     dataBaseModule.doesUserExist(username, function(doesExist){
@@ -288,7 +285,7 @@ function requestedSecurityQuestions(res, usersRequest)
 // Security questions (receive and check answers) 
 function sentSecurityQuestionAnswers(req, res, usersRequest)
 {
-  if(usersRequest[3] == 'ans')
+  if(usersRequest[3] == 'answers')
   {
     username = usersRequest[2];
     var answers = url.parse(req.url, true).query;
@@ -413,7 +410,7 @@ function handleVideoPageGET(req, res)
   // localhost:port/video/videoname/"userRole here"
   var userRequest = url.parse(req.url, true).pathname.split('/');
   dataBaseModule.getVideoData(decodeURI(userRequest[2]), function(videoData){
-    if(videoData != null){ // if Video exists
+    if(videoData != null){ // If video exists
       if(userRequest.length > 3){ // Fetch response
         handleRoleFetch(userRequest, res, videoData)
       }else{          
@@ -431,7 +428,7 @@ function handleVideoPageGET(req, res)
 // Handles the fetch that is made after the video page is sent
 function handleRoleFetch(userRequest, res, videoData)
 {
-  let userRole = userRequest[3]; 
+  let userRole = userRequest[3];
   let username = userRequest[4];
   if(username == "null"){
     res.end("sendToLogin");
@@ -523,7 +520,7 @@ function handleUserInfoQuery(req, res)
 {
   var usersRequest = url.parse(req.url, true).pathname.split('/')
   // Security questions
-  if(usersRequest[3] == 'qs' || usersRequest[3] == 'ans')
+  if(usersRequest[3] == 'questions' || usersRequest[3] == 'answers')
     securityQuestionsDirecting(usersRequest, req, res);
   else if (usersRequest[4] == 'verify') // Handles fetch on videoupload.html
   {
@@ -540,7 +537,7 @@ function verifyUserSession(usersRequest, res)
     } else {
       let accountType = usersRequest[3];
       dataBaseModule.getUserData(username, function(userData){
-        if(userData.loggedIn == "yes")
+        if(userData.loggedIn == "loggedIn")
         {
           // if user is valid stay on page
           if(userData.accountType == decodeURI(accountType))
