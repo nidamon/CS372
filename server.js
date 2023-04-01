@@ -32,31 +32,21 @@ function directOnRequest(query, req, res) {
   baseQuery = query.split('/')[1];
   switch (baseQuery) {
     case '':
-    case homePage:
-      sendPagehtml(res, homePage); break;
-    case loginPage:
-      handleLoginPage(req, res); break;
-    case 'logout':
-      handleLogout(req, res); break;
-    case signUpPage:
-      handleSignUpPage(req, res); break;
-    case passwordResetPage:
-      handlePasswordResetPage(req, res); break;
-    case landingPage:
-      handleMoviesPage(req, res); break;
-    case videoUploadPage:
-      handleVideoUploadPage(req, res); break;
-    case 'images': // Image request
-      sendImage(res, "." + query); break;
-    case 'users': // Request about users
-      handleUserInfoQuery(req, res); break;
-    case 'video': // Check if request about a video
-      handleVideoPage(req, res); break;
-    case invalidUserPage:
-      sendPagehtml(res, invalidUserPage); break;
+    case homePage: sendPagehtml(res, homePage); break;
+    case loginPage: handleLoginPage(req, res); break;
+    case 'logout': handleLogout(req, res); break;
+    case signUpPage: handleSignUpPage(req, res); break;
+    case passwordResetPage: handlePasswordResetPage(req, res); break;
+    case landingPage: handleMoviesPage(req, res); break;
+    case videoUploadPage: handleVideoUploadPage(req, res); break;
+    case 'images': sendImage(res, "." + query); break; // Image request
+    case 'users': handleUserInfoQuery(req, res); break; // Request about users
+    case 'video': handleVideoPage(req, res); break; // Check if request about a video
+    case invalidUserPage: sendPagehtml(res, invalidUserPage); break;
     default: // No page available
       res.writeHead(404, {'Content-Type': 'text/html'});
-      res.end("There is no page at this address."); break;
+      res.end("There is no page at this address."); 
+      break;
   }
 }
 
