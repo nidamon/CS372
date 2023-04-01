@@ -4,7 +4,7 @@ var fs = require('fs');
 const querystring = require('querystring');
 
 var credentialModule = require('./credentialModule');
-var dataBaseModule = require('./databaseModule.js');
+var dataBaseModule = require('./databaseModule');
 var videoModule = require('./videoModule');
 
 var port = 8080;
@@ -23,35 +23,42 @@ const invalidUserPage = 'notInMyHouse.html';
 http.createServer(function (req, res) {
   var query = url.parse(req.url, true).pathname;
   console.log("Requested page: " + query);
-  // Page directing
-  if(query == '/' || query == '/' + homePage)    // Homepage
-  { sendPagehtml(res, homePage); }
-  else if(query == '/' + loginPage)    // Login page
-  { handleLoginPage(req, res); }
-  else if(query.split('/')[1] == 'logout')    // Logout
-  { handleLogout(req, res); }
-  else if(query == '/' + signUpPage)    // Sign up page
-  { handleSignUpPage(req, res); }
-  else if(query == '/' + passwordResetPage)    // Forgot password page
-  { handlePasswordResetPage(req, res); }
-  else if(query == '/' + landingPage)    // Landing page
-  { handleMoviesPage(req, res); }
-  else if(query == '/' + videoUploadPage)    // Video upload page
-  { handleVideoUploadPage(req, res); }
-  else if(query.split('/')[1] == 'images') // Check if image request
-  { sendjpg(res, "." + query); }
-  else if(query.split('/')[1] == 'users') // Check if request about users
-  { handleUserInfoQuery(req, res); }
-  else if(query.split('/')[1] == 'video') // Check if request about a video
-  { handleVideoPage(req, res); }
-  else if(query == '/' + invalidUserPage)    // bad user page
-  { sendPagehtml(res, invalidUserPage); }
-  else { // No page available
-    res.writeHead(404, {'Content-Type': 'text/html'});
-    res.end("There is no page at this address.");
-  }
+
+  directOnRequest(query, req, res);
 }).listen(port); 
 
+// Handles the directing for queries
+function directOnRequest(query, req, res) {
+  baseQuery = query.split('/')[1];
+  switch (baseQuery) {
+    case '':
+    case homePage:
+      sendPagehtml(res, homePage); break;
+    case loginPage:
+      handleLoginPage(req, res); break;
+    case 'logout':
+      handleLogout(req, res); break;
+    case signUpPage:
+      handleSignUpPage(req, res); break;
+    case passwordResetPage:
+      handlePasswordResetPage(req, res); break;
+    case landingPage:
+      handleMoviesPage(req, res); break;
+    case videoUploadPage:
+      handleVideoUploadPage(req, res); break;
+    case 'images': // Image request
+      sendImage(res, "." + query); break;
+    case 'users': // Request about users
+      handleUserInfoQuery(req, res); break;
+    case 'video': // Check if request about a video
+      handleVideoPage(req, res); break;
+    case invalidUserPage:
+      sendPagehtml(res, invalidUserPage); break;
+    default: // No page available
+      res.writeHead(404, {'Content-Type': 'text/html'});
+      res.end("There is no page at this address."); break;
+  }
+}
 
 // ######################################################################################
 // Page handling 
@@ -580,7 +587,7 @@ function sendPagehtml(res, filename)
     });
 }
 // Sends the page of filename
-function sendjpg(res, filename)
+function sendImage(res, filename)
 {
     // Read the contents of the HTML file and send it back to the client
     fs.readFile(filename, function(err, data) {
