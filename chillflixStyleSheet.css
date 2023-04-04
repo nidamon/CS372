@@ -1,6 +1,6 @@
   body {
       font-family: Arial, sans-serif;
-      background-color: #DCB8A4;
+      background-color: #EEEEEC;
   }
 
 
@@ -18,15 +18,16 @@
   .backgroundImg1,
   .backgroundImg2,
   .backgroundImg3 {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-size: cover;
-      background-position: center center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-repeat: repeat-y;
+    background-attachment: scroll;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    z-index: -1;
   }
 
   .backgroundImg1 {
@@ -56,30 +57,43 @@
   .logo.medium {
       width: 25%;
   }
+
+  .logo.large {
+      width: 35%;
+  }
+
   .logo:hover {
-    transform: scale(1.1);
+      transform: scale(1.1);
   }
 
   /* Text, Login, and Signup boxes */
   .loginBox,
-  .signupBox{
-    background-color: #C5DCE4;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 20px;
-    margin: 0 auto;
-    display: inline-block;
-    /* Text Color */
-    color: black;
-  }
-  
-  .textBox {
-      background-color: #D3A68D;
+  .signupBox,
+  .textBoxBlue {
+      background-color: #C5DCE4;
       border: 1px solid #ccc;
       border-radius: 5px;
       padding: 20px;
       margin: 0 auto;
       display: inline-block;
+      /* Text Color */
+      color: black;
+  }
+
+  .videoUploadBox,
+  .textBoxSalmon {
+    background-color: #D3A68D;
+    border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 20px;
+      margin: 0 auto;
+      display: inline-block;
+      /* Text Color */
+      color: black;
+  }
+  
+
+  .textBoxSalmon.home {
       /* Text Color */
       color: white;
       text-shadow:
@@ -89,19 +103,6 @@
           1px 1px 0 black;
   }
 
-  /* Form elements */
-  /*
-  input[type="text"],
-  input[type="password"],
-  input[type="email"] {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  */
-
   /* Images */
   img {
       max-width: 100%;
@@ -109,3 +110,24 @@
       display: block;
       margin: 20px auto;
   }
+
+  /* Videos */
+  .videoContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+  }
+
+  .videoThumbnail {
+      margin: 10px;
+      text-align: center;
+
+      background: #C5DCE4;
+      border-radius: 5px;
+      padding: 1px;
+      color: black
+  }
+
+  .videoThumbnail:hover {
+    transform: scale(1.1);
+}

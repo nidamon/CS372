@@ -6,57 +6,55 @@
     <link rel="stylesheet" href="chillflixStyleSheet.css">
 </head>
 
-<body>
-    <div class="backgroundImg2 center">
-        <img src="images/ChillflixLogo.png" alt="chillflix logo" class="logo small"
-            onclick="window.location.href='home.html'">
+<body class="backgroundImg2 center">
+    <img src="images/ChillflixLogo.png" alt="chillflix logo" class="logo small"
+        onclick="window.location.href='home.html'">
 
 
-        <form method='post' class="signupBox" onsubmit="return validateForm()">
-            <h3>Account Creation</h3>
+    <form method='post' class="signupBox" onsubmit="return validateForm()">
+        <h3>Account Creation</h3>
 
-            <p> First Name
-                <input id='txtFirstName' type='text' placeholder='First Name' name='txtFirstName'>
-            </p>
+        <p> First Name
+            <input id='txtFirstName' type='text' placeholder='First Name' name='txtFirstName'>
+        </p>
 
-            <p> Last Name
-                <input id='txtLastName' type='text' placeholder='Last Name' name='txtLastName'>
-            </p>
+        <p> Last Name
+            <input id='txtLastName' type='text' placeholder='Last Name' name='txtLastName'>
+        </p>
 
-            Username
-            <input id='txtUname' type='text' placeholder='Username' name='txtUsername'>
-            <p id='pUsernameReqMsg' style="color:red;"></p>
+        Username
+        <input id='txtUname' type='text' placeholder='Username' name='txtUsername'>
+        <p id='pUsernameReqMsg' style="color:red;"></p>
 
-            <p> Password
-                <input id='txtPass' type='password' placeholder='Password' name='txtPassword'>
-                <button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>
-            </p>
-            <p id='pPasswordReqMsg' style="color:red;"></p>
+        <p> Password
+            <input id='txtPass' type='password' placeholder='Password' name='txtPassword'>
+            <button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>
+        </p>
+        <p id='pPasswordReqMsg' style="color:red;"></p>
 
-            Email
-            <input id='txtEmail' type='text' placeholder='Email' name='txtEmail'>
+        Email
+        <input id='txtEmail' type='text' placeholder='Email' name='txtEmail'>
 
-            <!-- Security Questions -->
-            <p id='pSecurityQuestionsMsg'>Security Questions</p>
-            <input id='txtSecureQ1' type='text' placeholder='Question 1' name='txtSecureQ1'>
-            <input id='txtSecureQ1Ans' type='text' placeholder='Answer' name='txtSecureQ1Ans'>
-            <p>
-                <input id='txtSecureQ2' type='text' placeholder='Question 2' name='txtSecureQ2'>
-                <input id='txtSecureQ2Ans' type='text' placeholder='Answer' name='txtSecureQ2Ans'>
-            </p>
-            <p>
-                <input id='txtSecureQ3' type='text' placeholder='Question 3' name='txtSecureQ3'>
-                <input id='txtSecureQ3Ans' type='text' placeholder='Answer' name='txtSecureQ3Ans'>
-            </p>
+        <!-- Security Questions -->
+        <p id='pSecurityQuestionsMsg'>Security Questions</p>
+        <input id='txtSecureQ1' type='text' placeholder='Question 1' name='txtSecureQ1'>
+        <input id='txtSecureQ1Ans' type='text' placeholder='Answer' name='txtSecureQ1Ans'>
+        <p>
+            <input id='txtSecureQ2' type='text' placeholder='Question 2' name='txtSecureQ2'>
+            <input id='txtSecureQ2Ans' type='text' placeholder='Answer' name='txtSecureQ2Ans'>
+        </p>
+        <p>
+            <input id='txtSecureQ3' type='text' placeholder='Question 3' name='txtSecureQ3'>
+            <input id='txtSecureQ3Ans' type='text' placeholder='Answer' name='txtSecureQ3Ans'>
+        </p>
 
-            <!-- Back to Login and Sign up button -->
-            <p>
-                <button type='button' id='btnBackToLogin' onclick="window.location='/loginpage.html'">Back To
-                    Login</button>
-                <button id='btnSignUp' type='submit'>Sign Up</button>
-            </p>
-        </form>
-    </div>
+        <!-- Back to Login and Sign up button -->
+        <p>
+            <button type='button' id='btnBackToLogin' onclick="window.location='/loginpage.html'">Back To
+                Login</button>
+            <button id='btnSignUp' type='submit'>Sign Up</button>
+        </p>
+    </form>
 </body>
 
 </html>

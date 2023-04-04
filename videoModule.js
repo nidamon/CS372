@@ -1,21 +1,19 @@
-
-const logoWidth = 200;
-const logoHeight = 133;
 const videoWidth = 240;
 const videoHeight = 135;
 
 // Creates an html page that displays the videos that have been passed to it
-exports.createVideoList = async function(videos, callback_HTMLData) {
-    // "<body onload=isUser() is for addInvalidUserRdirect() to redirect invalid users
-    let html = `<body onload=isUser()>
-    <div class ='topPage-container'>
-    <img src="images/ChillflixLogo.png" alt="A logo" width="${logoWidth}" height="${logoHeight}" > </div>`
+exports.createVideoList = async function (videos, callback_HTMLData) {
+    let html = `<body onload=isUser() class="backgroundImg2 center">
+    <head> <title>Landing Page</title> 
+    <link rel="stylesheet" href="chillflixStyleSheet.css">
+    </head>
+    <img src="images/ChillflixLogo.png" alt="chillflix logo" class="logo small"
+    onclick="window.location.href='home.html'">`
 
-    html += videoWrapAndBackgound();
     html += addButtonsAndSearching();
     try {
-        if(videos.length > 0) {
-            html += `<div class="video-container">`; //needed for videoWrapAndBackgound()
+        if (videos.length > 0) {
+            html += `<div class="videoContainer">`;
             for (let i = 0; i < videos.length; i++) {
                 html += addVideoToList(videos[i]);
             }
@@ -23,20 +21,20 @@ exports.createVideoList = async function(videos, callback_HTMLData) {
         } else {
             html += `No search results`;
         }
-
         html += addUploadButton();
         html += addTooltipToggle();
         html += addInvalidUserRdirect();
 
         callback_HTMLData(html);
-    }catch{
+    } catch {
         html = 'Glitched loading'
         callback_HTMLData(html);
     }
+    html += `</body>`;
 }
 
 // html script to redirect invalid users to not-in-my-house.html
-function addInvalidUserRdirect(){
+function addInvalidUserRdirect() {
     return `<script>
         function isUser()
         {
@@ -46,13 +44,12 @@ function addInvalidUserRdirect(){
         }
         </script>`
 }
-function addButtonsAndSearching()
-{
+function addButtonsAndSearching() {
     // Search by name and/or genre
     // Search button
     // Logout button
-    return `<div class ='topPage-container'>
-        <form method="post">
+    return `<div class ='center'>
+        <form method="post" class = 'textBoxBlue'>
             <input id='txtVideoSearchName' type='text' placeholder='Search by Title' name='videoNameSearch'>
             <input id='txtVideoSearchGenre' type='text' placeholder='Search by Genre' name='videoGenreSearch'>
             <button id='btnSubmitSearch' type='submit' >Search</button>
@@ -63,27 +60,24 @@ function addButtonsAndSearching()
         </form>
     </div>`;
 }
-function addVideoToList(video)
-{
+function addVideoToList(video) {
     // Video display on listings page
-    return `<div class="video-thumbnail">
+    return `<div class="videoThumbnail">
     <a href="/video/${encodeURI(video.videoName)}" title="${video.videoName}" 
     data-toggle="tooltip">
         <img src="${video.videoThumbnail}" alt="${video.videoName} thumbnail" width="${videoWidth}" height="${videoHeight}">
     </a>
-    <p>${video.videoName}</p>          
+    <p>${video.videoName}</p> 
     </div>`;
-    
+
 }
-function addUploadButton()
-{
-    return `<div class="videoUploadBtn">  
+function addUploadButton() {
+    return `<div class="videoUploadBtn textBoxBlue">  
     <br>      
     <button type='button' id='btnVideoUploadPage' onclick="window.location.href='videoupload.html'">Upload a video</button>
     </div>`;
 }
-function addTooltipToggle()
-{
+function addTooltipToggle() {
     return `<script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
@@ -91,40 +85,50 @@ function addTooltipToggle()
     </script>`;
 }
 
+// !!!!!!!!!!!!!! BROKEN CURRENTLY !!!!!!!!!!!!!!
 // Creates a video watching page and sends it with a fetch to retrieve more after.
-exports.sendVideoPage = function(res, videoData)
-{
-    let html = `<h3>${videoData.videoName}</h3>`;
-    html += videoWrapAndBackgound();  
+exports.sendVideoPage = function (res, videoData) {
+    let html = `<h3>${videoData.videoName}</h3> 
+    <head> <link rel="stylesheet" href="chillflixStyleSheet.css"> </head>`;
 
-    try {     
+    // Temp Fix
+    html += `<style>
+    body {
+        background-image: url('/images/website_background2.jpg');
+        background-repeat: repeat;
+        background-attachment: fixed;  
+        background-size: cover;
+        text-align: center;
+    }
+    </style>`;
+
+    try {
         html += // Embeded youtube video, comment, and html body for adding role based actions on fetch
-        `<body>
+            `<body class="backgroundImg2 center">
             <button type='button' id='btnBackToMovies' onclick="window.location='/landingpage'">Back To Movies</button>
             <br>
-            <div class="video-container"> <!-- Needed for videoWrapAndBackgound() -->
             <iframe width="960" height="540" src="https://www.youtube.com/embed/${extractVideoId(videoData.videoEmbedLink)}" 
             title="YouTube video player" frameborder="0" allow="accelerometer; 
             autoplay; clipboard-write; encrypted-media; gyroscope; 
             picture-in-picture; web-share" allowfullscreen></iframe>
-            </div>
+            <div class="textBoxBlue">
             <p>Comment: ${videoData.videoComment}</p>   
             <div id="roleBasedArea"></div>
-        </body>`;  
-        html += addFetchingForVideoPage(videoData.videoName);       
-        res.writeHead(200, {'Content-Type': 'text/html'});
+            </div>
+            </body>`;
+        html += addFetchingForVideoPage(videoData.videoName);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(html);
     }
-    catch(err){
+    catch (err) {
         console.log(err);
-        res.writeHead(500, {'Content-Type': 'text/plain'});
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
         html = 'Failed to load content'
         res.end(html);
     }
 }
 // Fetch code to get role-based additions to the video page
-function addFetchingForVideoPage(videoName)
-{
+function addFetchingForVideoPage(videoName) {
     return `<script>
         retrieveAdditionalVideoData()
         function retrieveAdditionalVideoData()
@@ -149,21 +153,8 @@ function addFetchingForVideoPage(videoName)
         </script>`;
 }
 // Add the CSS for the row-column format and repeating backgound
-function videoWrapAndBackgound()
-{
+function videoWrapAndBackgound() {
     return `<style>
-        .topPage-container{
-            text-align: center;
-        }
-        .video-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            }
-        .video-thumbnail {
-            margin: 10px;
-            text-align: center;
-        }
         body {
             background-image: url('/images/website_background2.jpg');
             background-repeat: repeat;
@@ -177,7 +168,7 @@ function videoWrapAndBackgound()
 function extractVideoId(url) {
     const regExpression = /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?/;
     const match = url.match(regExpression);
-    if (match == null){
+    if (match == null) {
         return null
     }
     return match[1];

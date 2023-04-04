@@ -1,163 +1,144 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Video Upload</title>
-	</head>
 
-    <style>
-        .topPage{
-            text-align: center;
-        }
-        .inputFields {     
-            background-color:antiquewhite; 
-            width:500px;
-            margin: auto;
-        }    
+<head>
+    <title>Video Upload</title>
+    <link rel="stylesheet" href="chillflixStyleSheet.css">
+</head>
 
-        body {
-            background-image: url('images/website_background.jpg');
-            background-repeat: no-repeat;
-            background-attachment: fixed;  
-            background-size: cover;
-        }
+<style>
+    fieldset {
+        border: none;
+        width: 100px;
+        margin: auto;
+    }
+</style>
 
-        fieldset{
-            border:none;
-            width:100px;
-            margin: auto;
-        }
-      </style>
-	
-	<body>
-        <div class = topPage>
-            <img id="logoImage" src="images/ChillflixLogo.png" alt="A logo">
-		    <h1>Video Upload</h1>
-        </div>
-  		<form method="post" id="formVideoUpload">
-            <div class="inputFields">
+<body class="backgroundImg1 center">
 
-                <fieldset>
-                    <button type='button' id='btnMoviesPage' onclick="window.location.href='landingpage'">Go to movies</button>
-                    <button type='button' id='btnLogout' onclick="(function(){ 
+    <img src="images/ChillflixLogo.png" alt="chillflix logo" class="logo small"
+        onclick="window.location.href='home.html'">
+        
+    <form method="post" id="formVideoUpload" class="videoUploadBox">
+        <h1>Video Upload</h1>
+        <fieldset>
+            <button type='button' id='btnMoviesPage' onclick="window.location.href='landingpage'">Go to movies</button>
+            <button type='button' id='btnLogout' onclick="(function(){ 
                         let uname = sessionStorage.getItem('UserId'); 
                         window.location.href=('logout/' + uname);
                         })()">Logout</button>
-                    <br><br>
-                    <!-- Uploader Name -->
-                    <input id='txtVideoUploader' type='hidden' name='txtVideoUploader'>
-                    
-                    <!-- Video Name -->
-                    Video Name:
-                    <input id='txtVideoName' type='text' placeholder='Video Name' name='txtVideoName'>
-                    <br>
-                    
-                    <!-- Video Link -->
-                    Video Link:
-                    <input id='txtVideoEmbedLink' type='text' placeholder='Video Link' name='txtVideoEmbedLink'>           
-                    <br>
+            <br><br>
+            <!-- Uploader Name -->
+            <input id='txtVideoUploader' type='hidden' name='txtVideoUploader'>
 
-                    <!-- Video Thumbnail -->
-                    Video Thumbnail:
-                    <input id='txtVideoThumbnail' type='text' placeholder='Video Thumbnail Link' name='txtVideoThumbnail'>            
-                    <br>
+            <!-- Video Name -->
+            Video Name:
+            <input id='txtVideoName' type='text' placeholder='Video Name' name='txtVideoName'>
+            <br>
 
-                    <!-- Video Length -->
-                    Video Length:
-                    <input id='txtVideoLength' type='text' placeholder='Video Length' name='txtVideoLength'>
-                </fieldset>
-              
-                <fieldset>
-                    <!-- Video Genres -->
-                    Video Genres:<br>
-                    <input id='txtVideoGenre' type='text' placeholder='Video Genres' name='txtVideoGenre' size="69">
-                    <br>
-                    
-                    <!-- Video Synopsis -->
-                    Video Synopsis:<br>
-                    <textarea id='txtVideoComment' type='text' placeholder='Video Synopsis' name='txtVideoComment' rows="5" cols="60"></textarea>
-                    
-                    
-                    <!-- Requirements message -->
-                    <p id='pReqMsg' style="color:red;"></p>
-                    
-                </fieldset>
+            <!-- Video Link -->
+            Video Link:
+            <input id='txtVideoEmbedLink' type='text' placeholder='Video Link' name='txtVideoEmbedLink'>
+            <br>
 
-                <fieldset>
-                    <!-- Submit video upload -->
-                    <button id='btnSubmitVideoUpload' type='button' onClick=uploadVideo()>Upload Video</button>
-                </fieldset>
-            </div>         
-		</form>
-	</body>
+            <!-- Video Thumbnail -->
+            Video Thumbnail:
+            <input id='txtVideoThumbnail' type='text' placeholder='Video Thumbnail Link' name='txtVideoThumbnail'>
+            <br>
+
+            <!-- Video Length -->
+            Video Length:
+            <input id='txtVideoLength' type='text' placeholder='Video Length' name='txtVideoLength'>
+        </fieldset>
+
+        <fieldset>
+            <!-- Video Genres -->
+            Video Genres:<br>
+            <input id='txtVideoGenre' type='text' placeholder='Video Genres' name='txtVideoGenre' size="69">
+            <br>
+
+            <!-- Video Synopsis -->
+            Video Synopsis:<br>
+            <textarea id='txtVideoComment' type='text' placeholder='Video Synopsis' name='txtVideoComment' rows="5"
+                cols="60"></textarea>
+
+
+            <!-- Requirements message -->
+            <p id='pReqMsg' style="color:red;"></p>
+
+        </fieldset>
+
+        <fieldset>
+            <!-- Submit video upload -->
+            <button id='btnSubmitVideoUpload' type='button' onClick=uploadVideo()>Upload Video</button>
+        </fieldset>
+    </form>
+</body>
+
 </html>
 
-<script>    
+<script>
     isAnEditorLoggedIn();
 
-    function isAnEditorLoggedIn()
-    {
-        const url = `users/${sessionStorage.getItem("UserId")}/${sessionStorage.getItem("AccountType")}/verify`;       
+    function isAnEditorLoggedIn() {
+        const url = `users/${sessionStorage.getItem("UserId")}/${sessionStorage.getItem("AccountType")}/verify`;
         fetch(url) // About fetch: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Fetching_data
-          .then( response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error: ${response.status}`);
-            }
-            return response.text();
-          })          
-          .then( html => { // When response.text() has succeeded
-            if(html == "sendToLogin") // Invalid user
-                window.location.replace('loginpage.html');
-            else // Verified user, check account type
-            {
-                if(sessionStorage.getItem("AccountType") != "content editor")
-                    setReqText("You do not have permission to upload.");
-            }
-          })
-          .catch( error => {window.location.replace('landingpage')}); 
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(html => { // When response.text() has succeeded
+                if (html == "sendToLogin") // Invalid user
+                    window.location.replace('loginpage.html');
+                else // Verified user, check account type
+                {
+                    if (sessionStorage.getItem("AccountType") != "content editor")
+                        setReqText("You do not have permission to upload.");
+                }
+            })
+            .catch(error => { window.location.replace('landingpage') });
     }
 
-    function uploadVideo()
-    {
+    function uploadVideo() {
         // First, does the uploader have permission to upload?
-        if(sessionStorage.getItem("AccountType") == "content editor"){
-            if(uploadRequirementsMet())
+        if (sessionStorage.getItem("AccountType") == "content editor") {
+            if (uploadRequirementsMet())
                 document.getElementById('formVideoUpload').submit();
-        }else{
+        } else {
             setReqText("You do not have permission to upload.");
         }
     }
 
-    function uploadRequirementsMet()
-    {
+    function uploadRequirementsMet() {
         // Set the hidden value to the uploaders UserId
         document.getElementById('txtVideoUploader').value = getUploaderName();
         var fields = [
-            [ "Video Uploader", getUploaderName() ],
-            [ "Video Name", getVideoName() ],
-            [ "Video Link", getVideoEmbedLink() ],
-            [ "Video Thunbnail", getVideoThunbnail() ],
-            [ "Video Length", getVideoLength() ],
-            [ "Video Genre", getVideoGenre() ],
-            [ "Video Comment", getVideoComment() ]
+            ["Video Uploader", getUploaderName()],
+            ["Video Name", getVideoName()],
+            ["Video Link", getVideoEmbedLink()],
+            ["Video Thunbnail", getVideoThunbnail()],
+            ["Video Length", getVideoLength()],
+            ["Video Genre", getVideoGenre()],
+            ["Video Comment", getVideoComment()]
         ];
 
         var requirementsMet = true;
         // Iterate over all the input fields and require them filled
         fields.reverse().forEach(element => {
-            if(isEmpty(element[0], element[1]))
-                requirementsMet = false;  
+            if (isEmpty(element[0], element[1]))
+                requirementsMet = false;
         });
-        
-        if(requirementsMet)
+
+        if (requirementsMet)
             console.log("Requirements met.");
         return requirementsMet;
     }
 
     // Returns true if the value passes is empty
-    function isEmpty(name, value)
-    {
-        if(value.length == 0)
-        {
+    function isEmpty(name, value) {
+        if (value.length == 0) {
             setReqText(name + " must be filled out.");
             return true;
         }
@@ -165,43 +146,29 @@
     }
 
     // Sets the text below the input fields
-    function setReqText(stringText)
-    {
+    function setReqText(stringText) {
         document.getElementById('pReqMsg').innerHTML = stringText;
     }
 
-    function getUploaderName()
-    {
+    function getUploaderName() {
         return sessionStorage.getItem("UserId");
     }
-    function getVideoName()
-    {
+    function getVideoName() {
         return document.getElementById('txtVideoName').value;
     }
-    function getVideoEmbedLink()
-    {
+    function getVideoEmbedLink() {
         return document.getElementById('txtVideoEmbedLink').value;
     }
-    function getVideoThunbnail()
-    {
+    function getVideoThunbnail() {
         return document.getElementById('txtVideoThumbnail').value;
     }
-    function getVideoLength()
-    {
+    function getVideoLength() {
         return document.getElementById('txtVideoLength').value;
     }
-    function getVideoGenre()
-    {
+    function getVideoGenre() {
         return document.getElementById('txtVideoGenre').value;
     }
-    function getVideoComment()
-    {
+    function getVideoComment() {
         return document.getElementById('txtVideoComment').value;
     }
-
-    const logoWidth = '200';
-    const logoHeight = '133';
-    const logoImage = document.getElementById('logoImage');
-    logoImage.style.width = logoWidth + 'px';
-    logoImage.style.height = logoHeight + 'px';
 </script>

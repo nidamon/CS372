@@ -1,39 +1,18 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Nice Try!</title>
-    </head>
-    <style>
-        .text-containers {text-align: center;}
-        .password-container {margin-left: 46px;}
-        .bottom-buttons{text-align: center;}
 
-        body {
-          background-image: url('images/website_background.jpg');
-          background-repeat: no-repeat;
-          background-attachment: fixed;  
-          background-size: cover;}
-    </style>
+<head>
+    <title>Nice Try!</title>
+    <link rel="stylesheet" href="chillflixStyleSheet.css">
+</head>
 
-    <body>
-    <div class="text-containers">
-	<h1>Nice Try!</h1>
-    <p> Redirecting to Login Page </p>
-    <img id="gifImage" src="images/not-in-my-house.gif" alt="Animated GIF">
+<body class="backgroundImg1 center">
+    <div class="textBox">
+        <h1>Nice Try!</h1>
+        <p> Redirecting to Login Page </p>
     </div>
-	<meta id="timedRedirect" http-equiv="refresh" url="loginpage.html">
-    </body>
+    <img class="logo large" src="images/not-in-my-house.gif" alt="Animated GIF">
+    <meta http-equiv="refresh" content="5; url=loginpage.html">
+</body>
 
 </html>
-
-<script>
-    const gifWidth = '300';
-    const redirectTime = '5'; // time in sec
-    const urlRedirect = 'loginpage.html'
-
-    const gifImage = document.getElementById('gifImage');
-    gifImage.style.width = gifWidth + 'px';
-
-    const refreshMeta = document.getElementById('timedRedirect');
-    refreshMeta.setAttribute('content', `${redirectTime}; url=${urlRedirect}`);
-</script>
