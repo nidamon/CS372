@@ -1,94 +1,70 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>LoginPage</title>
-	</head>
-	
-	<style>
-        .input-containers {text-align: center;}
-        .password-container {margin-left: 46px;}
-        .bottom-buttons{text-align: center;}
 
-        body {
-          background-image: url('images/website_background2.jpg');
-          background-repeat: no-repeat;
-          background-attachment: fixed;  
-          background-size: cover;}
-    </style>
+<head>
+    <title>LoginPage</title>
+    <link rel="stylesheet" href="chillflixStyleSheet.css">
+</head>
 
-	<body>
-         
-        <div class="input-containers">
-            <img id="logoImage" src="images/ChillflixLogo.png" alt="A logo">
+
+<body>
+    <div class="backgroundImg2 center">
+        <img src="images/ChillflixLogo.png" alt="chillflix logo" class="logo small"
+            onclick="window.location.href='home.html'">
+        <form method="post" class="loginBox">
             <h1>Login</h1>
-        </div>
-        <form method="post">
             <!-- Username -->
-            <div class="input-containers">
-		        <p id='pUserMsg'>Enter Username</p>	
-			    <input id='txtUname' type='text' placeholder='Username' name="textUname">
-                <p id='pUsernameNotifMsg' style="color:red;" name='pUsernameNotifMsg'></p>
-            </div>
+            <p id='pUserMsg'>Enter Username</p>
+            <input id='txtUname' type='text' placeholder='Username' name="textUname">
+            <p id='pUsernameNotifMsg' style="color:red;" name='pUsernameNotifMsg'></p>
             <!-- Password -->
-            <div class = "input-containers">
-                <p id='pPasswordMsg'>Enter Password</p>	
-                <div class="password-container">		
-			        <p>
-			        <input id='txtPass' type='password' placeholder='Password' name="textPass">
-			        <button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
-			        </p>
-                </div>
-                <p id='pPasswordNotifMsg' style="color:red;" name='pPasswordNotifMsg'></p>   
-            </div>        
-			
-            <!-- Buttons -->
-            <div class = "bottom-buttons">
-			    <button type='submit' id='btnSubmit'>Login</button>
-			    <button type='button' id='btnSignUp' onclick="window.location.href='signup.html'">Sign Up</button>
-			    <button type='button' id='btnForgotPass' onclick="window.location.href='passwordreset.html'">Reset Password</button>
+            <p id='pPasswordMsg'>Enter Password</p>
+            <div class="password-container">
+                <p>
+                    <input id='txtPass' type='password' placeholder='Password' name="textPass">
+                    <button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>
+                </p>
             </div>
+            <p id='pPasswordNotifMsg' style="color:red;" name='pPasswordNotifMsg'></p>
+
+            <!-- Buttons -->
+            <button type='submit' id='btnSubmit'>Login</button>
+            <button type='button' id='btnSignUp' onclick="window.location.href='signup.html'">Sign Up</button>
+            <button type='button' id='btnForgotPass' onclick="window.location.href='passwordreset.html'">Reset
+                Password</button>
         </form>
-	</body>
+</body>
+
+
 </html>
 
 <script>
     // Sets the visibility of the password field
-    function passwordVisibility()
-    {
+    function passwordVisibility() {
         var showButton = document.getElementById("txtPass");
-        if(showButton.type == "password")
+        if (showButton.type == "password")
             showButton.type = "text";
         else
             showButton.type = "password";
     }
 
-  
+
     // Sets the text below the Username input field
-    function setUserNotificationText(stringText)
-    {
+    function setUserNotificationText(stringText) {
         document.getElementById('pUsernameNotifMsg').innerHTML = stringText;
     }
 
     // Sets the text below the Password input field
-    function setPassNotificationText(stringText)
-    {
+    function setPassNotificationText(stringText) {
         document.getElementById('pPasswordNotifMsg').innerHTML = stringText;
     }
 
 
 
-    function getUsername()
-    {
+    function getUsername() {
         return document.getElementById('txtUname').value;
     }
-    function getPassword()
-    {
+    function getPassword() {
         return document.getElementById('txtPass').value;
     }
-
-    const logoWidth = '200';
-    const logoHeight = '133';
-    const logoImage = document.getElementById('logoImage');
-    logoImage.style.width = logoWidth + 'px';
-    logoImage.style.height = logoHeight + 'px';
 </script>

@@ -19,6 +19,7 @@ const landingPage = 'landingpage';
 const videoUploadPage = 'videoupload.html';
 const invalidUserPage = 'notInMyHouse.html';
 
+const chillflixStyleSheet = 'chillflixStyleSheet.css'
 
 http.createServer(function (req, res) {
   var query = url.parse(req.url, true).pathname;
@@ -42,6 +43,7 @@ function directOnRequest(query, req, res) {
     case 'images': sendImage(res, "." + query); break; // Image request
     case 'users': handleUserInfoQuery(req, res); break; // Request about users
     case 'video': handleVideoPage(req, res); break; // Check if request about a video
+    case chillflixStyleSheet: sendStyleSheet(res, chillflixStyleSheet); break;
     case invalidUserPage: sendPagehtml(res, invalidUserPage); break;
     default: // No page available
       res.writeHead(404, {'Content-Type': 'text/html'});
@@ -591,6 +593,18 @@ function sendImage(res, filename)
         }
     });
 }
+
+function sendStyleSheet(res, filename) {
+  const fileStream = fs.createReadStream(filename);
+  fileStream.on('error', function(err) {
+    res.writeHead(500, {'Content-Type': 'text/plain'});
+    console.log('Error: failed to send stylesheet.');
+    res.end('Error reading file');
+  });
+  res.writeHead(200, {'Content-Type': 'text/css'});
+  fileStream.pipe(res);
+}
+
 // Redirects to another page on this site
 function redirectOnSite(res, page)
 {

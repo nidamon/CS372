@@ -1,116 +1,103 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Sign Up</title>
-	</head>
 
-	<style>
-        .topPage{text-align: center;}
-        p {text-align: center;}
-        form {text-align: center;}
+<head>
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="chillflixStyleSheet.css">
+</head>
 
-        body {
-          background-image: url('images/website_background2.jpg');
-          background-repeat: no-repeat;
-          background-attachment: fixed;  
-          background-size: cover;}
-    </style>
+<body>
+    <div class="backgroundImg2 center">
+        <img src="images/ChillflixLogo.png" alt="chillflix logo" class="logo small"
+            onclick="window.location.href='home.html'">
 
-	<body>
-        <div class="topPage">
-            <img id="logoImage" src="images/ChillflixLogo.png" alt="A logo">
-		    <h3>Account Creation</h3>
-        </div>
 
-  		<form method='post' onsubmit="return validateForm()">     
-            <!-- First name -->
+        <form method='post' class="signupBox" onsubmit="return validateForm()">
+            <h3>Account Creation</h3>
+
             <p> First Name
-            <input id='txtFirstName' type='text' placeholder='First Name' name='txtFirstName'>
+                <input id='txtFirstName' type='text' placeholder='First Name' name='txtFirstName'>
             </p>
 
-            <!-- Last name -->
             <p> Last Name
-            <input id='txtLastName' type='text' placeholder='Last Name' name='txtLastName'>
+                <input id='txtLastName' type='text' placeholder='Last Name' name='txtLastName'>
             </p>
-            
-            <!-- Username -->
+
             Username
-			<input id='txtUname' type='text' placeholder='Username' name='txtUsername'>
-            <p id='pUsernameReqMsg' style="color:red;"></p>  
+            <input id='txtUname' type='text' placeholder='Username' name='txtUsername'>
+            <p id='pUsernameReqMsg' style="color:red;"></p>
 
-            <!-- Password -->		
-			<p> Password
-			<input id='txtPass' type='password' placeholder='Password' name='txtPassword'>
-			<button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>   
-			</p>
-            <p id='pPasswordReqMsg' style="color:red;"></p> 	
+            <p> Password
+                <input id='txtPass' type='password' placeholder='Password' name='txtPassword'>
+                <button id='btnShow' type='button' onclick=passwordVisibility()>Show</button>
+            </p>
+            <p id='pPasswordReqMsg' style="color:red;"></p>
 
-            <!-- Email -->
             Email
-			<input id='txtEmail' type='text' placeholder='Email' name='txtEmail'>
+            <input id='txtEmail' type='text' placeholder='Email' name='txtEmail'>
 
             <!-- Security Questions -->
-            <p id='pSecurityQuestionsMsg'>Security Questions</p>	
-			<input id='txtSecureQ1' type='text' placeholder='Question 1' name='txtSecureQ1'>
+            <p id='pSecurityQuestionsMsg'>Security Questions</p>
+            <input id='txtSecureQ1' type='text' placeholder='Question 1' name='txtSecureQ1'>
             <input id='txtSecureQ1Ans' type='text' placeholder='Answer' name='txtSecureQ1Ans'>
             <p>
-            <input id='txtSecureQ2' type='text' placeholder='Question 2' name='txtSecureQ2'>
-            <input id='txtSecureQ2Ans' type='text' placeholder='Answer' name='txtSecureQ2Ans'>
+                <input id='txtSecureQ2' type='text' placeholder='Question 2' name='txtSecureQ2'>
+                <input id='txtSecureQ2Ans' type='text' placeholder='Answer' name='txtSecureQ2Ans'>
             </p>
             <p>
-            <input id='txtSecureQ3' type='text' placeholder='Question 3' name='txtSecureQ3'>
-            <input id='txtSecureQ3Ans' type='text' placeholder='Answer' name='txtSecureQ3Ans'>
+                <input id='txtSecureQ3' type='text' placeholder='Question 3' name='txtSecureQ3'>
+                <input id='txtSecureQ3Ans' type='text' placeholder='Answer' name='txtSecureQ3Ans'>
             </p>
-            
+
             <!-- Back to Login and Sign up button -->
             <p>
-            <button type='button' id='btnBackToLogin' onclick="window.location='/loginpage.html'">Back To Login</button>
-			<button id='btnSignUp' type='submit'>Sign Up</button>
+                <button type='button' id='btnBackToLogin' onclick="window.location='/loginpage.html'">Back To
+                    Login</button>
+                <button id='btnSignUp' type='submit'>Sign Up</button>
             </p>
-		</form>
-	</body>
+        </form>
+    </div>
+</body>
+
 </html>
 
-<script>    
+<script>
     // Sets the visibility of the password field
-    function passwordVisibility()
-    {
+    function passwordVisibility() {
         var showButton = document.getElementById("txtPass");
-        if(showButton.type == "password")
+        if (showButton.type == "password")
             showButton.type = "text";
         else
             showButton.type = "password";
     }
-    
+
     // Todo: Account data storage + add names and email
-    function validateForm()
-    {        
+    function validateForm() {
         username = getUsername();
-        password = getPassword();        
+        password = getPassword();
 
         // Username and password requirements
-        if(!usernameRequirementsMet(username) ||
-           !passwordRequirementsMet(password, username))
+        if (!usernameRequirementsMet(username) ||
+            !passwordRequirementsMet(password, username))
             return false;
 
-        return true;     
+        return true;
     }
 
-    function usernameRequirementsMet(username)
-    {
-        if(hasSpace(username)) {
+    function usernameRequirementsMet(username) {
+        if (hasSpace(username)) {
             setUserReqText("*Username can not have spaces.");
             return false;
-        } if(username.length < 8) { // At least 8 characters long        
+        } if (username.length < 8) { // At least 8 characters long        
             setUserReqText("*Username needs to be at least 8 characters long.");
             return false;
-        } if(!hasUpperAndLowerCaseLetters(username)) { // At least 1 uppercase letter and 1 lowercase letter
+        } if (!hasUpperAndLowerCaseLetters(username)) { // At least 1 uppercase letter and 1 lowercase letter
             setUserReqText("*Username must have at least 1 uppercase letter and 1 lowercase letter.");
             return false;
-        } if(!hasNum(username)) {
+        } if (!hasNum(username)) {
             setUserReqText("*Username must have at least 1 number.");
             return false;
-        } if(!hasSymbols(username)) {
+        } if (!hasSymbols(username)) {
             setUserReqText("*Username must have at least 1 special character like: !, @, #, $, %, ^, &, *, (, or )");
             return false;
         }
@@ -120,32 +107,28 @@
         return true;
     }
 
-    function hasNum(str)
-    {
+    function hasNum(str) {
         return /\d/.test(str);
     }
-    function hasSpace(str) 
-    {
+    function hasSpace(str) {
         return /\s/.test(str);
     }
-    function hasSymbols(str)
-    {
+    function hasSymbols(str) {
         return /[!@#$%^&*()]/.test(str);
     }
 
-    function passwordRequirementsMet(password, username)
-    {
+    function passwordRequirementsMet(password, username) {
         // At least 10 characters long
-        if(password.length < 10){
+        if (password.length < 10) {
             setPassReqText("*Password needs to be at least 10 characters long.");
             return false;
-        } if(!hasUpperAndLowerCaseLetters(password)){ // At least 1 uppercase letter and 1 lowercase letter
+        } if (!hasUpperAndLowerCaseLetters(password)) { // At least 1 uppercase letter and 1 lowercase letter
             setPassReqText("*Password must have at least 1 uppercase letter and 1 lowercase letter.");
             return false;
-        } if(!hasNoInvalidChars(password)){ // Cannot have '&', '=', '/', or ' ' (spaces)
+        } if (!hasNoInvalidChars(password)) { // Cannot have '&', '=', '/', or ' ' (spaces)
             setPassReqText("*Password must not contain the following: \"&\", \"=\", \"/\" or spaces.");
             return false;
-        } if(password.toUpperCase().includes(username.toUpperCase())){ // The password should not contain the username (not case sensitive)
+        } if (password.toUpperCase().includes(username.toUpperCase())) { // The password should not contain the username (not case sensitive)
             setPassReqText("*Password should not contain the username.");
             return false;
         }
@@ -155,38 +138,34 @@
         return true;
     }
 
-    function hasUpperAndLowerCaseLetters(string)
-    {
+    function hasUpperAndLowerCaseLetters(string) {
         // At least 1 uppercase letter and 1 lowercase letter
         var oneUppercase = false;
         var oneLowercase = false;
         for (let index = 0; index < string.length; index++) {
             const element = string[index];
-            if(!isNaN(element * 1)) 
-            {}// It is a number                
-            else
-            {
-                if(element == element.toUpperCase())
+            if (!isNaN(element * 1)) { }// It is a number                
+            else {
+                if (element == element.toUpperCase())
                     oneUppercase = true;
                 else
                     oneLowercase = true;
             }
         }
 
-        if(oneUppercase && oneLowercase)
+        if (oneUppercase && oneLowercase)
             return true;
         else
             return false;
     }
 
     // False if '&', '=', '/', or ' ' is present
-    function hasNoInvalidChars(string)
-    {
+    function hasNoInvalidChars(string) {
         // Check for '&', '=', and '/'
         for (let index = 0; index < string.length; index++) {
             const element = string[index];
-            if(element == '&' || element == '=' || element == '/' || element == ' ')
-                return false;            
+            if (element == '&' || element == '=' || element == '/' || element == ' ')
+                return false;
         }
 
         // No invalid chars found
@@ -194,25 +173,21 @@
     }
 
     // Sets the text below the Username input field
-    function setUserReqText(stringText)
-    {
+    function setUserReqText(stringText) {
         document.getElementById('pUsernameReqMsg').innerHTML = stringText;
     }
 
     // Sets the text below the Password input field
-    function setPassReqText(stringText)
-    {
+    function setPassReqText(stringText) {
         document.getElementById('pPasswordReqMsg').innerHTML = stringText;
     }
 
 
 
-    function getUsername()
-    {
+    function getUsername() {
         return document.getElementById('txtUname').value;
     }
-    function getPassword()
-    {
+    function getPassword() {
         return document.getElementById('txtPass').value;
     }
 

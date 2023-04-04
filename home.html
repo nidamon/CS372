@@ -1,52 +1,34 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Homepage</title>
-	</head>
-	
-	<style>
-        h1 {
-          text-align: center;
-          font-family: 'Brush Script MT';}
-        p {text-align: center;}
-        form {text-align: center;}
+
+<head>
+    <title>Homepage</title>
+    <link rel="stylesheet" href="chillflixStyleSheet.css">
+</head>
 
 
-        body {
-          background-image: url('images/website_background.jpg');
-          background-repeat: no-repeat;
-          background-attachment: fixed;  
-          background-size: cover;}
-    </style>
+<body>
+    <div class="backgroundImg1 center">
+        <img src="images/ChillflixLogo.png" alt="Logo" class="logo medium">
 
-	<body>
-		<!--<h1>Homepage</h1>-->
-  		<form>
-            <img id="logoImage" src="images/ChillflixLogo.png" alt="A logo">
+        <div class="textBox">
+            <p id='ptxtPages' type='text'>Directory</p>
 
-            <!-- Buttons and response text -->
-			<p id='ptxtPages' type='text'>Directory</p>
+            <form>
+                <button type='button' id='btnLogin' onClick=redirectToLogin()>Login</button>
+                <button type='button' id='btnSignUp' onClick=redirectToSignUp()>Sign Up</button>
+            </form>
+        </div>
+    </div>
+</body>
 
-            <!--<button id='btnLogin' onClick="document.location='default.loginpage'">Login</button> -->
-			<button type='button' id='btnLogin' onClick=redirectToLogin()>Login</button>
-			<button type='button' id='btnSignUp' onClick=redirectToSignUp()>Sign Up</button>
-		</form>
-	</body>
 </html>
 
 <script>
-    function redirectToLogin()
-    {
+    function redirectToLogin() {
         window.location.href = "loginpage.html";
     }
-    function redirectToSignUp()
-    {
+    function redirectToSignUp() {
         window.location.href = "signup.html";
     }
-
-    const logoWidth = '300';
-    const logoHeight = '200';
-    const logoImage = document.getElementById('logoImage');
-    logoImage.style.width = logoWidth + 'px';
-    logoImage.style.height = logoHeight + 'px';
 </script>
