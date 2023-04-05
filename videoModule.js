@@ -27,8 +27,8 @@ exports.createVideoList = async function (videos, callback_HTMLData) {
             html += noResults();
         }
         html += addUploadButton();
-        html += addTooltipToggle();
         html += addInvalidUserRdirect();
+        html += addLandingPageScripts();
 
         callback_HTMLData(html);
     } catch {
@@ -69,10 +69,11 @@ function addButtonsAndSearching() {
     // Search button
     // Logout button
     return `<div class ='center'>
-        <form method="post" class = 'textBoxBlue'>
+        <form method="post" class = 'textBoxBlue' id="formVideoSearch">
             <input id='txtVideoSearchName' type='text' placeholder='Search by Title' name='videoNameSearch'>
-            <input id='txtVideoSearchGenre' type='text' placeholder='Search by Genre' name='videoGenreSearch'>
-            <button id='btnSubmitSearch' type='submit' >Search</button>
+            <input id='txtVideoSearchGenre' type='text' name='videoGenreSearch' hidden>
+            ${addGenreDropdown()}
+            <button id='btnSubmitSearch' type='button' onclick="storeSearch()">Search</button>
             <button type='button' id='btnLogout' onclick="(function(){ 
                 let uname = sessionStorage.getItem('UserId'); 
                 window.location.href=('logout/' + uname);
@@ -98,12 +99,93 @@ function addUploadButton() {
     <button type='button' id='btnVideoUploadPage' onclick="window.location.href='videoupload.html'">Upload a video</button>
     </div>`;
 }
+function addGenreDropdown() {
+    return `
+    <div class="dropdown">
+        <button type="button">Genres</button>
+        <div id="genreDropdownOptions" class="dropdown-options">
+        </div>
+    </div>`;
+}
+function addLandingPageScripts(){
+    let html = addTooltipToggle();
+    html += addFetchingForGenreDropdown();
+    html += addDropdownHandle();
+    html += addSearchStoreAndPopulate();
+    return html;
+}
 function addTooltipToggle() {
     return `<script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
     </script>`;
+}
+function addFetchingForGenreDropdown() {
+    return `<script>
+        populateGenres();
+        function populateGenres() {
+            const url = 'genrelist';
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(\`HTTP error: \${response.status}\`);
+                    }
+                    return response.text();
+                })
+                .then(genreList => { // When response.text() has succeeded
+                    let genreDropdownOptions = "";
+                    JSON.parse(genreList).forEach(genre => {
+                        genreDropdownOptions +=  
+                        \`<label><input type="checkbox" id="box\${genre}" onclick="toggleInGenresArray('\${genre}')">\${genre}</label>\`;
+                    });
+                    document.getElementById("genreDropdownOptions").innerHTML = genreDropdownOptions;
+                    populateSearchParams();
+                })
+                .catch(error => setReqText(\`Could not get genre list: \${error}\`));
+        }
+        </script>`;
+}
+function addDropdownHandle() {
+    // Adds the given genre to the list of genres for the current video upload
+    return `<script>
+        let genresArray = [];
+        function toggleInGenresArray(newGenre)
+        {
+            if(newGenre != '') {
+                const index = genresArray.indexOf(newGenre);
+                if (index > -1) { // Only splice array when item is found
+                    genresArray.splice(index, 1); // 2nd parameter means remove one item only
+                } else {
+                    genresArray.push(newGenre);
+                }
+            }
+            let videoGenres = ""; // Populate the search
+            genresArray.forEach(genre => {
+                videoGenres += genre + " ";
+                if (document.getElementById('box' + genre) != null)
+                    document.getElementById('box' + genre).checked = true;                
+            })
+            document.getElementById('txtVideoSearchGenre').value = videoGenres;
+        }
+        </script>`;
+}
+function addSearchStoreAndPopulate() {
+    return `<script>
+        function storeSearch(){
+            sessionStorage.setItem("PreviousTitleSearch", document.getElementById('txtVideoSearchName').value);
+            sessionStorage.setItem("PreviousSearchGenres", document.getElementById('txtVideoSearchGenre').value);
+            document.getElementById('formVideoSearch').submit();
+        }        
+        function populateSearchParams() {
+            document.getElementById('txtVideoSearchName').value = sessionStorage.getItem('PreviousTitleSearch');
+            document.getElementById('txtVideoSearchGenre').value = sessionStorage.getItem('PreviousSearchGenres');
+            genres = document.getElementById('txtVideoSearchGenre').value;
+            genres.split(' ').forEach(genre => {
+                toggleInGenresArray(genre);
+            })
+        }
+        </script>`;
 }
 
 // Creates a video watching page and sends it with a fetch to retrieve more after.
