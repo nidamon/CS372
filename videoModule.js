@@ -10,6 +10,7 @@ exports.createVideoList = async function (videos, callback_HTMLData) {
     let html = `<body onload=isUser() class="backgroundImg2 center">
     <head> <title>Landing Page</title> 
     <link rel="stylesheet" href="chillflixStyleSheet.css">
+    <link rel="icon" href="./images/ChillflixLogo.ico" type="image/x-icon">
     </head>
     <img src="images/ChillflixLogo.png" alt="chillflix logo" class="logo small"
     onclick="window.location.href='home.html'">`
@@ -109,7 +110,8 @@ function addTooltipToggle() {
 exports.sendVideoPage = function (res, videoData) {
     try {
         let html = `
-            <head><title>ChillFlix</title><link rel="stylesheet" href="/chillflixStyleSheet.css"></head>
+            <head><title>ChillFlix</title><link rel="stylesheet" href="/chillflixStyleSheet.css">
+            <link rel="icon" href="./images/ChillflixLogo.ico" type="image/x-icon"></head>
             <body class="backgroundImg2 center"> <div class="textBoxSalmon">
                 <h3>${videoData.videoName}</h3>
                 <button type='button' id='btnBackToMovies' onclick="window.location='/landingpage'">Back To Movies</button>
