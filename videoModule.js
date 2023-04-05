@@ -94,7 +94,7 @@ function addTooltipToggle() {
 exports.sendVideoPage = function (res, videoData) {
     try {
         let html = `
-            <head><link rel="stylesheet" href="/chillflixStyleSheet.css"></head>
+            <head><title>ChillFlix</title><link rel="stylesheet" href="/chillflixStyleSheet.css"></head>
             <body class="backgroundImg2 center"> <div class="textBoxSalmon">
                 <h3>${videoData.videoName}</h3>
                 <button type='button' id='btnBackToMovies' onclick="window.location='/landingpage'">Back To Movies</button>
@@ -102,8 +102,8 @@ exports.sendVideoPage = function (res, videoData) {
                 <div class="embededVideoContainer">
                 <iframe width="${videoWidth}" height="${videoHeight}" 
                 src="https://www.youtube.com/embed/${extractVideoId(videoData.videoEmbedLink)}" 
-                title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; 
-                encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                title="YouTube video player" frameborder="0" allow="encrypted-media; 
+                picture-in-picture" allowfullscreen></iframe>
                 </div><br> <div class="textBoxSalmon">
                 <p><strong>Genre:</strong> ${videoData.videoGenre}</p>
                 <p><strong>Comment:</strong> ${videoData.videoComment}</p>
