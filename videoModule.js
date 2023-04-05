@@ -23,7 +23,7 @@ exports.createVideoList = async function (videos, callback_HTMLData) {
             }
             html += `</div>`;
         } else {
-            html += `No search results`;
+            html += noResults();
         }
         html += addUploadButton();
         html += addTooltipToggle();
@@ -36,6 +36,21 @@ exports.createVideoList = async function (videos, callback_HTMLData) {
     }
     html += `</body>`;
 }
+
+// html no results found gives a button to clear the search
+function noResults() {
+    return `<div class="textBoxSalmon"> 
+    <strong>No search results</strong><br>
+    <button id='btnClearSearch'>Clear Search</button>
+    </div><br>
+    <script>
+      document.getElementById('btnClearSearch').addEventListener('click', function() {
+        document.getElementById('txtVideoSearchName').value = '';
+        document.getElementById('btnSubmitSearch').click();
+      });
+    </script>`;
+}
+
 
 // html script to redirect invalid users to not-in-my-house.html
 function addInvalidUserRdirect() {
