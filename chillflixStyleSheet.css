@@ -14,20 +14,24 @@
       text-align: center;
   }
 
+  .left {
+      text-align: left;
+  }
+
   /* Background Images */
   .backgroundImg1,
   .backgroundImg2,
   .backgroundImg3 {
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-repeat: repeat-y;
-    background-attachment: scroll;
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
-    z-index: -1;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-repeat: repeat-y;
+      background-attachment: scroll;
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      z-index: -1;
   }
 
   .backgroundImg1 {
@@ -82,8 +86,8 @@
 
   .videoUploadBox,
   .textBoxSalmon {
-    background-color: #D3A68D;
-    border: 1px solid #ccc;
+      background-color: #D3A68D;
+      border: 1px solid #ccc;
       border-radius: 5px;
       padding: 20px;
       margin: 0 auto;
@@ -91,7 +95,7 @@
       /* Text Color */
       color: black;
   }
-  
+
 
   .textBoxSalmon.home {
       /* Text Color */
@@ -129,5 +133,27 @@
   }
 
   .videoThumbnail:hover {
-    transform: scale(1.1);
-}
+      transform: scale(1.1);
+  }
+
+  .embededVideoContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    max-width: 960px;
+    height: 540px;
+    margin: 0 auto; /* added to center the container horizontally */
+    border: 5px solid #D3A68D;
+  }
+
+  .embededVideoContainer iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* ensure video maintains aspect ratio and fits within container */
+    max-width: 960px;
+    max-height: 540px;
+  }

@@ -10,6 +10,28 @@
     <img src="images/ChillflixLogo.png" alt="chillflix logo" class="logo small"
         onclick="window.location.href='home.html'">
 
+    <div id="accountReq" style="display: none;">
+        <div class="textBoxSalmon">
+            <h3>Account Requirements</h3>
+            <h4>Username:</h4>
+            <ul class="left">
+                <li>At least 8 characters long</li>
+                <li>At least 1 uppercase letter and 1 lowercase letter</li>
+                <li>At least 1 number</li>
+                <li>At least 1 special character</li>
+                <li>No spaces</li>
+            </ul>
+            <h4>Password:</h4>
+            <ul class="left">
+                <li>At least 8 characters long</li>
+                <li>At least 1 uppercase letter and 1 lowercase letter</li>
+                <li>At least 1 number</li>
+                <li>At least 1 special character</li>
+                <li>No spaces</li>
+                <li>Can not be the same as the username</li>
+            </ul>
+        </div>
+    </div>
 
     <form method='post' class="signupBox" onsubmit="return validateForm()">
         <h3>Account Creation</h3>
@@ -21,6 +43,8 @@
         <p> Last Name
             <input id='txtLastName' type='text' placeholder='Last Name' name='txtLastName'>
         </p>
+
+        <p><button id='btnShow' type='button' onclick=showRequirements()>Account Requirments</button></p>
 
         Username
         <input id='txtUname' type='text' placeholder='Username' name='txtUsername'>
@@ -55,6 +79,7 @@
             <button id='btnSignUp' type='submit'>Sign Up</button>
         </p>
     </form>
+
 </body>
 
 </html>
@@ -189,9 +214,12 @@
         return document.getElementById('txtPass').value;
     }
 
-    const logoWidth = '200';
-    const logoHeight = '133';
-    const logoImage = document.getElementById('logoImage');
-    logoImage.style.width = logoWidth + 'px';
-    logoImage.style.height = logoHeight + 'px';
+    // Username and password requirements
+    function showRequirements() {
+        var textBox = document.getElementById("accountReq");
+        if (textBox.style.display == "none")
+            textBox.style.display = "block";
+        else
+            textBox.style.display = "none";
+    }
 </script>
