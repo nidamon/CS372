@@ -1,5 +1,7 @@
 const videoThumbnailWidth = 240;
 const videoThumbnailHeight = 135;
+
+//max width and height of the video player specified in the style sheet
 const videoWidth = 960;
 const videoHeight = 540;
 
@@ -88,49 +90,35 @@ function addTooltipToggle() {
     </script>`;
 }
 
-// !!!!!!!!!!!!!! BROKEN CURRENTLY !!!!!!!!!!!!!!
 // Creates a video watching page and sends it with a fetch to retrieve more after.
 exports.sendVideoPage = function (res, videoData) {
-    let html = `<h3>${videoData.videoName}</h3> 
-    <head> <link rel="stylesheet" href="chillflixStyleSheet.css"> </head>`;
-
-    // Temp Fix
-    html += `<style>
-    body {
-        background-image: url('/images/website_background2.jpg');
-        background-repeat: repeat;
-        background-attachment: fixed;  
-        background-size: cover;
-        text-align: center;
-    }
-    </style>`;
-
     try {
-        html += // Embeded youtube video, comment, and html body for adding role based actions on fetch
-            `<body class="backgroundImg2 center">
-            <button type='button' id='btnBackToMovies' onclick="window.location='/landingpage'">Back To Movies</button>
-            <br>
-            <iframe width="${videoWidth}" height="${videoHeight}" 
-            src="https://www.youtube.com/embed/${extractVideoId(videoData.videoEmbedLink)}" 
-            title="YouTube video player" frameborder="0" allow="accelerometer; 
-            autoplay; clipboard-write; encrypted-media; gyroscope; 
-            picture-in-picture; web-share" allowfullscreen></iframe>
-            <div class="textBoxBlue">
-            <p>Comment: ${videoData.videoComment}</p>   
-            <div id="roleBasedArea"></div>
-            </div>
+        let html = `
+            <head><link rel="stylesheet" href="/chillflixStyleSheet.css"></head>
+            <body class="backgroundImg2 center"> <div class="textBoxSalmon">
+                <h3>${videoData.videoName}</h3>
+                <button type='button' id='btnBackToMovies' onclick="window.location='/landingpage'">Back To Movies</button>
+                </div><br><br>
+                <div class="embededVideoContainer">
+                <iframe width="${videoWidth}" height="${videoHeight}" 
+                src="https://www.youtube.com/embed/${extractVideoId(videoData.videoEmbedLink)}" 
+                title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; 
+                encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div><br> <div class="textBoxSalmon">
+                <p><strong>Genre:</strong> ${videoData.videoGenre}</p>
+                <p><strong>Comment:</strong> ${videoData.videoComment}</p>
+                <div id="roleBasedArea"></div></div>
+                ${addFetchingForVideoPage(videoData.videoName)}
             </body>`;
-        html += addFetchingForVideoPage(videoData.videoName);
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(html);
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err);
         res.writeHead(500, { 'Content-Type': 'text/plain' });
-        html = 'Failed to load content'
-        res.end(html);
+        res.end('Failed to load content');
     }
 }
+
 // Fetch code to get role-based additions to the video page
 function addFetchingForVideoPage(videoName) {
     return `<script>
@@ -155,18 +143,6 @@ function addFetchingForVideoPage(videoName) {
             .catch(error => { console.log("Fetch error")});        
         }
         </script>`;
-}
-// Add the CSS for the row-column format and repeating backgound
-function videoWrapAndBackgound() {
-    return `<style>
-        body {
-            background-image: url('/images/website_background2.jpg');
-            background-repeat: repeat;
-            background-attachment: fixed;  
-            background-size: cover;}
-        }
-    </style>`;
-
 }
 // Exracts the video ID form a youtube link.
 function extractVideoId(url) {
