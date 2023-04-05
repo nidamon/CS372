@@ -43,6 +43,7 @@ function directOnRequest(query, req, res) {
     case 'images': sendImage(res, "." + query); break; // Image request
     case 'users': handleUserInfoQuery(req, res); break; // Request about users
     case 'video': handleVideoPage(req, res); break; // Check if request about a video
+    case 'genrelist': sendGenreList(req, res); break; // Request for genres
     case chillflixStyleSheet: sendStyleSheet(res, chillflixStyleSheet); break;
     case invalidUserPage: sendPagehtml(res, invalidUserPage); break;
     default: // No page available
@@ -509,7 +510,6 @@ function handleVideoPagePOST(req, res)
 }
 
 
-
 // ######################################################################################
 // Misc
 // ######################################################################################
@@ -531,23 +531,32 @@ function handleUserInfoQuery(req, res)
 function verifyUserSession(usersRequest, res)
 {
   let username = usersRequest[2];
-    if(username == "null") { // No user session on client side
-      res.end("sendToLogin");
-    } else {
-      let accountType = usersRequest[3];
-      dataBaseModule.getUserData(username, function(userData){
-        if(userData.loggedIn == "loggedIn")
-        {
-          // if user is valid stay on page
-          if(userData.accountType == decodeURI(accountType))
-            res.end();
-          else
-            res.end("sendToLogin");
-        }
+  if(username == "null") { // No user session on client side
+    res.end("sendToLogin");
+  } else {
+    let accountType = usersRequest[3];
+    dataBaseModule.getUserData(username, function(userData){
+      if(userData.loggedIn == "loggedIn")
+      {
+        // If user is valid stay on page
+        if(userData.accountType == decodeURI(accountType))
+          res.end();
         else
           res.end("sendToLogin");
-      });
-    }
+      }
+      else
+        res.end("sendToLogin");
+    });
+  }
+}
+
+// Sends the list of genres on request
+function sendGenreList(req, res)
+{
+  dataBaseModule.getGenres(function(genreList){
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.end(JSON.stringify(genreList));
+  });
 }
 
 // Gets the form data from a submission and passes it to a callback
@@ -593,7 +602,6 @@ function sendImage(res, filename)
         }
     });
 }
-
 function sendStyleSheet(res, filename) {
   const fileStream = fs.createReadStream(filename);
   fileStream.on('error', function(err) {
@@ -604,7 +612,6 @@ function sendStyleSheet(res, filename) {
   res.writeHead(200, {'Content-Type': 'text/css'});
   fileStream.pipe(res);
 }
-
 // Redirects to another page on this site
 function redirectOnSite(res, page)
 {
