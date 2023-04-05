@@ -55,7 +55,13 @@
         <fieldset>
             <!-- Video Genres -->
             Video Genres:<br>
-            <input id='txtVideoGenre' type='text' placeholder='Video Genres' name='txtVideoGenre' size="69">
+            <input id='txtVideoGenre' type='text' placeholder='New Video Genres' name='txtVideoGenre' style="margin-left: auto; " size="57">
+            <div class="dropdown" style="float:right">
+                <button type="button">Add Genre</button>
+                <div id="genreDropdownOptions" class="dropdown-options">
+                    <!-- This area get populated by a fetch -->
+                </div>
+            </div>
             <br>
 
             <!-- Video Synopsis -->
@@ -80,6 +86,7 @@
 
 <script>
     isAnEditorLoggedIn();
+    populateGenres();
 
     function isAnEditorLoggedIn() {
         const url = `users/${sessionStorage.getItem("UserId")}/${sessionStorage.getItem("AccountType")}/verify`;
@@ -100,6 +107,27 @@
                 }
             })
             .catch(error => { window.location.replace('landingpage') });
+    }
+
+    function populateGenres() {
+        const url = `genrelist`;
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(genreList => { // When response.text() has succeeded
+                console.log(genreList);
+                let genreDropdownOptions = "";
+                JSON.parse(genreList).forEach(genre => {
+                    genreDropdownOptions += 
+                    `<label><input type="checkbox" onclick="toggleInGenresArray('${genre}')">${genre}</label>`;
+                });
+                document.getElementById("genreDropdownOptions").innerHTML = genreDropdownOptions;
+            })
+            .catch(error => setReqText(`Could not get genre list: ${error}`));
     }
 
     function uploadVideo() {
@@ -146,6 +174,19 @@
         return false;
     }
 
+    // Adds the given genre to the list of genres for the current video upload
+    let genresArray = [];
+    function toggleInGenresArray(genre)
+    {
+        const index = genresArray.indexOf(genre);
+        if (index > -1) { // Only splice array when item is found
+            genresArray.splice(index, 1); // 2nd parameter means remove one item only
+        } else {
+            genresArray.push(genre);
+        }
+        console.log(genresArray);
+    }
+
     // Sets the text below the input fields
     function setReqText(stringText) {
         document.getElementById('pReqMsg').innerHTML = stringText;
@@ -167,7 +208,11 @@
         return document.getElementById('txtVideoLength').value;
     }
     function getVideoGenre() {
-        return document.getElementById('txtVideoGenre').value;
+        let videoGenres = document.getElementById('txtVideoGenre').value;
+        genresArray.forEach(genre => {
+            videoGenres += " " + genre;
+        })
+        return videoGenres;
     }
     function getVideoComment() {
         return document.getElementById('txtVideoComment').value;
