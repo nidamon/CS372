@@ -6,7 +6,7 @@ exports.client = new MongoClient(exports.uri);
 exports.mongoDataBase = "project";
 exports.userDataCollection = "userData";
 exports.videoDataCollection = "videoData";
-
+exports.genreDataCollection = "genreData";
 
 // ################################################################################
 // MongoDB Client Connection and Client Closing 
@@ -17,7 +17,6 @@ exports.videoDataCollection = "videoData";
 process.on('SIGINT', closeDatabaseConnection);
 process.on('SIGTERM', closeDatabaseConnection);
 
-
 // Connect to the database when the module is loaded
 (async () => {
     try {
@@ -27,7 +26,6 @@ process.on('SIGTERM', closeDatabaseConnection);
         console.error("Error connecting to MongoDB:", err);
     }
 })();
-
 // Close mongoDB client connection 
 async function closeDatabaseConnection() {
     try {
@@ -39,12 +37,10 @@ async function closeDatabaseConnection() {
         process.exit(0);
     }
 }
-  
-  
+    
 // ################################################################################
 // Database communication
 // ################################################################################
-
 
 // Adds the document into the collection within the given dataBase
 exports.addData = async function(dataBase, collection, document, callback_argNone = null)
@@ -56,7 +52,20 @@ exports.addData = async function(dataBase, collection, document, callback_argNon
             callback_argNone();    
     }
 }
-
+// Adds the document into the collection within the given dataBase if the document is not already in the database
+exports.addDataIfNotPresent = async function(dataBase, collection, checkField, checkFieldValue, document, callback_argNone = null)
+{
+    try {        
+        await exports.client.db(dataBase).collection(collection).updateOne(
+            {[checkField]: checkFieldValue},
+            {$setOnInsert: document},
+            {upsert: true}
+        );            
+    } finally {
+        if(callback_argNone != null)
+            callback_argNone();    
+    }
+}
 // Removes a document from the specified database and collection that matches the filter
 exports.removeData = async function(dataBase, collection, filter, callback_argNone = null)
 {
@@ -67,7 +76,6 @@ exports.removeData = async function(dataBase, collection, filter, callback_argNo
             callback_argNone();    
     }
 }
-
 // Retrieves field data from a document in the database and passes it to a callback function
 exports.getFieldData = async function(dataBase, collection, fieldNameString, query, callback_argFieldData)
 {
@@ -86,7 +94,6 @@ exports.getFieldData = async function(dataBase, collection, fieldNameString, que
             callback_argFieldData(data);
     }
 }
-
 // Retrieves data from the database and passes it to a callback function
 exports.getDocData = async function (dataBase, collection, query, options, callback_argData) {
     try {
@@ -102,8 +109,7 @@ exports.getDocData = async function (dataBase, collection, query, options, callb
     } catch (err) {
         console.error("Error fetching data:", err);
     }
-};
-
+}
 // Retrieves a set of data from the database and passes it to a callback function
 exports.getMultiDocData = async function(dataBase, collection, query, options, callback_argData)
 {
@@ -124,7 +130,6 @@ exports.getMultiDocData = async function(dataBase, collection, query, options, c
         console.error("Error fetching data:", err);
     }
 }
-
 // Edits a field within a document in the database
 exports.editFieldData = async function(dataBase, collection, query, fieldNameString, newValue, callback_argNone = null)
 {
@@ -143,11 +148,9 @@ exports.editFieldData = async function(dataBase, collection, query, fieldNameStr
     }
 }
 
-
 // ################################################################################
 // User Database wrappers 
 // ################################################################################
-
 
 // Adds the user's data to the database
 exports.addNewUser = function(formData)
@@ -181,7 +184,6 @@ exports.addNewUser = function(formData)
             
     exports.addData(exports.mongoDataBase, exports.userDataCollection, newUserData, function(){console.log("User data added to server");})
 }
-
 // Gets the user's data
 exports.getUserData = function(username, callback_argData)
 {
@@ -189,21 +191,18 @@ exports.getUserData = function(username, callback_argData)
     options = {};
     exports.getDocData(exports.mongoDataBase, exports.userDataCollection, query, options, callback_argData);
 }
-
 // Gets the user's field data
 exports.getUserFieldData = function(username, fieldNameString, callback_argData)
 {
     query = {"username": username};
     exports.getFieldData(exports.mongoDataBase, exports.userDataCollection, fieldNameString, query, callback_argData);
 }
-
 // Edits a field within a user Account in the database
 exports.editUserFieldData = async function(username, fieldNameString, newValue, callback_argNone)
 {
     query = {"username":username};
     exports.editFieldData(exports.mongoDataBase, exports.userDataCollection, query, fieldNameString, newValue, callback_argNone)
 }
-
 // Checks if the user exists
 exports.doesUserExist = function(username, callback_argBool)
 {
@@ -216,13 +215,9 @@ exports.doesUserExist = function(username, callback_argBool)
   });
 }
 
-
-
-
 // ################################################################################
 // Video Database wrappers 
 // ################################################################################
-
 
 // Adds the video's data to the database
 exports.addNewVideo = function(formData)
@@ -248,23 +243,21 @@ exports.addNewVideo = function(formData)
         "videoFeedback" : "No feedback yet"
     };   
 
+    exports.addNewGenres(videoGenre);
     exports.addData(exports.mongoDataBase, exports.videoDataCollection, newVideoData, function(){console.log("New video added to server");})
 }
-
 // Edits a field within a video's data in the database
 exports.editVideoFieldData = async function(videoName, fieldNameString, newValue, callback_argNone)
 {
     query = { "videoName" : videoName };
     exports.editFieldData(exports.mongoDataBase, exports.videoDataCollection, query, fieldNameString, newValue, callback_argNone)
 }
-
 // Removes the video with the matching name
 exports.removeVideo = function(videoName, callback_argNone)
 {
     filter = { "videoName" : videoName };
     exports.removeData(exports.mongoDataBase, exports.videoDataCollection, filter, callback_argNone);
 }
-
 // Finds videos based on text search of the videoName and text search of genres
 exports.getVideos = function(searchParamName, searchParamGenre, callback_argData)
 {
@@ -291,7 +284,6 @@ exports.getVideos = function(searchParamName, searchParamGenre, callback_argData
     // Conduct search
     exports.getMultiDocData(exports.mongoDataBase, exports.videoDataCollection, query, options, callback_argData);    
 }
-
 // Gets a specific video's data
 exports.getVideoData = function(videoName, callback_argData)
 {
@@ -299,10 +291,44 @@ exports.getVideoData = function(videoName, callback_argData)
     options = {};
     exports.getDocData(exports.mongoDataBase, exports.videoDataCollection, query, options, callback_argData);
 }
-
 // Gets a specific video's field data
 exports.getVideoFieldData = function(videoName, fieldNameString, callback_argData)
 {
     query = {"videoName": videoName};
     exports.getFieldData(exports.mongoDataBase, exports.videoDataCollection, fieldNameString, query, callback_argData);
+}
+
+// ################################################################################
+// Genre Database wrappers 
+// ################################################################################
+
+// Adds new genres if not already present
+exports.addNewGenres = function(videoGenres)
+{    
+    genreList = videoGenres.split(' ');
+    genreList.forEach(possibleNewGenre => {
+        newGenreData = { 
+            "genreName" : possibleNewGenre
+        };   
+
+        let checkField = "genreName";
+        let checkFieldValue = possibleNewGenre;
+        exports.addDataIfNotPresent(exports.mongoDataBase, exports.genreDataCollection, checkField, checkFieldValue, newGenreData, function(){console.log("New video added to server");})
+    });
+}
+// Gets all genres
+exports.getGenres = function(callback_argGenres)
+{
+    query = {};
+    options = {
+        projection: { _id: 0 }, // 0 means don't show
+        sort : { "genreName": 1 } // Sort alphabetically (1 = ascending)
+    };    
+    exports.getMultiDocData(exports.mongoDataBase, exports.genreDataCollection, query, options, function(genreDocList){
+        let genresList = [];
+        genreDocList.forEach(genreDoc => { // Fill genresList with genreName field data only
+            genresList.push(genreDoc.genreName);
+        });
+        callback_argGenres(genresList);
+    });    
 }
