@@ -1,5 +1,7 @@
-const videoWidth = 240;
-const videoHeight = 135;
+const videoThumbnailWidth = 240;
+const videoThumbnailHeight = 135;
+const videoWidth = 960;
+const videoHeight = 540;
 
 // Creates an html page that displays the videos that have been passed to it
 exports.createVideoList = async function (videos, callback_HTMLData) {
@@ -65,7 +67,8 @@ function addVideoToList(video) {
     return `<div class="videoThumbnail">
     <a href="/video/${encodeURI(video.videoName)}" title="${video.videoName}" 
     data-toggle="tooltip">
-        <img src="${video.videoThumbnail}" alt="${video.videoName} thumbnail" width="${videoWidth}" height="${videoHeight}">
+        <img src="${video.videoThumbnail}" alt="${video.videoName} thumbnail" 
+        width="${videoThumbnailWidth}" height="${videoThumbnailHeight}">
     </a>
     <p>${video.videoName}</p> 
     </div>`;
@@ -107,7 +110,8 @@ exports.sendVideoPage = function (res, videoData) {
             `<body class="backgroundImg2 center">
             <button type='button' id='btnBackToMovies' onclick="window.location='/landingpage'">Back To Movies</button>
             <br>
-            <iframe width="960" height="540" src="https://www.youtube.com/embed/${extractVideoId(videoData.videoEmbedLink)}" 
+            <iframe width="${videoWidth}" height="${videoHeight}" 
+            src="https://www.youtube.com/embed/${extractVideoId(videoData.videoEmbedLink)}" 
             title="YouTube video player" frameborder="0" allow="accelerometer; 
             autoplay; clipboard-write; encrypted-media; gyroscope; 
             picture-in-picture; web-share" allowfullscreen></iframe>
