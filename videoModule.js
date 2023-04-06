@@ -46,7 +46,7 @@ function noResults() {
     </div><br>
     <script>
       document.getElementById('btnClearSearch').addEventListener('click', function() {
-        document.getElementById('txtVideoSearchName').value = '';
+        clearSearch();
         document.getElementById('btnSubmitSearch').click();
       });
     </script>`;
@@ -73,6 +73,7 @@ function addButtonsAndSearching() {
             <input id='txtVideoSearchName' type='text' placeholder='Search by Title' name='videoNameSearch'>
             <input id='txtVideoSearchGenre' type='text' name='videoGenreSearch' hidden>
             ${addGenreDropdown()}
+            <button id='btnSearchClear' type='button' onclick="clearSearch()">Clear</button>
             <button id='btnSubmitSearch' type='button' onclick="storeSearch()">Search</button>
             <button type='button' id='btnLogout' onclick="(function(){ 
                 let uname = sessionStorage.getItem('UserId'); 
@@ -172,11 +173,22 @@ function addDropdownHandle() {
 }
 function addSearchStoreAndPopulate() {
     return `<script>
-        function storeSearch(){
+        function storeSearch() {
             sessionStorage.setItem("PreviousTitleSearch", document.getElementById('txtVideoSearchName').value);
             sessionStorage.setItem("PreviousSearchGenres", document.getElementById('txtVideoSearchGenre').value);
             document.getElementById('formVideoSearch').submit();
         }        
+        function clearSearch() {
+            document.getElementById('txtVideoSearchName').value = "";
+            document.getElementById('txtVideoSearchGenre').value = "";
+            sessionStorage.setItem("PreviousTitleSearch", "");
+            sessionStorage.setItem("PreviousSearchGenres", "");
+            genresArray.forEach(genre => {
+                if (document.getElementById('box' + genre) != null)
+                    document.getElementById('box' + genre).checked = false;                
+            })       
+            genresArray = [];
+        }
         function populateSearchParams() {
             document.getElementById('txtVideoSearchName').value = sessionStorage.getItem('PreviousTitleSearch');
             document.getElementById('txtVideoSearchGenre').value = sessionStorage.getItem('PreviousSearchGenres');
