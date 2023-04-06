@@ -13,6 +13,13 @@
         width: 100px;
         margin: auto;
     }
+    .genreBar {
+        margin-left: auto; 
+        width: 365px;
+    }
+    .genreDropDown {
+        float: right;
+    }
 </style>
 
 <body class="backgroundImg1 center">
@@ -55,8 +62,8 @@
         <fieldset>
             <!-- Video Genres -->
             Video Genres:<br>
-            <input id='txtVideoGenre' type='text' placeholder='New Video Genres' name='txtVideoGenre' style="margin-left: auto; " size="57">
-            <div class="dropdown" style="float:right">
+            <input class="genreBar" id='txtVideoGenre' type='text' placeholder='New Video Genres' name='txtVideoGenre'>
+            <div class="dropdown genreDropDown">
                 <button type="button">Add Genre</button>
                 <div id="genreDropdownOptions" class="dropdown-options">
                     <!-- This area get populated by a fetch -->
@@ -131,6 +138,7 @@
     }
 
     function uploadVideo() {
+        console.log(getVideoGenre());
         // First, does the uploader have permission to upload?
         if (sessionStorage.getItem("AccountType") == "content editor") {
             if (uploadRequirementsMet())
@@ -208,7 +216,11 @@
         return document.getElementById('txtVideoLength').value;
     }
     function getVideoGenre() {
-        let videoGenres = document.getElementById('txtVideoGenre').value;
+        genresArray = genresArray.concat(document.getElementById('txtVideoGenre').value.split(' '));
+        genresArray = genresArray.filter(function(item, pos) { // Remove duplicate values
+            return genresArray.indexOf(item) == pos;
+        })
+        let videoGenres = "";
         genresArray.forEach(genre => {
             videoGenres += " " + genre;
         })
