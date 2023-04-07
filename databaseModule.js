@@ -307,13 +307,15 @@ exports.addNewGenres = function(videoGenres)
 {    
     genreList = videoGenres.split(' ');
     genreList.forEach(possibleNewGenre => {
-        newGenreData = { 
-            "genreName" : possibleNewGenre
-        };   
+        if(/^ *$/.test(possibleNewGenre) == false) { // NOT Only white space and NOT empty
+            newGenreData = { 
+                "genreName" : possibleNewGenre
+            };   
 
-        let checkField = "genreName";
-        let checkFieldValue = possibleNewGenre;
-        exports.addDataIfNotPresent(exports.mongoDataBase, exports.genreDataCollection, checkField, checkFieldValue, newGenreData, function(){console.log("New video added to server");})
+            let checkField = "genreName";
+            let checkFieldValue = possibleNewGenre;
+            exports.addDataIfNotPresent(exports.mongoDataBase, exports.genreDataCollection, checkField, checkFieldValue, newGenreData, function(){console.log("New video added to server");})
+        }
     });
 }
 // Gets all genres
