@@ -138,11 +138,12 @@
     }
 
     function uploadVideo() {
-        console.log(getVideoGenre());
         // First, does the uploader have permission to upload?
         if (sessionStorage.getItem("AccountType") == "content editor") {
-            if (uploadRequirementsMet())
-                document.getElementById('formVideoUpload').submit();
+            if (uploadRequirementsMet()) {
+                console.log("Requirements met.");
+                document.getElementById('formVideoUpload').submit();                
+            }
         } else {
             setReqText("You do not have permission to upload.");
         }
@@ -168,18 +169,33 @@
                 requirementsMet = false;
         });
 
-        if (requirementsMet)
-            console.log("Requirements met.");
+        if (requirementsMet) {
+            cleanUpSubmission();
+        }
+
         return requirementsMet;
     }
 
     // Returns true if the value passes is empty
     function isEmpty(name, value) {
-        if (value.length == 0) {
+        if (/^ *$/.test(value)) {
             setReqText(name + " must be filled out.");
             return true;
         }
         return false;
+    }
+
+    function cleanUpSubmission() {
+        document.getElementById('txtVideoName').value = cleanSpacing(getVideoName());
+        document.getElementById('txtVideoEmbedLink').value = cleanSpacing(getVideoEmbedLink());
+        document.getElementById('txtVideoThumbnail').value = cleanSpacing(getVideoThunbnail());
+        document.getElementById('txtVideoLength').value = cleanSpacing(getVideoLength());
+        document.getElementById('txtVideoGenre').value = cleanSpacing(getVideoGenre());
+        document.getElementById('txtVideoComment').value = cleanSpacing(getVideoComment());
+
+        function cleanSpacing(string) {
+            return string.replace(/\s+/g,' ').trim();
+        } 
     }
 
     // Adds the given genre to the list of genres for the current video upload
